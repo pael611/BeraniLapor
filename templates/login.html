@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | PPKS</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="../static/style/style.css">
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <!-- Javascript -->
+    <script>
+        $(document).ready(function() {
+            // Tombol Lupa password
+            $('#lupaPassword').click(function() {
+                $('#updatePasswordModal').css('display', 'block');
+                $('#overlay').css('display', 'block');
+            });
+
+            // Tombol Batal
+            $('#tombolBatal').click(function() {
+                $('#updatePasswordModal').css('display', 'none');
+                $('#overlay').css('display', 'none');
+            });
+        });
+    </script>        
+</head>
+<body>
+    <div class="container" id="main">
+        <div class="sign-up">
+            <form action="#">
+                <h3>Register akun baru</h3>
+                <input type="text" name="nama-lengkap" placeholder="Masukkan Nama Lengkap">
+                <input type="text" name="username" placeholder="Masukkan Username">
+                <input type="email" name="email" placeholder="Masukkan Email">
+                <input type="password" name="password" placeholder="Masukkan Password">
+                <div class="form-buttons">
+                    <button class="tombolSignUp" id="Register">Sign Up</button>
+                    <button class="tombolKembali" id="Kembali">Kembali</button>
+                </div>
+            </form>
+        </div>
+        <div class="sign-in">
+            <form action="#">
+                <h3>Sign In dengan akun Anda</h3>
+                <input type="text" name="username" placeholder="Masukkan Username">
+                <input type="password" name="password" placeholder="Masukkan Password">
+                <button id="lupaPassword" class="transparent-button">Lupa password?</button>
+                <div class="form-buttons">
+                    <button class="tombolSignIn" id="Login">Sign In</button>
+                    <button class="tombolKembali" id="Kembali">Kembali</button>
+                </div>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-left">  <!-- Overlay untuk bilah login -->
+                    <h3>Halo, Kawan!</h3>
+                    <p>Silahkan masukkan identitas Anda untuk bisa register akun pengguna baru</p>
+                    <p>Sudah punya akun?<br>
+                        Kita Sign In, yuk!</p>
+                    <button class="tombolOverlay" id="SignIn">Sign In</button>
+                </div>
+                <div class="overlay-right">  <!-- Overlay untuk bilah register -->
+                    <h3>Selamat Datang Kembali!</h3>
+                    <p>Silahkan Sign In dengan akun sosial media Anda atau juga bisa dengan akun PPKS yang telah Anda buat sebelumnya</p>
+                    <p>Belum punya akun?<br>
+                        Daftar dulu, yuk!</p>
+                    <button class="tombolOverlay" id="SignUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="updatePasswordModal" class="modal">
+        <div class="modal-content">
+            <h2>Update Password</h2>
+            <input style="margin-left: 0;" type="text" name="username" placeholder="Masukkan Username">
+            <input style="margin-left: 0;" type="password" name="new-password" placeholder="Masukkan Password Baru">
+            <div class="form-buttons">
+                <button class="tombolUpdatePassword" id="UpdatePassword">Update Password</button>
+                <button class="tombolKembali" id="tombolBatal">Batal</button>
+            </div>
+        </div>
+    </div>
+    <div id="overlay"></div>
+    
+
+    <!-- Transisi Javascript -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#SignUp').click(function() {
+                $('#main').addClass('right-panel-active');
+            });
+    
+            $('#SignIn').click(function() {
+                $('#main').removeClass('right-panel-active');
+            });
+        });
+    </script>
+</body>
+</html>
