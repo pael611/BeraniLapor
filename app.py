@@ -38,6 +38,12 @@ def forumControl():
         # Handle POST Request here
         return render_template('admin/forumControl.html')
     return render_template('admin/forumControl.html')
+@app.route('/adminDashboard/userControl', methods=['GET', 'POST'])
+def userControl():
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('admin/adminUserControl.html')
+    return render_template('admin/adminUserControl.html')
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD
     app.run(port=5000,debug=True)
