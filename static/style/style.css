@@ -45,20 +45,20 @@ body {
     border-radius: 30px;
 }
 /* Typing Animation */
-.nav-tittle {
+/* .nav-tittle {
     overflow: hidden;
     white-space: nowrap;
     animation: typing 2s steps(40) infinite;
-}
+} */
 
-@keyframes typing {
+/* @keyframes typing {
     from {
         width: 0;
     }
     to {
         width: auto;
     }
-}
+} */
 
 /* End of Typing Animation */
 
