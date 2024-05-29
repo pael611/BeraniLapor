@@ -14,36 +14,49 @@ def loginUser():
         # Handle POST Request here
         return render_template('login.html')
     return render_template('login.html')
+
+@app.route('/userProfil', methods=['GET', 'POST'])
+def userProfil():
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('userProfil.html')
+    return render_template('userProfil.html')
+
 @app.route('/adminDashboard', methods=['GET', 'POST'])
 def adminDashboard():
     if request.method == 'POST':
         # Handle POST Request here
         return render_template('admin/adminDashboard.html')
     return render_template('admin/adminDashboard.html')
+
 @app.route('/adminControl', methods=['GET', 'POST'])
 def adminControl():
     if request.method == 'POST':
         # Handle POST Request here
         return render_template('admin/adminControl.html')
     return render_template('admin/adminControl.html')
+
 @app.route('/adminDashboard/detailLaporan', methods=['GET', 'POST'])
 def detailLaporan():
     if request.method == 'POST':
         # Handle POST Request here
         return render_template('admin/detailLaporan.html')
     return render_template('admin/detailLaporan.html')
+
 @app.route('/adminDashboard/forumControl', methods=['GET', 'POST'])
 def forumControl():
     if request.method == 'POST':
         # Handle POST Request here
         return render_template('admin/forumControl.html')
     return render_template('admin/forumControl.html')
+
 @app.route('/adminDashboard/userControl', methods=['GET', 'POST'])
 def userControl():
     if request.method == 'POST':
         # Handle POST Request here
         return render_template('admin/adminUserControl.html')
     return render_template('admin/adminUserControl.html')
+
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD
-    app.run(port=5000,debug=True)
+    app.run("0.0.0.0", port=5000, debug=True)
