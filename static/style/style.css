@@ -45,24 +45,220 @@ body {
     border-radius: 30px;
 }
 /* Typing Animation */
-/* .nav-tittle {
+.nav-tittle {
     overflow: hidden;
     white-space: nowrap;
     animation: typing 2s steps(40) infinite;
-} */
+}
 
-/* @keyframes typing {
+@keyframes typing {
     from {
         width: 0;
     }
     to {
         width: auto;
     }
-} */
+}
 
 /* End of Typing Animation */
 
- 
+/* css for Navabar*/
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px;
+    min-height: 60vh;
+    position: relative;
+    
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.2;
+    z-index: 1;
+}
+
+.hero-content {
+    max-width: 50%;
+    position: relative;
+    z-index: 2;
+    color: #fff;
+}
+
+.hero-content h1 {
+    font-size: 36px;
+    margin: 0;
+}
+
+.hero-content h2 {
+    font-size: 32px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.hero-content p {
+    font-size: 18px;
+    margin: 20px 0;
+}
+
+.btn-primary {
+    
+    background: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 18px;
+   
+}
+
+.btn-container {
+    display: flex;
+    align-items: center; /* Vertically center the button and icons */
+    margin-top: 20px;
+}
+
+.btn-cender {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 18px;
+    margin-right: 10px; /* Add some space between button and icons */
+}
+
+.icons {
+    display: flex;
+}
+
+.icons img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px; /* Add space between icons */
+}
+
+.icons img:last-child {
+    margin-right: 0; /* Remove right margin for the last icon */
+}
+.container {
+    max-width: 1200px;
+    margin: auto;
+    text-align: center;
+}
+
+.card-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.card {
+    background: #F8F8F8;
+    width: 300px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.author-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 15px;
+}
+
+h1 {
+    color: #f7f4f4;
+}
+
+h2 {
+    font-size: 1.2rem;
+}
+
+p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #f9f8fc;
+}
+body {
+    background-color: RGBA(232, 52, 78, 0.2);
+    min-height: 100vh;
+  }
+  
+  .section {
+    padding: 1rem 1.5rem;
+    max-width: 750px;
+    margin: auto;
+  }
+  
+  .title {
+    font-weight: 800;
+    font-size: 5rem;
+  }
+  
+  .subtitle {
+    font-size: 2rem;
+  }
+  
+  .is-sparta {
+    color: #e8344e !important;
+  }
+  
+  .button.is-sparta {
+    background-color: #e8344e;
+    border-color: transparent;
+    color: #fff !important;
+  }
+  
+  .button.is-sparta.is-outlined {
+    background-color: transparent;
+    border-color: #e8344e;
+    color: #e8344e !important;
+  }
+  
+  .help {
+    color: gray;
+  }
+  
+  .modal-content {
+    width: 600px;
+    max-width: 80%;
+  }
+  
+  input::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+  
+  .image img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .logo-text {
+      font-family: 'Stylish', sans-serif; 
+      font-size: larger;
+  }
+  .profile{
+    width: 100px; 
+    height: 100px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+  }
 /* End of Navabar */
 
 /* Css for footer */
