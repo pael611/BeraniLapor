@@ -47,7 +47,8 @@
             <div class="modal-body bg-body-tertiary">
                 <form>
                     <div class="no-resi">
-                        <input type="text" class="form-control" id="reportNoResi" hidden readonly name="noResi">
+                        <input type="text" class="form-control bg-secondary-subtle" id="reportNoResi" readonly name="noResi">
+                        <i style="font-size: small; font-family: 'Times New Roman', Times, serif;"> Jika ingin Melakukan Pelaporan, Silahkan Copy atau Simpan terlebih dahulu Resi diatas agar Anda dapat memeriksa Perkembangan Laporan Anda!</i>
                     </div>
                     <div class="mb-3">
                         <label for="reporterName" class="form-label">Nama Pelapor</label>
@@ -84,10 +85,12 @@
         let minutes = ('0' + now.getMinutes()).slice(-2);
         let seconds = ('0' + now.getSeconds()).slice(-2);
         let milliseconds = ('00' + now.getMilliseconds()).slice(-3);
-
-        let noResi = year + month + day + hours + minutes + seconds + milliseconds;
-        $('#reportNoResi').val(noResi); // Menggunakan .val() untuk mengatur nilai input
+        let randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Menggunakan 'String.fromCharCode()' untuk mengubah kode ASCII menjadi huruf
+        let randomLetter2 = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Menggunakan 'String.fromCharCode()' untuk mengubah kode ASCII menjadi huruf
+        let randomLetter3 = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Menggunakan 'String.fromCharCode()' untuk mengubah kode ASCII menjadi huruf
+        let noResi =randomLetter + year + month + day+ randomLetter2 + hours + minutes + seconds +randomLetter3+ milliseconds;
         console.log(noResi);
+        $('#reportNoResi').val(noResi); // Menggunakan .val() untuk mengatur nilai input
     }
 
     // Panggil fungsi noResi() saat halaman dimuat
