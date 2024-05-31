@@ -276,6 +276,30 @@ body {
 
 /* end of css image landingpage */
 
-/* css halaman report */
- 
+/* css type animation */
+.typewriter h1 {
+    overflow: hidden; /* Ensures the content is not clipped */
+    white-space: nowrap;
+    font-size: 2rem;
+    width: 0;
+    animation: typingh1 2s forwards infinite;
+  }
+  
+  @keyframes typingh1 {
+    0% { width: 0 }
+    100% { width: 100% }
+  }
+  
+  @keyframes blink-caret {
+    from, to { border-color: transparent }
+  }
+  
+  .typewriter h1 {
+    animation-duration: 3s;  
+    animation-iteration-count: infinite;  
+    animation-delay: 1s;  
+  }
+  
+  
+  
 /* end css halaman reposrt */
