@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'header.html' %}
+
+<body style="">
+    <main>
+        <section class="report-section d-flex flex-column align-items-center justify-content-center">
+            <div class="container">
+                <div class="row">
+                    <div
+                        class="col-md-6 background-image-reportPage order-md-1 order-2 d-flex align-items-center justify-content-center">
+                        <img src="../static/bg-landing.png" alt="Doctors" class="img-fluid">
+                    </div>
+                    <div
+                        class="col-md-6 report-content text-dark order-md-2 order-1 d-flex flex-column align-items-center justify-content-center">
+                        <h1 class="display-4"><strong>Laporkan!</strong></h1>
+                        <h5 class="mb-4">Silakan isi halaman Laporan dengan Tombol di bawah, jangan ragu untuk
+                            menceritakan detail kejadian dan <b>YAKINLAH!</b> data kamu pasti aman</h5>
+                        <div class="btn-container d-flex flex-column align-items-center justify-content-center">
+                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal"
+                                data-bs-target="#reportModal" onclick="noResi()">
+                                Lapor!
+                            </button>
+                            <div class="icons mt-3 d-flex flex-row align-items-center justify-content-center">
+                                <a href="/artikel"><img src="../static/icon1.png" alt="Icon 1" class="img-fluid"></a>
+                                <a href="/loginUser"><img src="../static/icon2.png" alt="Icon 2" class="img-fluid"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+
+
+<!-- Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"> 
+            <div class="modal-header" style="background-color: #410404; color: white;">
+                <h5 class="modal-title " id="reportModalLabel">Form Laporan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-body-tertiary">
+                <form>
+                    <div class="no-resi">
+                        <input type="text" class="form-control" id="reportNoResi" hidden readonly name="noResi">
+                    </div>
+                    <div class="mb-3">
+                        <label for="reporterName" class="form-label">Nama Pelapor</label>
+                        <input type="text" class="form-control" id="reporterName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reportDetails" class="form-label">Detail Laporan</label>
+                        <textarea class="form-control" id="reportDetails" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reportDate" class="form-label">Tanggal Kejadian</label>
+                        <input type="date" class="form-control" id="reportDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reportLocation" class="form-label">Lokasi Kejadian</label>
+                        <input type="text" class="form-control" id="reportLocation" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script>
+    function noResi() {
+        let now = new Date();
+        let year = now.getFullYear().toString();
+        let month = ('0' + (now.getMonth() + 1)).slice(-2); // Menggunakan 'slice(-2)' untuk memastikan dua digit angka
+        let day = ('0' + now.getDate()).slice(-2);
+        let hours = ('0' + now.getHours()).slice(-2);
+        let minutes = ('0' + now.getMinutes()).slice(-2);
+        let seconds = ('0' + now.getSeconds()).slice(-2);
+        let milliseconds = ('00' + now.getMilliseconds()).slice(-3);
+
+        let noResi = year + month + day + hours + minutes + seconds + milliseconds;
+        $('#reportNoResi').val(noResi); // Menggunakan .val() untuk mengatur nilai input
+        console.log(noResi);
+    }
+
+    // Panggil fungsi noResi() saat halaman dimuat
+    $(document).ready(function () {
+        noResi();
+    });
+</script>
+
+
+{% include 'footer.html' %}
+
+</html>

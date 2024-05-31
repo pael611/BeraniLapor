@@ -15,6 +15,13 @@ def loginUser():
         return render_template('login.html')
     return render_template('login.html')
 
+@app.route('/laporUser', methods=['GET', 'POST'])
+def lapor():
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('lapor.html')
+    return render_template('lapor.html')
+
 @app.route('/userProfil', methods=['GET', 'POST'])
 def userProfil():
     if request.method == 'POST':
