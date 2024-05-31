@@ -39,7 +39,7 @@
 <!-- Modal -->
 <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content"> 
+        <div class="modal-content">
             <div class="modal-header" style="background-color: #410404; color: white;">
                 <h5 class="modal-title " id="reportModalLabel">Form Laporan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -47,11 +47,18 @@
             <div class="modal-body bg-body-tertiary">
                 <form>
                     <div class="no-resi">
-                        <input type="text" class="form-control bg-secondary-subtle" id="reportNoResi" readonly name="noResi">
-                        <i style="font-size: small; font-family: 'Times New Roman', Times, serif;"> Jika ingin Melakukan Pelaporan, Silahkan Copy atau Simpan terlebih dahulu Resi diatas agar Anda dapat memeriksa Perkembangan Laporan Anda!</i>
+                        <input type="text" class="form-control bg-secondary-subtle" id="reportNoResi" readonly
+                            name="noResi">
+                        <i style="font-size: small; font-family: 'Times New Roman', Times, serif;"> Jika ingin Melakukan
+                            Pelaporan, Silahkan Copy atau Simpan terlebih dahulu Resi diatas agar Anda dapat memeriksa
+                            Perkembangan Laporan Anda!</i>
                     </div>
                     <div class="mb-3">
                         <label for="reporterName" class="form-label">Nama Pelapor</label>
+                        <input type="text" class="form-control" id="reporterName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reporterName" class="form-label">Program Studi</label>
                         <input type="text" class="form-control" id="reporterName" required>
                     </div>
                     <div class="mb-3">
@@ -60,7 +67,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="reportDate" class="form-label">Tanggal Kejadian</label>
-                        <input type="date" class="form-control" id="reportDate" required>
+                        <input type="text" class="form-control" id="reportDate" required>
                     </div>
                     <div class="mb-3">
                         <label for="reportLocation" class="form-label">Lokasi Kejadian</label>
@@ -88,14 +95,24 @@
         let randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Menggunakan 'String.fromCharCode()' untuk mengubah kode ASCII menjadi huruf
         let randomLetter2 = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Menggunakan 'String.fromCharCode()' untuk mengubah kode ASCII menjadi huruf
         let randomLetter3 = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // Menggunakan 'String.fromCharCode()' untuk mengubah kode ASCII menjadi huruf
-        let noResi =randomLetter + year + month + day+ randomLetter2 + hours + minutes + seconds +randomLetter3+ milliseconds;
+        let noResi = randomLetter + year + month + day + randomLetter2 + hours + minutes + seconds + randomLetter3 + milliseconds;
         console.log(noResi);
-        $('#reportNoResi').val(noResi); // Menggunakan .val() untuk mengatur nilai input
+        if (noResi == null) {
+            noResi = "No Resi Tidak Dapat Dibuat";
+        } else {
+            $('#reportNoResi').val(noResi); // Menggunakan .val() untuk mengatur nilai input
+        }
+
     }
 
     // Panggil fungsi noResi() saat halaman dimuat
     $(document).ready(function () {
         noResi();
+        $('#reportDate').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true
+        });
     });
 </script>
 
