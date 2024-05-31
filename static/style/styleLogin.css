@@ -95,13 +95,27 @@ button {
     font-weight: bold;
     padding: 12px 20px;
     margin: 10px;
-    border: 1px solid transparent;
+    border: none;
     border-radius: 10px;
     outline: none;
     letter-spacing: 1px;
     text-transform: uppercase;
     transition: transform 80ms ease-in;
     cursor: pointer;
+}
+
+.cek-id {
+    background: linear-gradient(to left, #8a0e12, #ff4750);
+    color: white;
+    width: 115px;
+    height: 44px;
+    margin: auto;
+    border-radius: 0 5px 5px 0;
+}
+
+.hint {
+    margin: 0;
+    font-size: 12px;
 }
 
 .tombolSignIn {

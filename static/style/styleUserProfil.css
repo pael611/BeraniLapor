@@ -80,6 +80,15 @@ body {
     text-align: center;
     background: #0075FF;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 80ms ease-in;
+}
+
+.button:active {
+    transform: scale(0.90);
+}
+
+i:active {
+    transform: scale(0.90);
 }
 
 .check-status {
@@ -287,4 +296,8 @@ body {
     color: white;
     margin: 0 20px;
     cursor: pointer;
+}
+
+a {
+    text-decoration: none;
 }
