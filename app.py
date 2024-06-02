@@ -1,4 +1,4 @@
-from flask import Flask,redirect,url_for,render_template,request
+from flask import Flask,redirect,url_for,render_template,request, jsonify
 
 app=Flask(__name__)
 @app.route('/',methods=['GET','POST'])
@@ -15,6 +15,29 @@ def loginUser():
         return render_template('login.html')
     return render_template('login.html')
 
+@app.route("/sign_in", methods=["POST"])
+def sign_in():
+    username_receive = request.form['username_give']
+    password_receive = request.form['password_give']
+    
+    return jsonify({'msg': 'Login berhasil!'})
+
+@app.route("/update_password", methods=["POST"])
+def update_password():
+    username_receive = request.form['username_give']
+    new_pw_receive = request.form['new_password_give']
+    
+    return jsonify({'msg': 'Password Anda berhasil diubah!'})
+
+@app.route("/sign_up", methods=["POST"])
+def sign_up():
+    namaLengkap_receive = request.form['namaLengkap_give']
+    username_register_receive = request.form['username_register_give']
+    email_receive = request.form['email_give']
+    pw_register_receive = request.form['pw_register_give']
+    
+    return jsonify({'msg': 'Akun baru berhasil dibuat!'})
+
 @app.route('/laporUser', methods=['GET', 'POST'])
 def lapor():
     if request.method == 'POST':
@@ -28,6 +51,29 @@ def userProfil():
         # Handle POST Request here
         return render_template('userProfil.html')
     return render_template('userProfil.html')
+
+@app.route("/editProfil", methods=["POST"])
+def edit_profil():
+    nama_receive = request.form['nama_give']
+    deskripsi_bio_receive = request.form['deskripsi_bio_give']
+    
+    return jsonify({'msg': 'Profil Anda berhasil diupdate!'})
+
+@app.route("/newPost", methods=["POST"])
+def new_post():
+    new_post_receive = request.form['new_post_give']
+    
+    return jsonify({'msg': 'Postingan baru berhasil dibagikan!'})
+
+@app.route("/tambahKomentar", methods=["POST"])
+def tambah_komentar():
+    komentar_receive = request.form['komentar_give']
+    
+    return jsonify({'msg': 'Komentar Anda berhasil ditambahkan!'})
+
+@app.route("/delete", methods=["POST"])
+def delete_postingan():
+    return jsonify({'msg': 'Postingan Anda berhasil dihapus!'})
 
 @app.route('/adminDashboard', methods=['GET', 'POST'])
 def adminDashboard():

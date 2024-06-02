@@ -86,7 +86,7 @@ input {
     border: none;
     color: #333;
     font-size: 10px;
-    text-decoration: underline;
+    text-decoration: none;
     cursor: pointer;
 }
 
