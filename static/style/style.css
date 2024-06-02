@@ -303,3 +303,26 @@ body {
   
   
 /* end css halaman reposrt */
+
+/*CSS HALAMAN FORUM  */
+.card-text-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* number of lines to show */
+    -webkit-box-orient: vertical;
+    color: black;
+    text-align: left;
+}
+.card-tittle {
+    color: black;
+    text-align: left;
+}
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 15px;
+}
+/* END CSS FORUM */

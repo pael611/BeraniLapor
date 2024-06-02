@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'header.html' %}
+
+<body>
+    <!-- Container -->
+    <div class="container mt-4">
+        <!-- Post Input -->
+        <div class="d-flex justify-content-center align-items-center mb-3">
+            <div class="me-3">
+                <a href="#">
+                    <img class="rounded" src="../static/assets/placeholder.jpg " alt="User Image" width="32"
+                        height="32">
+                </a>
+            </div>
+            <input id="input-post" class="form-control rounded-pill" style="max-width: 600px;"
+                placeholder="What are you thinking about?"
+                onclick='document.getElementById("modal-post").classList.add("show"); document.getElementById("modal-post").style.display = "block"' />
+        </div>
+
+        <!-- MODAL -->
+        <div class="modal fade" id="modal-post" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create Post</h5>
+                        <button type="button" class="btn-close" aria-label="Close"
+                            onclick='document.getElementById("modal-post").classList.remove("show"); document.getElementById("modal-post").style.display = "none"'></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="textarea-post" class="form-control"
+                            placeholder="What are you thinking about?"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="post()">Create post</button>
+                        <button class="btn btn-secondary"
+                            onclick='document.getElementById("modal-post").classList.remove("show"); document.getElementById("modal-post").style.display = "none"'>Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Post Card -->
+        <div id="post-box" class="container">
+            <div class="card mb-3 mx-auto w-100 w-sm-75 w-md-50">
+                <div class="card-body">
+                    <div class="d-flex mb-3">
+                        <a class="me-3" href="#">
+                            <img class="rounded"  src="../static/assets/placeholder.jpg" alt="Image">
+                        </a>
+                        <div>
+                            <div class="card-title mb-1 card-tittle">User a <small class="text-muted">@user-a</small>
+                            </div>
+                            <div class="card-subtitle mb-2 text-muted card-info">10 minutes ago</div>
+                            <div class="card-text-content">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nam
+                                quis
+                                saepe eum eos nobis cumque doloremque dicta quos tempore rem omnis architecto atque illo
+                                animi obcaecati asperiores praesentium, hic ad quisquam quidem. Illo quas blanditiis,
+                                dolorem totam minus facere dignissimos molestiae unde accusamus itaque animi incidunt
+                                ducimus facilis alias fugit, pariatur suscipit voluptatem magni. Aut similique atque
+                                soluta autem ratione porro obcaecati, veritatis a error voluptatem temporibus tenetur
+                                consectetur quo fugiat magnam reiciendis non quasi recusandae quisquam delectus
+                                deserunt. Nihil quam dolorum natus excepturi iusto esse ad tempore quisquam dolor quasi
+                                reprehenderit, omnis, culpa facere, quos non iure voluptas temporibus! Quia inventore
+                                consequatur maxime, omnis necessitatibus itaque molestiae eaque quibusdam eos natus.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center">
+                            <span class="cursor me-3" onclick="toggle_like('', 'heart')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">23.k</span>
+                            </span>
+                            <span class="cursor me-3 comment-trigger" data-post-id="#">
+                                <i class="fa fa-commenting-o"></i> Comment 281
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-warning mt-2 mt-sm-0">Komentar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Additional posts can be added in a similar manner -->
+    </div>
+
+    <script>
+        function post() {
+            // Implement your post functionality here
+        }
+
+        function toggle_like(postId, element) {
+            // Implement your like functionality here
+        }
+    </script>
+</body>
+{% include 'footer.html' %}
+
+
+</html>

@@ -1,6 +1,7 @@
 from flask import Flask,redirect,url_for,render_template,request
 
 app=Flask(__name__)
+# Index / Landing Page!
 @app.route('/',methods=['GET','POST'])
 def home():
     if request.method=='POST':
@@ -8,6 +9,8 @@ def home():
         return render_template('index.html')
     return render_template('index.html')
 
+
+# User Function Here!!!
 @app.route('/loginUser', methods=['GET', 'POST'])
 def loginUser():
     if request.method == 'POST':
@@ -29,6 +32,12 @@ def userProfil():
         return render_template('userProfil.html')
     return render_template('userProfil.html')
 
+@app.route('/forumBase', methods=['GET', 'POST'])
+def forum():
+     
+    return render_template('forum.html')
+
+# Admin function Here, Jangan Di-edit Push dan commit apabila Masih terjadi Eror!
 @app.route('/adminDashboard', methods=['GET', 'POST'])
 def adminDashboard():
     if request.method == 'POST':
