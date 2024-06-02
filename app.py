@@ -47,6 +47,14 @@ def artikel():
     return render_template('artikel.html')
 
 # Admin function Here, Jangan Di-edit Push dan commit apabila Masih terjadi Eror!
+
+@app.route('/loginPetugasSatgas', methods=['GET', 'POST'])
+def loginAdmin():
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('admin/loginAdmin.html')
+    return render_template('admin/loginAdmin.html')
+
 @app.route('/adminDashboard', methods=['GET', 'POST'])
 def adminDashboard():
     if request.method == 'POST':
