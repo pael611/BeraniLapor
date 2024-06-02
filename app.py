@@ -1,4 +1,4 @@
-from flask import Flask,redirect,url_for,render_template,request, jsonify
+from flask import Flask,redirect,url_for,render_template,request
 
 app=Flask(__name__)
 # Index / Landing Page!
@@ -18,29 +18,6 @@ def loginUser():
         return render_template('login.html')
     return render_template('login.html')
 
-@app.route("/sign_in", methods=["POST"])
-def sign_in():
-    username_receive = request.form['username_give']
-    password_receive = request.form['password_give']
-    
-    return jsonify({'msg': 'Login berhasil!'})
-
-@app.route("/update_password", methods=["POST"])
-def update_password():
-    username_receive = request.form['username_give']
-    new_pw_receive = request.form['new_password_give']
-    
-    return jsonify({'msg': 'Password Anda berhasil diubah!'})
-
-@app.route("/sign_up", methods=["POST"])
-def sign_up():
-    namaLengkap_receive = request.form['namaLengkap_give']
-    username_register_receive = request.form['username_register_give']
-    email_receive = request.form['email_give']
-    pw_register_receive = request.form['pw_register_give']
-    
-    return jsonify({'msg': 'Akun baru berhasil dibuat!'})
-
 @app.route('/laporUser', methods=['GET', 'POST'])
 def lapor():
     if request.method == 'POST':
@@ -54,6 +31,29 @@ def userProfil():
         # Handle POST Request here
         return render_template('userProfil.html')
     return render_template('userProfil.html')
+
+@app.route('/forumBase', methods=['GET', 'POST'])
+def forum():
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('forum.html')
+    return render_template('forum.html')
+
+@app.route('/artikelBase', methods=['GET', 'POST'])
+def artikel():
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('artikel.html')
+    return render_template('artikel.html')
+
+# Admin function Here, Jangan Di-edit Push dan commit apabila Masih terjadi Eror!
+
+@app.route('/loginPetugasSatgas', methods=['GET', 'POST'])
+def loginAdmin():
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('admin/loginAdmin.html')
+    return render_template('admin/loginAdmin.html')
 
 @app.route('/adminDashboard', methods=['GET', 'POST'])
 def adminDashboard():
