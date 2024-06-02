@@ -22,7 +22,6 @@ body {
 .header {
     width: 100%;
     height: 200px;
-    margin: auto;
     position: relative;
     background: #D9D9D9;
     border-radius: 0 0 20px 20px;
@@ -53,7 +52,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     color: white;
-    font-size: 48px;
+    font-size: 25px;
     font-weight: 700;
     text-align: center;
 }
@@ -166,11 +165,6 @@ a:visited {
     font-weight: bold;
     text-align: center;
     cursor: pointer;
-    transition: transform 80ms ease-in;
-}
-
-.new-post-button:active {
-    transform: scale(0.90);
 }
 
 .new-post-icon {
@@ -225,7 +219,6 @@ a:visited {
 
 .content {
     text-align: justify;
-    font-size: 20px;
 }
 
 .post-header {
@@ -296,18 +289,61 @@ a:visited {
     align-items: center;
     box-shadow: 0px -4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 20px 20px 0 0;
+    /* position: fixed; */
     bottom: 0;
-    color: white;
 }
 
-a {
-    text-decoration: none;
+.footer-nav {
     font-size: 24px;
     font-weight: 400;
+    color: white;
     margin: 0 20px;
     cursor: pointer;
 }
 
 a {
     text-decoration: none;
+}
+
+/* CSS for responsive design */
+@media screen and (max-width: 768px) {
+    .footer {
+        height: 70px;
+        padding: 10px;
+    }
+
+    .footer-nav {
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .footer {
+        height: 90px;
+        padding: 20px;
+    }
+
+    .footer-nav {
+        font-size: 18px;
+    }
+}
+
+/* Button Kembali pada Halaman Profile */
+.float-icon {
+    position: fixed;
+    bottom: 20px; /* Jarak dari bawah */
+    right: 20px; /* Jarak dari kanan */
+    z-index: 1000; /* Pastikan ikon tetap di atas konten lain */
+    color: black; /* Warna ikon */
+    font-size: 32px; /* Ukuran ikon */
+}
+
+.float-icon i {
+    background-color: rgb(108, 107, 107); /* Warna latar belakang ikon */
+    padding: 10px; /* Padding ikon agar terlihat lebih besar */
+    border-radius: 50%; /* Agar ikon berbentuk lingkaran */
+}
+
+.float-icon:hover {
+    opacity: 0.8; /* Opacity sedikit diturunkan saat mouse hover */
 }
