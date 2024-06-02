@@ -1,6 +1,7 @@
 from flask import Flask,redirect,url_for,render_template,request, jsonify
 
 app=Flask(__name__)
+# Index / Landing Page!
 @app.route('/',methods=['GET','POST'])
 def home():
     if request.method=='POST':
@@ -8,6 +9,8 @@ def home():
         return render_template('index.html')
     return render_template('index.html')
 
+
+# User Function Here!!!
 @app.route('/loginUser', methods=['GET', 'POST'])
 def loginUser():
     if request.method == 'POST':
@@ -51,29 +54,6 @@ def userProfil():
         # Handle POST Request here
         return render_template('userProfil.html')
     return render_template('userProfil.html')
-
-@app.route("/editProfil", methods=["POST"])
-def edit_profil():
-    nama_receive = request.form['nama_give']
-    deskripsi_bio_receive = request.form['deskripsi_bio_give']
-    
-    return jsonify({'msg': 'Profil Anda berhasil diupdate!'})
-
-@app.route("/newPost", methods=["POST"])
-def new_post():
-    new_post_receive = request.form['new_post_give']
-    
-    return jsonify({'msg': 'Postingan baru berhasil dibagikan!'})
-
-@app.route("/tambahKomentar", methods=["POST"])
-def tambah_komentar():
-    komentar_receive = request.form['komentar_give']
-    
-    return jsonify({'msg': 'Komentar Anda berhasil ditambahkan!'})
-
-@app.route("/delete", methods=["POST"])
-def delete_postingan():
-    return jsonify({'msg': 'Postingan Anda berhasil dihapus!'})
 
 @app.route('/adminDashboard', methods=['GET', 'POST'])
 def adminDashboard():

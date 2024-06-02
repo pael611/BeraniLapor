@@ -10,8 +10,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
     <!-- Style CSS -->
@@ -103,13 +102,13 @@
 <body>
     <div class="container">
         <div class="header">
-            <img class="header-bg" src="../static/assets/Bg-header-user-profil.png" />
+            <img class="header-bg" src="../static/assets/Bg login sign up ppks 1.png" />
             <div class="header-overlay"></div>
             <div class="header-text">BERANI LAPOR ITU BAIK</div>
         </div>
         <div class="profile">
             <div class="profile-card">
-                <img class="profile-image" src="../static/assets/Default-profile-image.png" />
+                <img class="profile-image" src="../static/assets/Default Profile Image 1.png" />
                 <div class="profile-info">
                     <div class="profile-name">Nama Lengkap</div>
                     <div class="profile-username">@Username</div>
@@ -118,8 +117,8 @@
             </div>
         </div>
         <div class="button-container">
-            <div class="button edit-profile" type="button" data-bs-toggle="modal" data-bs-target="#editProfilModal">Edit Profil</div>
-            <div class="button check-status" type="button" data-bs-toggle="modal" data-bs-target="#cekLaporanModal">Cek Status Laporan</div>
+            <div class="button edit-profile">Edit Profil</div>
+            <div class="button check-status">Cek Status Laporan</div>
             <div class="button sign-out">Sign Out</div>
             <div class="button delete-account">Hapus Akun</div>
         </div>
@@ -128,17 +127,20 @@
             <div class="forum-divider"></div>
         </div>
         <div class="new-post-container">
-            <img class="new-post-icon" src="../static/assets/Default-profile-image.png" />
-            <input type="button" class="new-post-button" data-bs-toggle="modal" data-bs-target="#newPostModal" value="Buat Postingan Baru">
+            <img class="new-post-icon" src="../static/assets/Default Profile Image 1.png" />
+            <input type="button" class="new-post-button" value="Buat Postingan Baru">
         </div>
         <div class="post-card">
             <img class="post-profile-image" src="../static/assets/Default-profile-image.png" />
             <div class="post-content">
                 <div class="content">
                     <p>
-                      <strong>Nama Lengkap</strong> <small>@username</small> <small>0 minutes ago</small>
-                      <br>
-                      Deskripsi postingan Anda. Contohnya, kemarin aku melihat gerak-gerik aneh dari seorang pria paruh baya di sekitar perpus kampusku. Saat aku datangi dan perhatikan, ternyata dia sedang menahan mules.
+                        <strong>Nama Lengkap</strong> <small>@username</small> <small>0 minutes ago</small>
+                        <br>
+                        Deskripsi postingan Anda. Contohnya, kemarin aku melihat gerak-gerik aneh dari seorang pria
+                        paruh
+                        baya di sekitar perpus kampusku. Saat aku datangi dan perhatikan, ternyata dia sedang menahan
+                        mules.
                     </p>
                 </div>
                 <div class="post-actions">
@@ -147,111 +149,26 @@
                         <i class="far fa-star"></i>
                         <i class="far fa-thumbs-up"></i>
                         <i class="far fa-thumbs-down"></i>
+                        <i class="fas fa-trash-alt post-delete-icon"></i>
                     </div>
                     <div class="button post-action" type="button" data-bs-toggle="modal" data-bs-target="#komentarModal" komentarModal>Komentar</div>
                 </div>
+
+
             </div>
-            <i class="fas fa-trash-alt post-delete-icon" onclick="delete_postingan()"></i>
+            <i class="fas fa-trash-alt post-delete-icon"></i>
         </div>
         <div class="footer">
-            <a href="/" style="color: white; text-decoration: none;">Home</a>
-            <a href="/laporUser" style="color: white; text-decoration: none;">Laporan</a>
-            <a href="#" style="color: white; text-decoration: none;">Forum</a>
-            <a href="#" style="color: white; text-decoration: none;">Artikel</a>
+            <a href="/"><div class="footer-nav">Home</div></a>
+            <a href="#"></a><div class="footer-nav">Laporan</div></a>
+            <a href="#"></a><div class="footer-nav">Forum</div></a>
+            <a href="#"></a><div class="footer-nav">Artikel</div></a>
         </div>
+    </div>
+    <div class="footer">
+        <p class="text-center " style="color: white;">© 2024 BeraniLapor, Satgas-PPKS Politeknik Negeri Medan</p>
     </div>
 
-    <!-- Modal Edit Profil -->
-    <div class="modal fade" id="editProfilModal" tabindex="-1" aria-labelledby="editProfilLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #410404; color: white;">
-                    <h5 class="modal-title " id="editProfilLabel">Edit Profil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body bg-body-tertiary">
-                    <form>
-                        <div class="mb-3">
-                            <label for="namaProfil" class="form-label">Nama</label>
-                            <input type="text" class="form-control" id="namaProfil" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="formFile" class="form-label">Foto Profil</label>
-                            <input class="form-control" type="file" id="formFile">
-                        </div>
-                        <div class="mb-3">
-                            <label for="deskripsiBio" class="form-label">Deskripsi Bio</label>
-                            <textarea class="form-control" id="deskripsiBio" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" onclick="editProfil()">Edit Profil</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Cek Status Laporan -->
-    <div class="modal fade" id="cekLaporanModal" tabindex="-1" aria-labelledby="cekLaporanLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #410404; color: white;">
-                    <h5 class="modal-title " id="cekLaporanLabel">Cek Status Laporan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body bg-body-tertiary">
-                    <form>
-                        <div class="mb-3">
-                            <label for="noResiCek" class="form-label">Masukkan Nomor Resi Laporan</label>
-                            <input type="text" class="form-control" id="noResiCek" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Cek Status</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Buat Postingan Baru -->
-    <div class="modal fade" id="newPostModal" tabindex="-1" aria-labelledby="newPostLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #410404; color: white;">
-                    <h5 class="modal-title " id="newPostLabel">Buat Postingan Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body bg-body-tertiary">
-                    <form>
-                        <div class="mb-3">
-                            <label for="newPost" class="form-label">Apa yang ingin Anda bagikan?</label>
-                            <textarea class="form-control" id="newPost" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" onclick="new_post()">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Komentar -->
-    <div class="modal fade" id="komentarModal" tabindex="-1" aria-labelledby="komentarLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #410404; color: white;">
-                    <h5 class="modal-title " id="komentarLabel">Komentar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body bg-body-tertiary">
-                    <form>
-                        <div class="mb-3">
-                            <label for="komentar" class="form-label">Tambahkan komentar</label>
-                            <textarea class="form-control" id="komentar" rows="3" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" onclick="tambahKomentar()">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 
 </html>

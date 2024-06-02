@@ -228,7 +228,11 @@ body {
     color: white;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    
+}
+
+/* Give padding bottom to content */
+.content-above-footer {
+    padding-bottom: 10vh; /* Adjust the value according to the height of your footer */
 }
 /* End css footer */
 
@@ -303,3 +307,26 @@ body {
   
   
 /* end css halaman reposrt */
+
+/*CSS HALAMAN FORUM  */
+.card-text-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4; /* number of lines to show */
+    -webkit-box-orient: vertical;
+    color: black;
+    text-align: left;
+}
+.card-tittle {
+    color: black;
+    text-align: left;
+}
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 15px;
+}
+/* END CSS FORUM */
