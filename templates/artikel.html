@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'header.html' %}
+
+<body>
+    <!-- Container -->
+    <div class="container mt-4">
+        <!-- Articles Section -->
+        <div id="articles-box" class="row flex-wrap justify-content-center align-items-center">
+            <!-- Article Card -->
+            <div class="col-md-6 col-lg-4 mb-4 col-12">
+                <div class="card h-100">
+                    <img src="../static/assets/placeholder.jpg" class="card-img-top" alt="Article Image">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title"><b>Article Title</b></h5>
+                        <p class="card-text-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem,
+                            illum...</p>
+                        <div class="mt-auto d-flex justify-content-between">
+                            <span class="cursor" onclick="toggle_like('', 'heart1')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">23.k</span>
+                            </span>
+                            <a href="article-detail.html" class="btn btn-primary">See More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional article cards can be added here following the same structure -->
+            <div class="col-md-6 col-lg-4 mb-4 col-12">
+                <div class="card h-100">
+                    <img src="../static/assets/placeholder.jpg" class="card-img-top" alt="Article Image">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Another Article</h5>
+                        <p class="card-text-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem,
+                            illum...</p>
+                        <div class="mt-auto d-flex justify-content-between">
+                            <span class="cursor" onclick="toggle_like('', 'heart2')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">15.k</span>
+                            </span>
+                            <a href="article-detail.html" class="btn btn-primary">See More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional article cards can be added here following the same structure -->
+            <div class="col-md-6 col-lg-4 mb-4 col-12">
+                <div class="card h-100">
+                    <img src="../static/assets/placeholder.jpg" class="card-img-top" alt="Article Image">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Another Article</h5>
+                        <p class="card-text-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem,
+                            illum...</p>
+                        <div class="mt-auto d-flex justify-content-between">
+                            <span class="cursor" onclick="toggle_like('', 'heart2')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">15.k</span>
+                            </span>
+                            <a href="article-detail.html" class="btn btn-primary">See More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional article cards can be added here following the same structure -->
+            <div class="col-md-6 col-lg-4 mb-4 col-12">
+                <div class="card h-100">
+                    <img src="../static/assets/placeholder.jpg" class="card-img-top" alt="Article Image">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Another Article</h5>
+                        <p class="card-text-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem,
+                            illum...</p>
+                        <div class="mt-auto d-flex justify-content-between">
+                            <span class="cursor" onclick="toggle_like('', 'heart2')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">15.k</span>
+                            </span>
+                            <a href="article-detail.html" class="btn btn-primary">See More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Additional article cards can be added here following the same structure -->
+             <div class="col-md-6 col-lg-4 mb-4 col-12">
+                <div class="card h-100">
+                    <img src="../static/assets/placeholder.jpg" class="card-img-top" alt="Article Image">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Another Article</h5>
+                        <p class="card-text-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem,
+                            illum...</p>
+                        <div class="mt-auto d-flex justify-content-between">
+                            <span class="cursor" onclick="toggle_like('', 'heart2')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">15.k</span>
+                            </span>
+                            <a href="article-detail.html" class="btn btn-primary">See More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Additional article cards can be added here following the same structure -->
+             <div class="col-md-6 col-lg-4 mb-4 col-12">
+                <div class="card h-100">
+                    <img src="../static/assets/placeholder.jpg" class="card-img-top" alt="Article Image">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">Another Article</h5>
+                        <p class="card-text-content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem,
+                            illum...</p>
+                        <div class="mt-auto d-flex justify-content-between">
+                            <span class="cursor" onclick="toggle_like('', 'heart2')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">15.k</span>
+                            </span>
+                            <a href="article-detail.html" class="btn btn-primary">See More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional article cards can be added here following the same structure -->
+        </div>
+    </div>
+
+    <script>
+        function toggle_like(postId, element) {
+            // Implement your like functionality here
+        }
+    </script>
+</body>
+
+
+{% include 'footer.html' %}
+
+</html>

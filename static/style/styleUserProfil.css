@@ -52,7 +52,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     color: white;
-    font-size: 48px;
+    font-size: 25px;
     font-weight: 700;
     text-align: center;
 }
@@ -67,15 +67,16 @@ body {
 
 .button {
     flex: 1;
-    max-width: 150px;
-    height: 60px;
+    padding: 10px;
+    max-width: auto;
+    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 20px;
-    font-weight: 700;
-    border-radius: 40px;
+    font-size: medium;
+    font-weight: auto;
+    border-radius: 20px;
     cursor: pointer;
     text-align: center;
     background: #0075FF;
@@ -107,7 +108,7 @@ i:active {
 
 .profile-card {
     width: 100%;
-    max-width: 594px;
+    max-width: 90%;
     background: white;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 40px;
@@ -129,8 +130,8 @@ i:active {
 }
 
 .profile-name, .profile-username, .profile-bio {
-    font-size: 24px;
-    font-weight: 400;
+    font-size: x-large;
+    font-weight: 200;
     color: black;
 }
 
@@ -139,24 +140,29 @@ i:active {
 }
 
 .new-post-container {
+    max-width: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin: 3vh auto;
     gap: 10px;
+}
+a:visited {
+    color: rgb(255, 255, 255); /* Tetapkan warna hitam untuk tautan yang sudah dikunjungi */
 }
 
 .new-post-button {
+    padding: 10px;
     flex: 1;
-    max-width: 520px;
+    max-width: 90%;
     min-width: 200px;
     height: 65px;
     background: transparent;
     border: 1px solid #959595;
     border-radius: 50px;
     color: #8C8C8C;
-    font-size: 27px;
-    font-weight: 700;
+    font-size: large;
+    font-weight: bold;
     text-align: center;
     cursor: pointer;
 }
@@ -175,20 +181,21 @@ i:active {
 
 .forum-title {
     color: #0075FF;
-    font-size: 27px;
+    font-size: large;
     font-weight: 700;
 }
 
 .forum-divider {
-    width: 400px;
+    width: 90%;
+    max-width: 400px;
     height: 3px;
     background: #0075FF;
     margin: 10px auto 0;
 }
 
-.post-card {
-    width: 100%;
-    max-width: 906px;
+.post-card { 
+    display: flex;
+    flex-direction: column;
     background: white;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
@@ -207,7 +214,7 @@ i:active {
 }
 
 .post-content {
-    overflow: hidden;
+    flex: 1;
 }
 
 .content {
@@ -235,8 +242,8 @@ i:active {
 
 .post-actions {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     margin-top: 10px;
 }
 
@@ -254,12 +261,11 @@ i:active {
     cursor: pointer;
     text-align: center;
     background: #FF7171;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .post-icons {
     display: flex;
-    gap: 20px;
+    gap: 10px;
 }
 
 .post-icons i {
@@ -269,10 +275,7 @@ i:active {
 }
 
 .post-delete-icon {
-    position: absolute;
     color: red;
-    top: 20px;
-    right: 20px;
     font-size: 24px;
     cursor: pointer;
 }
@@ -301,3 +304,47 @@ i:active {
 a {
     text-decoration: none;
 }
+
+/* CSS for responsive design */
+@media screen and (max-width: 768px) {
+    .footer {
+        height: 70px;
+        padding: 10px;
+    }
+
+    .footer-nav {
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .footer {
+        height: 90px;
+        padding: 20px;
+    }
+
+    .footer-nav {
+        font-size: 18px;
+    }
+}
+
+/* Button Kembali pada Halaman Profile */
+.float-icon {
+    position: fixed;
+    bottom: 20px; /* Jarak dari bawah */
+    right: 20px; /* Jarak dari kanan */
+    z-index: 1000; /* Pastikan ikon tetap di atas konten lain */
+    color: black; /* Warna ikon */
+    font-size: 32px; /* Ukuran ikon */
+}
+
+.float-icon i {
+    background-color: rgb(108, 107, 107); /* Warna latar belakang ikon */
+    padding: 10px; /* Padding ikon agar terlihat lebih besar */
+    border-radius: 50%; /* Agar ikon berbentuk lingkaran */
+}
+
+.float-icon:hover {
+    opacity: 0.8; /* Opacity sedikit diturunkan saat mouse hover */
+}
+

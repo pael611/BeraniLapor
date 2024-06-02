@@ -228,7 +228,11 @@ body {
     color: white;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    
+}
+
+/* Give padding bottom to content */
+.content-above-footer {
+    padding-bottom: 10vh; /* Adjust the value according to the height of your footer */
 }
 /* End css footer */
 

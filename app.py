@@ -34,8 +34,17 @@ def userProfil():
 
 @app.route('/forumBase', methods=['GET', 'POST'])
 def forum():
-     
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('forum.html')
     return render_template('forum.html')
+
+@app.route('/artikelBase', methods=['GET', 'POST'])
+def artikel():
+    if request.method == 'POST':
+        # Handle POST Request here
+        return render_template('artikel.html')
+    return render_template('artikel.html')
 
 # Admin function Here, Jangan Di-edit Push dan commit apabila Masih terjadi Eror!
 @app.route('/adminDashboard', methods=['GET', 'POST'])

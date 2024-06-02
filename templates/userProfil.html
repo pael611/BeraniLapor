@@ -10,8 +10,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
     <!-- Style CSS -->
@@ -26,44 +25,52 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <img class="header-bg" src="../static/assets/Bg login sign up ppks 1.png" />
-            <div class="header-overlay"></div>
-            <div class="header-text">BERANI LAPOR ITU BAIK</div>
-        </div>
-        <div class="profile">
-            <div class="profile-card">
-                <img class="profile-image" src="../static/assets/Default Profile Image 1.png" />
-                <div class="profile-info">
-                    <div class="profile-name">Nama Lengkap</div>
-                    <div class="profile-username">@Username</div>
-                    <div class="profile-bio">Deskripsi Bio</div>
-                </div>
+    <a href="/" class="float-icon"><i class="fa fa-home"></i></a>
+
+    <div class="header">
+        <img class="header-bg" src="../static/assets/Bg login sign up ppks 1.png" />
+        <div class="header-overlay"></div>
+        <div class="header-text"><a href="/">BERANI LAPOR ITU BAIK</a></div>
+    </div>
+
+    <div class="profile" style="max-width: 70vw;max-height: auto; margin-left: auto; margin-right: auto;">
+        <div class="profile-card" style="size: auto;">
+            <img class="profile-image" src="../static/assets/Default Profile Image 1.png" />
+            <div class="profile-info">
+                <div class="profile-name">Nama Lengkap</div>
+                <div class="profile-username">@Username</div>
+                <div class="profile-bio">Deskripsi Bio</div>
             </div>
         </div>
-        <div class="button-container">
-            <div class="button edit-profile">Edit Profil</div>
-            <div class="button check-status">Cek Status Laporan</div>
-            <div class="button sign-out">Sign Out</div>
-            <div class="button delete-account">Hapus Akun</div>
-        </div>
-        <div class="forum">
-            <div class="forum-title">Forum</div>
-            <div class="forum-divider"></div>
-        </div>
-        <div class="new-post-container">
-            <img class="new-post-icon" src="../static/assets/Default Profile Image 1.png" />
-            <input type="button" class="new-post-button" value="Buat Postingan Baru">
-        </div>
+    </div>
+    <div class="button-container" style="max-width: 70%; max-height: 70%; margin: 4vh auto ;">
+        <div class="button edit-profile">Edit Profil</div>
+        <div class="button check-status">Cek Status Laporan</div>
+        <div class="button sign-out">Sign Out</div>
+        <div class="button delete-account">Hapus Akun</div>
+    </div>
+    <div class="forum">
+        <div class="forum-title">Forum</div>
+        <div class="forum-divider"></div>
+    </div>
+    <div class="new-post-container">
+        <img class="new-post-icon" src="../static/assets/Default Profile Image 1.png" />
+        <input type="button" class="new-post-button" value="Buat Postingan Baru">
+    </div>
+
+
+    <div class="container">
         <div class="post-card">
             <img class="post-profile-image" src="../static/assets/Default Profile Image 1.png" />
             <div class="post-content">
                 <div class="content">
                     <p>
-                      <strong>Nama Lengkap</strong> <small>@username</small> <small>0 minutes ago</small>
-                      <br>
-                      Deskripsi postingan Anda. Contohnya, kemarin aku melihat gerak-gerik aneh dari seorang pria paruh baya di sekitar perpus kampusku. Saat aku datangi dan perhatikan, ternyata dia sedang menahan mules.
+                        <strong>Nama Lengkap</strong> <small>@username</small> <small>0 minutes ago</small>
+                        <br>
+                        Deskripsi postingan Anda. Contohnya, kemarin aku melihat gerak-gerik aneh dari seorang pria
+                        paruh
+                        baya di sekitar perpus kampusku. Saat aku datangi dan perhatikan, ternyata dia sedang menahan
+                        mules.
                     </p>
                 </div>
                 <div class="post-actions">
@@ -72,19 +79,19 @@
                         <i class="far fa-star"></i>
                         <i class="far fa-thumbs-up"></i>
                         <i class="far fa-thumbs-down"></i>
+                        <i class="fas fa-trash-alt post-delete-icon"></i>
                     </div>
                     <div class="button post-action">Komentar</div>
                 </div>
+
+
             </div>
-            <i class="fas fa-trash-alt post-delete-icon"></i>
-        </div>
-        <div class="footer">
-            <a href="/"><div class="footer-nav">Home</div></a>
-            <a href="#"></a><div class="footer-nav">Laporan</div></a>
-            <a href="#"></a><div class="footer-nav">Forum</div></a>
-            <a href="#"></a><div class="footer-nav">Artikel</div></a>
         </div>
     </div>
+    <div class="footer">
+        <p class="text-center " style="color: white;">© 2024 BeraniLapor, Satgas-PPKS Politeknik Negeri Medan</p>
+    </div>
+
 </body>
 
 </html>
