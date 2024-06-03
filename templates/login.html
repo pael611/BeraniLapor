@@ -72,7 +72,7 @@
                 data: { username_give: username, password_give: password },
                 success: function (response) {
                     alert(response["msg"]);
-                    window.location.reload();
+                    window.location.href = "/";
                 }
             });
         }
@@ -82,14 +82,14 @@
             if (!username) {
             return alert("Masukkan Username!");
             }
-            let new_password = $("#new-password").val();
-            if (!new_password) {
+            let new_pw = $("#new-password").val();
+            if (!new_pw) {
             return alert("Masukkan Password baru Anda!");
             }
             $.ajax({
                 type: "POST",
                 url: "/update_password",
-                data: { username_give: username, new_password_give: new_password },
+                data: { username_give: username, new_pw_give: new_pw },
                 success: function (response) {
                     alert(response["msg"]);
                     window.location.reload();
@@ -98,8 +98,8 @@
         }
 
         function sign_up() {
-            let namaLengkap = $("#nama-lengkap").val();
-            if (!namaLengkap) {
+            let nama = $("#nama-lengkap").val();
+            if (!nama) {
             return alert("Masukkan Nama Lengkap Anda!");
             }
             let username_register = $("#username-register").val();
@@ -118,11 +118,27 @@
                 type: "POST",
                 url: "/sign_up",
                 data: {
-                    namaLengkap_give: namaLengkap,
-                    username_register_give: username_register,
+                    nama_give: nama,
+                    username_give: username_register,
                     email_give: email,
-                    pw_register_give: pw_register
+                    password_give: pw_register
                 },
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            });
+        }
+
+        function cek_username() {
+            let username = $("#username-register").val();
+            if (!username) {
+            return alert("Masukkan Username!");
+            }
+            $.ajax({
+                type: "POST",
+                url: "/sign_up/cek-username",
+                data: { username_give: username },
                 success: function (response) {
                     alert(response["msg"]);
                 }
@@ -141,7 +157,7 @@
                     <input type="text" name="nama-lengkap" id="nama-lengkap" placeholder="Masukkan Nama Lengkap" required>
                 </div>
                 <div class="control has-icons-left" style="width: 100%; display: flex; flex-direction: row;">
-                    <input type="text" name="username" id="username-register" placeholder="Masukkan Username" style="border-radius: 5px 0 0 5px;" required><button class="cek-id">Cek ID</button>
+                    <input type="text" name="username" id="username-register" placeholder="Masukkan Username" style="border-radius: 5px 0 0 5px;" required><button class="cek-id" onclick="cek_username()">Cek ID</button>
                 </div>
                 <p id="help-id" class="hint">Masukkan 2-10 huruf, angka, atau karakter spesial (.), (_), (-).</p>
                 <p id="help-id-login" class="hint" style="font-size: 12px;"></p>
