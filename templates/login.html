@@ -15,7 +15,12 @@
         rel="stylesheet">
 
     <!-- Style CSS -->
-    <link rel="stylesheet" href="../static/style/styleLogin.css">
+    <link rel="stylesheet" href="../static/style/styleLogin.css" id="css-desktop">
+
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" id="bulma-mobile" disabled>
+    <link rel="stylesheet" href="../static/style/styleLoginMobile.css" id="css-mobile-device" disabled>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"
@@ -54,7 +59,7 @@
         });
     </script>
 
-    <!-- Javascript -->
+    <!-- Javascript Layout Desktop -->
 
     <script>
         function sign_in() {
@@ -146,6 +151,158 @@
         }
     </script>
 
+    <!-- Javascript untuk tampilkan container mobile device -->
+    <script>
+        $(document).ready(function() {
+            function checkWidth() {
+                var windowWidth = $(window).width();
+                if (windowWidth > 1028) {
+                $('#main').show();
+                $('#container-mobile-device').hide();
+                $('#bulma-mobile').prop('disabled', true);  // Disable Bulma CSS
+                $('#css-mobile-device').prop('disabled', true);  // Disable CSS Container Mobile
+                $('.container').removeClass('no-min-height');  // Remove class to reset min-height
+                } else {
+                $('#main').hide();
+                $('#container-mobile-device').show();
+                $('#bulma-mobile').prop('disabled', false);  // Enable Bulma CSS
+                $('#css-mobile-device').prop('disabled', false);  // Enable CSS Container Mobile
+                $('.container').addClass('no-min-height');  // Add class to hide min-height
+                }
+            }
+            
+            // Initial check
+            checkWidth();
+            
+            // Check on resize
+            $(window).resize(function() {
+                checkWidth();
+            });
+
+            tampilan_login();
+
+        });
+
+        function tampilan_login() {
+            $("#btn-check-dup").hide();
+            $("#hint-id-hp").hide();
+            $("#hint-pw-hp").hide();
+            $("#sign-up-box").hide();
+        }
+
+        function sign_in_mobile() {
+            let username = $("#username-mbl").val();
+            if (!username) {
+            return alert("Masukkan Username!");
+            }
+            let password = $("#password-mbl").val();
+            if (!password) {
+            return alert("Masukkan Password!");
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/sign_in",
+                data: {
+                    username_give: username,
+                    password_give: password
+                },
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.href = '/';
+                }
+            });
+        }
+
+        function toggle_sign_up() {
+            $('#input-username').val('');
+            $('#input-password').val('');
+            $('#btn-check-dup').show();
+            $('#hint-id-hp').show();
+            $('#hint-pw-hp').show();
+            $('#sign-up-box').show();
+            $('#div-sign-in-or-up').hide();
+            $("#hint-login-hp").hide();
+        }
+
+        function toggle_cancel() {
+            $('#btn-check-dup').hide();
+            $('#hint-id-hp').hide();
+            $('#hint-pw-hp').hide();
+            $('#sign-up-box').hide();
+            $('#input-username').val('');
+            $('#input-password').val('');
+            $('#input-password2').val('');
+            $('#div-sign-in-or-up').show();
+            $("#hint-login-hp").show();
+        }
+
+        function is_nickname(asValue) {
+            var regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{2,10}$/;
+            return regExp.test(asValue);
+        }
+
+        function is_password(asValue) {
+            var regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
+            return regExp.test(asValue);
+        }
+
+        function sign_up_mobile() {
+            let username = $('#username-mbl').val();
+            if (!username) {
+            return alert("Masukkan Username!");
+            }
+            let password = $('#password-mbl').val();
+            if (!password) {
+            return alert("Masukkan Password!");
+            }
+            let nama = $('#namaLengkap-mbl').val();
+            if (!nama) {
+            return alert("Masukkan Nama Lengkap Anda!");
+            }
+            let email = $('#email-mbl').val();
+            if (!email) {
+            return alert("Masukkan Email!");
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/sign_up',
+                data: {
+                    nama_give: nama,
+                    username_give: username,
+                    email_give: email,
+                    password_give: password,
+                },
+                success: function(response) {
+                    alert(response["msg"]);
+                },
+            });
+        }
+
+        function cek_username_mobile() {
+            let username = $("#username-mbl").val();
+            if (!username) {
+            return alert("Masukkan Username!");
+            }
+            $.ajax({
+                type: "POST",
+                url: "/sign_up/cek-username",
+                data: { username_give: username },
+                success: function (response) {
+                    alert(response["msg"]);
+                }
+            });
+        }
+
+        function clearInputs() {
+            $('#username-mbl').val('');
+            $('#password-mbl').val('');
+            $('#namaLengkap-mbl').val('');
+            $('#email-mbl').val('');
+        }
+    </script>
+
 </head>
 
 <body class="body">
@@ -202,8 +359,7 @@
                 </div>
                 <div class="overlay-right"> <!-- Overlay untuk bilah register -->
                     <h3>Selamat Datang Kembali!</h3>
-                    <p>Silahkan Sign In dengan akun sosial media Anda atau juga bisa dengan akun PPKS yang telah Anda
-                        buat sebelumnya</p>
+                    <p>Silahkan melakukan Sign In menggunakan akun yang telah Anda buat sebelumnya.</p>
                     <p>Belum punya akun?<br>
                         Daftar dulu, yuk!</p>
                     <div class="form-buttons">
@@ -227,6 +383,75 @@
         </div>
     </div>
     <div id="overlay"></div>
+
+    <!-- Container Mobile Device -->
+    <section class="section" id="container-mobile-device">
+        <div class="container">
+            <div class="box" style="max-width: 480px; margin: auto;">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <div class="field has-addons">
+                                <div class="control has-icons-left" style="width: 100%;">
+                                    <input class="input" type="text" id="username-mbl" placeholder="Masukkan Username">
+                                    <span class="icon is-small is-left">
+                                        <i class="fa fa-user"></i>
+                                    </span>
+                                </div>
+                                <div class="control" id="btn-check-dup">
+                                    <button class="button is-sparta" onclick="cek_username_mobile()">Cek Username</button>
+                                </div>
+                            </div>
+                            <p id="hint-id-hp" class="help is-safe">Masukkan 2-10 huruf, angka, atau karakter spesial (.), (_), (-).</p>
+                            <div class="field">
+                                <div class="control has-icons-left">
+                                    <input class="input" type="password" id="password-mbl" placeholder="Masukkan Password">
+                                    <span class="icon is-small is-left">
+                                        <i class="fa fa-lock"></i>
+                                    </span>
+                                </div>
+                                <p id="hint-pw-hp" class="help is-safe">Masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*).</p>
+                                <p id="hint-login-hp" class="help is-safe">Silahkan melakukan Sign In menggunakan akun yang telah Anda buat sebelumnya.</p>
+                            </div>
+                        </div>
+    
+                        <div id="div-sign-in-or-up" class="has-text-centered">
+                            <nav class="level is-mobile">
+                                <button class="level-item button is-sparta" onclick="sign_in_mobile()">Sign In</button>
+                                <button class="level-item button is-sparta is-outlined" onclick="clearInputs()">Clear</button>
+                            </nav>
+                            <hr />
+                            <h4 class="mb-3 has-text-centered">Belum punya akun? Daftar dulu, yuk!</h4>
+                            <nav class="level is-mobile">
+                                <button class="level-item button is-sparta is-outlined" onclick="toggle_sign_up()">Sign Up</button>
+                            </nav>
+                        </div>
+    
+                        <div id="sign-up-box">
+                            <div class="control has-icons-left" style="width: 100%; margin-bottom: 20px;">
+                                <input class="input" type="text" id="namaLengkap-mbl" placeholder="Masukkan Nama Lengkap">
+                                <span class="icon is-small is-left">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                            </div>
+                            <div class="control has-icons-left" style="width: 100%; margin-bottom: 20px;">
+                                <input class="input" type="email" id="email-mbl" placeholder="Masukkan Email">
+                                <span class="icon is-small is-left">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                            </div>
+                            <nav class="level is-mobile">
+                                <button class="level-item button is-sparta" onclick="sign_up_mobile()">Sign Up</button>
+                                <button class="level-item button is-sparta is-outlined" onclick="toggle_cancel()">Cancel</button>
+                                <button class="level-item button is-sparta is-outlined" onclick="clearInputs()">Clear</button>
+                            </nav>
+                        </div>
+    
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
 
 </body>
 

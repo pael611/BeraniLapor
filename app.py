@@ -57,7 +57,7 @@ def sign_up():
     email_receive = request.form['email_give']
     password_receive = request.form['password_give']
     
-    return jsonify({'msg': 'Akun baru berhasil dibuat!'})
+    return jsonify({'msg': 'Akun baru berhasil dibuat. Silahkan Login!'})
 
 @app.route('/sign_up/cek-username', methods=['POST'])
 def cek_username():
