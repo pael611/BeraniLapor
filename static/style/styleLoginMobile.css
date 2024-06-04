@@ -1,0 +1,36 @@
+* {
+    font-family: "Open Sans", sans-serif;
+}
+  
+body {
+    display: flex;
+    overflow: hidden;
+    background: #f6f5f7;
+    min-height: 100vh;
+}
+
+#container-mobile-device {
+    display: none;
+}
+
+.section {
+    padding: 1rem 1.5rem;
+    max-width: 750px;
+    margin: auto;
+}
+  
+.is-sparta {
+    color: #e8344e !important;
+}
+
+.button.is-sparta {
+    background-color: #e8344e;
+    border-color: transparent;
+    color: #fff !important;
+}
+
+.button.is-sparta.is-outlined {
+    background-color: transparent;
+    border-color: #e8344e;
+    color: #e8344e !important;
+}

@@ -16,6 +16,10 @@ body {
     padding: 20px;
 }
 
+#main {
+    display: none;
+}
+
 .container {
     position: relative;
     width: 768px;
@@ -26,6 +30,11 @@ body {
     overflow: hidden;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
                 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+/* CSS untuk menghapus min-height pada tampilan mobile */
+.no-min-height {
+    min-height: 0 !important;
 }
 
 .sign-up, .sign-in {
@@ -264,100 +273,6 @@ button:active {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .container {
-        width: 100%;
-        min-height: 100vh;
-        box-shadow: none;
-    }
-
-    .sign-up, .sign-in {
-        width: 100%;
-    }
-
-    .container.right-panel-active .sign-in,
-    .container.right-panel-active .sign-up {
-        transform: translateX(0);
-    }
-
-    .overlay-container {
-        display: none;
-    }
-
-    .form-buttons {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    input {
-        margin: 10px 0;
-    }
-
-    button {
-        margin: 10px 0;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
-
-    form {
-        padding: 0 20px;
-    }
-
-    .modal-content {
-        width: 90%;
-        margin: 50% auto;
-    }
-
-    .h3, .p {
-        font-size: 16px;
-    }
-
-    .button {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 1024px) {
-    .overlay-container {
-        left: 0;
-        width: 100%;
-    }
-
-    .overlay {
-        left: -100%;
-        width: 200%;
-    }
-
-    .container.right-panel-active .overlay {
-        transform: translateX(50%);
-    }
-
-    .overlay-left, .overlay-right {
-        width: 50%;
-    }
-
-    .overlay-left {
-        transform: translateX(-20%);
-    }
-
-    .overlay-right {
-        transform: translateX(0);
-    }
-
-    .container.right-panel-active .overlay-left {
-        transform: translateX(0);
-    }
-
-    .container.right-panel-active .overlay-right {
-        transform: translateX(20%);
-    }
 }
 
 /* Style Login Register Page End */
