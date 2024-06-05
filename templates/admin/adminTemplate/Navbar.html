@@ -9,18 +9,15 @@
         </button>
         <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item">
-                <span>Hi admin</span>
+                <span>Hi admin {{data.username}} ({{data.role}})  </span>
             </li>
             <li class="nav-item nav-profile dropdown">
                 <a class="nav-link  " href="#" data-bs-toggle=" " id=" ">
                     <img src="../../static/adminAsset/images/faces/face1.jpg" alt="profile" />
                 </a>
                 <div class="menu " aria-labelledby="">
-                    <a class="dropdown-item">
-                        <i class="ti-settings text-primary"></i>
-                        Settings
-                    </a>
-                    <a href="/loginPetugasSatgas" class="dropdown-item">
+                    
+                    <a href="/logOutPetugas" class="dropdown-item">
                         <i class="ti-power-off text-primary"></i>
                         Logout
                     </a>

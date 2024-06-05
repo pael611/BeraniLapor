@@ -1,6 +1,28 @@
-from flask import Flask,redirect,url_for,render_template,request, jsonify
+from pymongo import MongoClient
+import jwt
+import datetime
+import hashlib
+from flask import Flask, render_template, jsonify, request, redirect, url_for, make_response, flash,session
+from werkzeug.utils import secure_filename
+import os
+from os.path import join, dirname
+from datetime import datetime, timedelta
+from bson import ObjectId
+from dotenv import load_dotenv
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+MONGODB_URI = os.environ.get("MONGODB_URI")
+DB_NAME =  os.environ.get("DB_NAME")
+
+client = MongoClient(MONGODB_URI)
+
+db = client[DB_NAME]
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 app=Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY")
 # Index / Landing Page!
 @app.route('/',methods=['GET','POST'])
 def home():
@@ -119,49 +141,195 @@ def artikel():
         return render_template('artikel.html')
     return render_template('artikel.html')
 
-# Admin function Here, Jangan Di-edit Push dan commit apabila Masih terjadi Eror!
 
+# 
+# 
+# Admin function Here, Jangan Di-edit Push dan commit apabila Masih terjadi Eror!
+# 
+# 
 @app.route('/loginPetugasSatgas', methods=['GET', 'POST'])
 def loginAdmin():
+    
+    token_receive = request.cookies.get('token')
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+            return redirect(url_for('adminDashboard'))
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass  
+
+    
     if request.method == 'POST':
-        # Handle POST Request here
-        return render_template('admin/loginAdmin.html')
+        username_receive = request.form.get('username_give')
+        password_receive = request.form.get('password_give')
+        pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+        result = db.admin.find_one({
+            'username': username_receive,
+            'password': pw_hash,
+        })
+        
+        if result:
+            role = result.get('role')
+            payload = {
+                'id': username_receive,
+                'role': role,
+                'exp': datetime.utcnow() + timedelta(seconds=60 * 60),
+            }
+            token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+            
+            # Simpan role dalam sesi
+            session['role'] = role
+            
+            # Create a redirect response and add a cookie to it
+            response = make_response(redirect(url_for('adminDashboard')))
+            response.set_cookie('token', token)
+            
+            return response
+        else:
+            flash("Username atau Password Salah!")
+            return redirect(url_for("loginAdmin"))
+ 
     return render_template('admin/loginAdmin.html')
+
+@app.route('/logOutPetugas', methods=['GET', 'POST'])
+def logoutPetugas():
+    response = make_response(redirect(url_for('loginAdmin')))
+    response.set_cookie('token', '', expires=0)
+    return response      
+    
 
 @app.route('/adminDashboard', methods=['GET', 'POST'])
 def adminDashboard():
-    if request.method == 'POST':
-        # Handle POST Request here
-        return render_template('admin/adminDashboard.html')
-    return render_template('admin/adminDashboard.html')
-
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.admin.find_one({"username": payload["id"]})
+        dataAdmin = list(db.admin.find({"role": "Admin"}))
+       
+        return render_template('admin/adminDashboard.html',data=user_info , data_admin = dataAdmin)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+         
+        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+    
+    
 @app.route('/adminControl', methods=['GET', 'POST'])
 def adminControl():
     if request.method == 'POST':
+        adminName_receive = request.form.get('adminName_give')
+        adminUsername_receive = request.form.get('adminUsername_give')
+        adminPassword_receive = request.form.get('adminPassword_give')
+        password_hash = hashlib.sha256(adminPassword_receive.encode('utf-8')).hexdigest()
+        adminStatus_receive = request.form.get('adminStatus_give')
+        
+        data = {
+            "nama": adminName_receive,
+            "username": adminUsername_receive,
+            "password": password_hash,
+            "status": adminStatus_receive,
+            "role": "admin"
+        }
+        # duplicate username check
+        if db.admin.find_one({"username": adminUsername_receive}):
+            flash("Username sudah terdaftar!")
+            return redirect(url_for("adminControl"))
+        else:         
+            db.admin.insert_one(data)      
         # Handle POST Request here
-        return render_template('admin/adminControl.html')
-    return render_template('admin/adminControl.html')
+        return redirect(url_for('adminControl'))
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.admin.find_one({"username": payload["id"]})
+        dataAdmin = list(db.admin.find({"role": "admin"})) 
+        return render_template('admin/adminControl.html',data=user_info , data_admin = dataAdmin)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+    
+@app.route('/adminControl/update', methods=['POST'])
+def updateAdmin():
+    adminName_receive = request.form.get('adminName_give')
+    adminUsername_receive = request.form.get('adminUsername_give')
+    adminPassword_receive = request.form.get('adminPassword_give')
+    password_hash = hashlib.sha256(adminPassword_receive.encode('utf-8')).hexdigest()
+    adminStatus_receive = request.form.get('adminStatus_give')
+    
+    update_fields = {}
+
+    if adminName_receive != "":
+        update_fields["nama"] = adminName_receive
+
+    if adminUsername_receive != "":
+        update_fields["username"] = adminUsername_receive
+
+    if adminStatus_receive != "":
+        update_fields["status"] = adminStatus_receive
+
+    if adminPassword_receive != "":
+        update_fields["password"] = password_hash
+
+    db.admin.update_one(
+        {"username": adminUsername_receive},
+        {"$set": update_fields}
+    )
+
+    return redirect(url_for('adminControl'))
+
+@app.route('/adminControl/delete/<username>', methods=['GET'])
+def deleteAdmin(username):
+    db.admin.delete_one({"username": username})
+    return redirect(url_for('adminControl'))
+
+# Menu admin kepada User
 
 @app.route('/adminDashboard/detailLaporan', methods=['GET', 'POST'])
 def detailLaporan():
-    if request.method == 'POST':
-        # Handle POST Request here
-        return render_template('admin/detailLaporan.html')
-    return render_template('admin/detailLaporan.html')
-
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.admin.find_one({"username": payload["id"],
+                                        "role": payload["role"]
+                                        })
+        return render_template('admin/detailLaporan.html',data=user_info)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+        
+        
 @app.route('/adminDashboard/forumControl', methods=['GET', 'POST'])
 def forumControl():
-    if request.method == 'POST':
-        # Handle POST Request here
-        return render_template('admin/forumControl.html')
-    return render_template('admin/forumControl.html')
-
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.admin.find_one({"username": payload["id"],
+                                        "role": payload["role"]
+                                        })
+        return render_template('admin/detailLaporan.html',data=user_info)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+    
+    
 @app.route('/adminDashboard/userControl', methods=['GET', 'POST'])
 def userControl():
-    if request.method == 'POST':
-        # Handle POST Request here
-        return render_template('admin/adminUserControl.html')
-    return render_template('admin/adminUserControl.html')
+        token_receive = request.cookies.get('token')
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+            user_info = db.admin.find_one({"username": payload["id"],
+                                           "role": payload["role"]
+                                           })
+            return render_template('admin/detailLaporan.html',data=user_info)
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+
+@app.route('/adminDashboard/artikelControl', methods=['GET', 'POST'])
+def artikelControl():
+        token_receive = request.cookies.get('token')
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+            user_info = db.admin.find_one({"username": payload["id"],
+                                           "role": payload["role"]
+                                           })
+            return render_template('admin/detailLaporan.html',data=user_info)
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
 
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD

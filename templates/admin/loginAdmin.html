@@ -16,27 +16,40 @@
             <div class="auth-form-light text-left py-5 px-4 px-sm-5">
               <div class="brand-logo d-flex justify-content-center">
                 <img src="../../static/adminAsset/images/logo.jpg" alt="logo">
-              </div>  
+              </div>
               <h4>Hai Petugas, Silahkan Login Sesuai Akun yang sudah diberikan!</h4>
               <h6 class="font-weight-light"></h6>
-              <form class="pt-3">
+              <form action="/loginPetugasSatgas" method="post" class="pt-3">
                 <div class="form-group">
-                  <input type="email" class="form-control form-control-lg" id="exampleInputEmail1"
+                  <input type="text" name="username_give" class="form-control form-control-lg" id="inputUsername"
                     placeholder="Username">
                 </div>
                 <div class="form-group">
-                  <input type="password" class="form-control form-control-lg" id="exampleInputPassword1"
-                    placeholder="Password">
+                  <input type="password" name="password_give" class="form-control form-control-lg"
+                    id="exampleInputPassword1" placeholder="Password">
                 </div>
                 <div class="mt-3">
-                  <a class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
-                    href="/adminDashboard">SIGN IN</a>
+                  <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN
+                    IN</button>
                 </div>
                 <div class="my-2 d-flex justify-content-between align-items-center">
-
                 </div>
               </form>
             </div>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <script>
+                swal({
+                  title: "Pesan",
+                  text: "{{ messages[0] }}",
+                  icon: "error",
+                  button: "OK",
+                });
+              </script>
+            {% endif %}
+          {% endwith %}
+
           </div>
         </div>
       </div>
