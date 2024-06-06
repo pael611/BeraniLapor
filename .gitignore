@@ -1,3 +1,5 @@
+.gitignore
 .env
-venv/
-requirements.txt/
+/nama_venv
+/requirements.txt
+/vevn

@@ -85,12 +85,37 @@
                                 <i class="fa fa-commenting-o"></i> Comment 281
                             </span>
                         </div>
-                        <button type="button" class="btn btn-warning mt-2 mt-sm-0">Komentar</button>
+                        <form>
+                        <div class="modal fade" id="form" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header"  style="background-color:rgb(157, 146, 146) ; color: rgb(95, 30, 30);" >
+                                        <h5 class="modal-title">Komentar anda</h5>
+                                        <button type="button" class="btn-close" aria-label="Close"
+                                            onclick='document.getElementById("form").classList.remove("show"); document.getElementById("form").style.display = "none"'></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <textarea id="textarea-post" class="form-control" rows="3" 
+                                            placeholder="silahkan ketikkan komentar anda"></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-primary" onclick="post()">tambah komentar</button>
+                                        <button class="btn btn-secondary"
+                                            onclick='document.getElementById("form").classList.remove("show"); document.getElementById("modal-posmodal-post").style.display = "none"'>Batal</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                
+                        <button type="button" class="btn btn-warning mt-2 mt-sm-0"onclick='document.getElementById("form").classList.add("show"); document.getElementById("form").style.display = "block"' />
+                        Komentar</button>
+                        
                     </div>
                 </div>
 
             </div>
-
+        </form>
             <div class="card card-forum mb-3  mx-auto w-100 w-sm-75 w-md-50">
                 <div class="card-body mx-auto w-100 w-sm-75 w-md-50">
                     <div class="d-flex mb-3">
