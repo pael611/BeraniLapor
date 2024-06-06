@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-<!-- header -->
-{% include 'admin/adminTemplate/headerAdmin.html' %}
-<!-- end header -->
+  <!-- header -->
+  {% include 'admin/adminTemplate/headerAdmin.html' %}
+  <!-- end header -->
 </head>
 
 
@@ -27,6 +27,9 @@
                   <h4 class="font-weight-bold mb-0">Satgas-PPKS Dashboard</h4>
                 </div>
                 <div>
+                  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#adminModal">
+                    Tambah Admin
+                  </button>
                   <!-- button report waws here -->
                 </div>
               </div>
@@ -37,42 +40,45 @@
               <table class="table table-striped table-hover table-bordered table-primary align-middle table-dark">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Nama Pengguna</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Peran</th>
+                    <th scope="col">No</th>
+                    <th scope="col">User</th>
+                    <th scope="col">Nama</th>
+                    <th scope="col">Status</th>
                     <th scope="col">Aksi</th>
                   </tr>
                 </thead>
                 <tbody class="table-group-divider">
+                  {% for data in data_admin %}
                   <tr class="table-primary">
-                    <th scope="row">1</th>
-                    <td>Admin</td>
-                    <td>admin@example.com</td>
-                    <td>Admin</td>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ data['username'] }}</td>
+                    <td>{{ data['nama'] }}</td>
+                    <td>{{ data['status'] }}</td>
                     <td>
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-danger">Hapus</button>
+                      <button class="btn btn-primary edit-btn" data-bs-username="{{ data['username'] }}"
+                        data-bs-nama="{{ data['nama'] }}" data-bs-status="{{ data['status'] }}">Edit</button>
+                      <button class="btn btn-danger" data-bs-username="{{data['username']}}">Hapus</button>
                     </td>
                   </tr>
-                  <tr class="table-primary">
-                    <th scope="row">2</th>
-                    <td>Editor</td>
-                    <td>editor@example.com</td>
-                    <td>Editor</td>
-                    <td>
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-danger">Hapus</button>
-                    </td>
-                  </tr>
+                  {% endfor %}
+
+                  {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                  <script>
+                    swal({
+                      title: "Pesan",
+                      text: "{{ messages[0] }}",
+                      icon: "error",
+                      button: "OK",
+                    });
+                  </script>
+                  {% endif %}
+                  {% endwith %}
                   <!-- Tambahkan baris lain jika diperlukan -->
                 </tbody>
               </table>
               <!-- end table -->
-
             </div>
-
-            
           </main>
         </div>
         <!-- content-wrapper ends -->
@@ -102,6 +108,92 @@
   <!-- Custom js for this page-->
   <script src="../../static/adminAsset/js/dashboard.js"></script>
   <!-- End custom js for this page-->
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="adminModalLabel">Tambah Admin</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form -->
+          <form method="POST" action="/adminControl">
+            <div class="mb-3">
+              <label for="adminName" class="form-label">Nama Admin</label>
+              <input type="text" class="form-control" id="adminName" name="adminName_give">
+            </div>
+            <div class="mb-3">
+              <label for="adminUsername" class="form-label">Username</label>
+              <input type="text" class="form-control" id="adminUsername" readonly name="adminUsername_give">
+            </div>
+            <div class="mb-3">
+              <label for="adminPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="adminPassword" name="adminPassword_give">
+            </div>
+            <div class="mb-3">
+              <label for="adminStatus" class="form-label">Status</label>
+              <input type="text" class="form-control" id="adminStatus" name="adminStatus_give">
+            </div>
+            <button type="submit" class="btn btn-primary btn-submit-inModal">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery to handle button click -->
+  <script>
+    $(document).ready(function () {
+      $('.edit-btn').click(function () {
+        // Get the username from the data-bs-username attribute
+        var username = $(this).data('bs-username');
+        var status = $(this).data('bs-status');
+        var nama = $(this).data('bs-nama');
+        // Set the username to the modal
+        $('#adminName').val(nama);
+        $('#adminUsername').val(username);
+        $('#adminStatus').val(status);
+        // Show the modal
+        //change the button submit to button update and chnge the action to /adminControl/update
+        $('#adminModalLabel').text('Edit Admin');
+        $('#adminModal form').attr('action', '/adminControl/update');
+        $('.btn-submit-inModal').remove(); // Remove the submit button
+
+        // Check if the update button already exists
+        if ($('#adminModal form .btn-update-inModal').length === 0) {
+          // If not, add it
+          $('#adminModal form').append('<button type="submit" class="btn btn-warning btn-update-inModal">Update</button>');
+        }
+
+        $('#adminModal').modal('show');
+        // TODO: Use the username to load the data for the item to be edited
+      });
+
+      // edit admin
+      $('.btn-danger').click(function () {
+        // Get the username from the data-bs-username attribute
+        var username = $(this).data('bs-username');
+
+        // Send a DELETE request to the server
+
+        $.ajax({
+          url: `/adminControl/delete/${username}`, // Replace with the URL of your delete endpoint
+          type: 'GET',
+          data: {},
+          success: function (result) {
+            // Do something with the result (e.g., refresh the page, show a success message, etc.)
+            location.reload();
+          }
+        });
+      });
+
+
+    });
+  </script>
+
 </body>
 
 </html>

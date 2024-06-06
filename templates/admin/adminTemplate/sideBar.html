@@ -1,37 +1,47 @@
 <nav class="sidebar sidebar-offcanvas border border-2" id="sidebar">
     <ul class="nav">
         <li class="nav-item">
-            <a class="nav-link" href="/adminDashboard">
+            <a class="nav-link" href="{{ url_for('adminDashboard') }}">
                 <i class="ti-shield menu-icon"></i>
                 <span class="menu-title">Dashboard</span>
             </a>
         </li>
-       
+
+        {% if session['role'] != 'admin' %}
+        <!-- Item menu Admin Control -->
         <li class="nav-item">
-            <a class="nav-link" href="/adminControl">
-                <i class="ti-shield menu-icon"></i>
+            <a class="nav-link" href="{{ url_for('adminControl') }}">
+                <i class="ti-server menu-icon"></i>
                 <span class="menu-title">Admin Control</span>
             </a>
         </li>
+        {% else %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('artikelControl') }}">
+                <i class="ti-bookmark-alt menu-icon"></i>
+                <span class="menu-title">Artikel Control</span>
+            </a>
+        </li>
+        {% endif %}
 
         <li class="nav-item">
-            <a class="nav-link" href="/adminDashboard/detailLaporan">
+            <a class="nav-link" href="{{ url_for('detailLaporan') }}">
                 <i class="ti-layout-list-post menu-icon"></i>
                 <span class="menu-title">Laporan Detail</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/adminDashboard/forumControl">
-                <i class="ti-pie-chart menu-icon"></i>
+            <a class="nav-link" href="{{ url_for('forumControl') }}">
+                <i class="ti-comment-alt menu-icon"></i>
                 <span class="menu-title">Forum control</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/adminDashboard/userControl">
+            <a class="nav-link" href="{{ url_for('userControl') }}">
                 <i class="ti-id-badge menu-icon"></i>
                 <span class="menu-title">User Control</span>
             </a>
         </li>
-        
+
     </ul>
 </nav>
