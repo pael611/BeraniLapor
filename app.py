@@ -2,11 +2,11 @@ from pymongo import MongoClient
 import jwt
 import datetime
 import hashlib
-from flask import Flask, render_template, jsonify, request, redirect, url_for, make_response, flash,session
+from flask import Flask, render_template, jsonify, request, redirect, url_for, make_response, flash, session
 from werkzeug.utils import secure_filename
 import os
 from os.path import join, dirname
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from bson import ObjectId
 from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), '.env')
@@ -20,17 +20,29 @@ client = MongoClient(MONGODB_URI)
 db = client[DB_NAME]
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
+TOKEN_KEY = os.environ.get("TOKEN_KEY")
 
 app=Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 # Index / Landing Page!
-@app.route('/',methods=['GET','POST'])
+@app.route('/',methods=['GET'])
 def home():
-    if request.method=='POST':
-        # Handle POST Request here
-        return render_template('index.html')
+    # token_receive = request.cookies.get(TOKEN_KEY)
+    # try:
+    #     payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+    #     user_info = db.users.find_one({'username': payload.get('id')})
+        
+    #     return render_template('index.html', user_info=user_info)
+    
+    # except jwt.ExpiredSignatureError:
+    #     msg = 'Akun Anda telah keluar, silahkan Login kembali!'
+    #     return redirect(url_for('/', msg=msg))
+    
+    # except jwt.exceptions.DecodeError:
+    #     msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
+    #     return redirect(url_for('/', msg=msg))
+    
     return render_template('index.html')
-
 
 # User Function Here!!!
 @app.route('/loginUser', methods=['GET', 'POST'])
@@ -44,33 +56,46 @@ def loginUser():
 def sign_in():
     username_receive = request.form.get('username_give')
     password_receive = request.form.get('password_give')
-    # pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     
-    # result = db.users.find_one({
-    #     'username': username_receive,
-    #     'password': pw_hash,
-    # })
+    result = db.users.find_one({
+        'username': username_receive,
+        'password': pw_hash,
+    })
     
-    # if result:
-    #     payload = {
-    #         'id': username_receive,
-    #         # Token bisa berlaku sampai 24 jam
-    #         'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24),
-    #     }
-    #     token = jwt.encode(payload, SECRET_KEY)
+    if result:
+        payload = {
+            'id': username_receive,
+            # Token bisa berlaku sampai 24 jam
+            'exp': datetime.now(timezone.utc) + timedelta(seconds=60 * 60 * 24),
+        }
+        token = jwt.encode(payload, SECRET_KEY)
+        print(f"User {username_receive} berhasil Login.")
 
-    return jsonify({'msg': 'Login berhasil!'})
-    # return jsonify({'result': 'success', 'token': token})
+        return jsonify({'result': 'success', 'msg': 'Anda berhasil Login!', 'token': token})
     # Case ketika kombinasi ID dan PW tidak ditemukan
-    # else:
-    #     return jsonify({'result': 'fail', 'msg': 'We could not find a user with that ID or password combination'})
+    else:
+        print(f"Login gagal untuk user {username_receive}.")
+        return jsonify({'result': 'fail', 'msg': 'Maaf Kak, akun tidak ditemukan!'})
 
 @app.route('/update_password', methods=['POST'])
 def update_password():
-    username_receive = request.form['username_give']
-    new_pw_receive = request.form['new_pw_give']
-    
-    return jsonify({'msg': 'Password Anda berhasil diubah!'})
+    try:
+        username_receive = request.form['username_give']
+        new_pw_receive = request.form['new_pw_give']
+        new_pw_hash = hashlib.sha256(new_pw_receive.encode('utf-8')).hexdigest()
+        
+        filter = {'username': username_receive}
+        new_pw = {'$set': {'password': new_pw_hash}}
+        
+        result = db.users.update_one(filter, new_pw)
+        
+        if result.matched_count > 0:
+            return jsonify({'result': 'success', 'msg': 'Password Anda berhasil diubah!'})
+        else:
+            return jsonify({'result': 'fail', 'msg': 'User tidak ditemukan!'})
+    except Exception as e:
+        return jsonify({'result': 'fail', 'msg': str(e)})
 
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
@@ -78,15 +103,23 @@ def sign_up():
     username_receive = request.form['username_give']
     email_receive = request.form['email_give']
     password_receive = request.form['password_give']
+    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     
-    return jsonify({'msg': 'Akun baru berhasil dibuat. Silahkan Login!'})
+    db.users.insert_one({
+        'nama lengkap': nama_receive,
+        'username': username_receive,
+        'email': email_receive,
+        'password': password_hash,
+        })
+    
+    return jsonify({'result': 'success'})
 
 @app.route('/sign_up/cek-username', methods=['POST'])
 def cek_username():
     username_receive = request.form.get('username_give')
-    # exists = bool(db.users.find_one({'username': username_receive}))
-    # return jsonify({'result': 'success', 'exists': exists})
-    return jsonify({'msg': 'Username ini tersedia'})
+    exists = bool(db.users.find_one({'username': username_receive}))
+
+    return jsonify({'result': 'success', 'exists': exists})
 
 @app.route('/laporUser', methods=['GET', 'POST'])
 def lapor():

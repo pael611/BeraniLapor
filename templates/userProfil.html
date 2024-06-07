@@ -24,6 +24,7 @@
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
@@ -95,6 +96,12 @@
                 });
             }
         }
+
+        function sign_out() {
+            $.removeCookie('mytoken', {path: '/'});
+            alert('Anda berhasil sign out!');
+            window.location.href = '/';
+        }
     </script>
 
 </head>
@@ -121,7 +128,7 @@
     <div class="button-container" style="max-width: 70%; max-height: 70%; margin: 4vh auto;">
         <div class="button edit-profile" data-bs-toggle="modal" data-bs-target="#editProfilModal">Edit Profil</div>
         <div class="button check-status" data-bs-toggle="modal" data-bs-target="#cekStatusModal">Cek Status Laporan</div>
-        <div class="button sign-out">Sign Out</div>
+        <div class="button sign-out" onclick="sign_out()">Sign Out</div>
         <div class="button delete-account">Hapus Akun</div>
     </div>
     <div class="forum">
