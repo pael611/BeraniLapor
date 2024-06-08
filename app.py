@@ -185,7 +185,7 @@ def forum():
         # Handle POST Request here
         pass
 
-# validasi token dan menampilkan halaman forum
+# validasi token, apabila user sudah login maka akan menampilkan halaman forum
     token_receive = request.cookies.get('mytoken')
     if not token_receive:
         flash("Anda Belum Login")
