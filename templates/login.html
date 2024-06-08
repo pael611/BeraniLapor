@@ -253,8 +253,7 @@
                 },
                 success: function (response) {
                     if (response['result'] === 'success') {
-                        let token = response['token'];
-                        $.cookie('mytoken', token, { path: '/' });
+                        
                         alert(response['msg']);
                         window.location.href = '/';
                     } else {
