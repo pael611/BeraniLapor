@@ -20,37 +20,53 @@ client = MongoClient(MONGODB_URI)
 db = client[DB_NAME]
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
-TOKEN_KEY = os.environ.get("TOKEN_KEY")
 
 app=Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 # Index / Landing Page!
 @app.route('/',methods=['GET'])
 def home():
-    # token_receive = request.cookies.get(TOKEN_KEY)
-    # try:
-    #     payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-    #     user_info = db.users.find_one({'username': payload.get('id')})
-        
-    #     return render_template('index.html', user_info=user_info)
-    
-    # except jwt.ExpiredSignatureError:
-    #     msg = 'Akun Anda telah keluar, silahkan Login kembali!'
-    #     return redirect(url_for('/', msg=msg))
-    
-    # except jwt.exceptions.DecodeError:
-    #     msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
-    #     return redirect(url_for('/', msg=msg))
-    
-    return render_template('index.html')
+    token_receive = request.cookies.get('mytoken')
+    user_info = None
+    print(token_receive)
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'username': payload.get('id')})
+
+        except jwt.ExpiredSignatureError:
+            msg = 'Akun Anda telah keluar, silahkan Login kembali!'
+            flash(msg)
+
+        except jwt.exceptions.DecodeError:
+            msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
+            flash(msg)
+
+    return render_template('index.html', user_info=user_info)
 
 # User Function Here!!!
 @app.route('/loginUser', methods=['GET', 'POST'])
 def loginUser():
+    token_receive = request.cookies.get('mytoken')
+    print (token_receive)
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'username': payload.get('id')})
+
+            if user_info:
+                return redirect(url_for('home'))
+
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
     if request.method == 'POST':
         # Handle POST Request here
-        return render_template('login.html')
+        pass
     return render_template('login.html')
+
 
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
@@ -62,7 +78,6 @@ def sign_in():
         'username': username_receive,
         'password': pw_hash,
     })
-    
     if result:
         payload = {
             'id': username_receive,
@@ -70,9 +85,13 @@ def sign_in():
             'exp': datetime.now(timezone.utc) + timedelta(seconds=60 * 60 * 24),
         }
         token = jwt.encode(payload, SECRET_KEY)
-        print(f"User {username_receive} berhasil Login.")
-
-        return jsonify({'result': 'success', 'msg': 'Anda berhasil Login!', 'token': token})
+        
+        # Membuat response
+        response = make_response(jsonify({'result': 'success', 'msg': 'Anda berhasil Login!'}))
+        # Mengatur cookie
+        response.set_cookie('mytoken', token, httponly=True, samesite='Strict', path='/')
+        return response
+    
     # Case ketika kombinasi ID dan PW tidak ditemukan
     else:
         print(f"Login gagal untuk user {username_receive}.")
@@ -164,8 +183,24 @@ def delete_post():
 def forum():
     if request.method == 'POST':
         # Handle POST Request here
-        return render_template('forum.html')
-    return render_template('forum.html')
+        pass
+
+# validasi token dan menampilkan halaman forum
+    token_receive = request.cookies.get('mytoken')
+    if not token_receive:
+        flash("Anda Belum Login")
+        return redirect(url_for('loginUser'))
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({"username": payload["id"]})
+        if not user_info:
+            raise jwt.exceptions.DecodeError
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.")
+        return redirect(url_for('login_page'))
+
+    return render_template('forum.html', username=user_info['username'])
 
 @app.route('/artikelBase', methods=['GET', 'POST'])
 def artikel():
@@ -223,6 +258,7 @@ def loginAdmin():
             return redirect(url_for("loginAdmin"))
  
     return render_template('admin/loginAdmin.html')
+
 
 @app.route('/logOutPetugas', methods=['GET', 'POST'])
 def logoutPetugas():
@@ -306,6 +342,7 @@ def updateAdmin():
     )
 
     return redirect(url_for('adminControl'))
+
 
 @app.route('/adminControl/delete/<username>', methods=['GET'])
 def deleteAdmin(username):

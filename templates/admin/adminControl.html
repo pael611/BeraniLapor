@@ -127,7 +127,7 @@
             </div>
             <div class="mb-3">
               <label for="adminUsername" class="form-label">Username</label>
-              <input type="text" class="form-control" id="adminUsername" readonly name="adminUsername_give">
+              <input type="text" class="form-control" id="adminUsername" required name="adminUsername_give">
             </div>
             <div class="mb-3">
               <label for="adminPassword" class="form-label">Password</label>
@@ -172,13 +172,29 @@
         // TODO: Use the username to load the data for the item to be edited
       });
 
+      // Hide the modal when it is closed and return submit Admin form
+      $('#adminModal').on('hidden.bs.modal', function () {
+        // Change the button back to submit and change the action back to /adminControl/add
+        $('#adminModalLabel').text('Tambah Admin');
+        $('#adminModal form').attr('action', '/adminControl');
+        $('.btn-update-inModal').remove(); // Remove the update button
+
+        // Check if the submit button already exists
+        if ($('#adminModal form .btn-submit-inModal').length === 0) {
+          // If not, add it
+          $('#adminModal form').append('<button type="submit" class="btn btn-primary btn-submit-inModal">Submit</button>');
+        }
+
+        // Clear all input fields in the form
+        $('#adminModal form input').val('');
+      });
+
       // edit admin
       $('.btn-danger').click(function () {
         // Get the username from the data-bs-username attribute
         var username = $(this).data('bs-username');
-
+        // return submit admin form if model edit closed
         // Send a DELETE request to the server
-
         $.ajax({
           url: `/adminControl/delete/${username}`, // Replace with the URL of your delete endpoint
           type: 'GET',

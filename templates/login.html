@@ -37,7 +37,7 @@
                 $('#updatePasswordModal').css('display', 'block');
                 $('#overlay').css('display', 'block');
             });
-    
+
             // Tombol Batal
             $('#tombolBatal').click(function () {
                 $('#updatePasswordModal').css('display', 'none');
@@ -65,12 +65,15 @@
         function sign_in() {
             let username = $("#username").val();
             if (!username) {
-            return alert("Masukkan Username!");
+                alert("Masukkan Username!");
+                return false;
             }
             let password = $("#password").val();
             if (!password) {
-            return alert("Masukkan Password!");
+                alert("Masukkan Password!");
+                return false;
             }
+
             $.ajax({
                 type: "POST",
                 url: "/sign_in",
@@ -78,29 +81,27 @@
                     username_give: username,
                     password_give: password,
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response['result'] === 'success') {
-                        let token = response['token'];
-                        $.cookie('mytoken', token, { path: '/' });
                         alert(response['msg']);
-                        window.location.href = '/';
+                        window.location.replace('/');
                     } else {
                         alert(response['msg']);
                         window.location.reload();
                     }
                 },
             });
+            return false;
         }
-
         function update_password() {
             let username = $("#username-new-pw").val();
             if (!username) {
-            return alert("Masukkan Username!");
+                return alert("Masukkan Username!");
             }
 
             let new_pw = $("#new-password").val();
             if (!new_pw) {
-            return alert("Masukkan Password baru Anda!");
+                return alert("Masukkan Password baru Anda!");
             }
             if (!password_cek(new_pw)) {
                 return alert("Maaf Kak, Password Anda belum sesuai. Silahkan masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*)");
@@ -172,10 +173,10 @@
         function cek_username() {
             let username = $("#username-register").val();
             if (!username) {
-            return alert("Masukkan Username!");
+                return alert("Masukkan Username!");
             }
             if (!username_cek(username)) {
-            return alert("Maaf Kak, Password Anda belum sesuai. Silahkan masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*)");
+                return alert("Maaf Kak, Password Anda belum sesuai. Silahkan masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*)");
             }
             $.ajax({
                 type: "POST",
@@ -196,29 +197,29 @@
 
     <!-- Javascript untuk tampilkan container mobile device -->
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             function checkWidth() {
                 var windowWidth = $(window).width();
                 if (windowWidth > 1028) {
-                $('#main').show();
-                $('#container-mobile-device').hide();
-                $('#bulma-mobile').prop('disabled', true);  // Disable Bulma CSS
-                $('#css-mobile-device').prop('disabled', true);  // Disable CSS Container Mobile
-                $('.container').removeClass('no-min-height');  // Remove class to reset min-height
+                    $('#main').show();
+                    $('#container-mobile-device').hide();
+                    $('#bulma-mobile').prop('disabled', true);  // Disable Bulma CSS
+                    $('#css-mobile-device').prop('disabled', true);  // Disable CSS Container Mobile
+                    $('.container').removeClass('no-min-height');  // Remove class to reset min-height
                 } else {
-                $('#main').hide();
-                $('#container-mobile-device').show();
-                $('#bulma-mobile').prop('disabled', false);  // Enable Bulma CSS
-                $('#css-mobile-device').prop('disabled', false);  // Enable CSS Container Mobile
-                $('.container').addClass('no-min-height');  // Add class to hide min-height
+                    $('#main').hide();
+                    $('#container-mobile-device').show();
+                    $('#bulma-mobile').prop('disabled', false);  // Enable Bulma CSS
+                    $('#css-mobile-device').prop('disabled', false);  // Enable CSS Container Mobile
+                    $('.container').addClass('no-min-height');  // Add class to hide min-height
                 }
             }
-            
+
             // Initial check
             checkWidth();
-            
+
             // Check on resize
-            $(window).resize(function() {
+            $(window).resize(function () {
                 checkWidth();
             });
 
@@ -236,11 +237,11 @@
         function sign_in_mobile() {
             let username = $("#username-mbl").val();
             if (!username) {
-            return alert("Masukkan Username!");
+                return alert("Masukkan Username!");
             }
             let password = $("#password-mbl").val();
             if (!password) {
-            return alert("Masukkan Password!");
+                return alert("Masukkan Password!");
             }
 
             $.ajax({
@@ -250,7 +251,7 @@
                     username_give: username,
                     password_give: password,
                 },
-                success: function(response) {
+                success: function (response) {
                     if (response['result'] === 'success') {
                         let token = response['token'];
                         $.cookie('mytoken', token, { path: '/' });
@@ -290,28 +291,28 @@
         function sign_up_mobile() {
             let username = $('#username-mbl').val();
             if (!username) {
-            return alert("Masukkan Username!");
+                return alert("Masukkan Username!");
             }
             if (!username_cek(username)) {
-            return alert("Maaf Kak, Username Anda belum sesuai. Silahkan masukkan 2-10 huruf, angka, atau karakter spesial (.), (_), (-)");
+                return alert("Maaf Kak, Username Anda belum sesuai. Silahkan masukkan 2-10 huruf, angka, atau karakter spesial (.), (_), (-)");
             }
 
             let password = $('#password-mbl').val();
             if (!password) {
-            return alert("Masukkan Password!");
+                return alert("Masukkan Password!");
             }
             if (!password_cek(password)) {
-            return alert("Maaf Kak, Password Anda belum sesuai. Silahkan masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*)");
+                return alert("Maaf Kak, Password Anda belum sesuai. Silahkan masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*)");
             }
 
             let nama = $('#namaLengkap-mbl').val();
             if (!nama) {
-            return alert("Masukkan Nama Lengkap Anda!");
+                return alert("Masukkan Nama Lengkap Anda!");
             }
 
             let email = $('#email-mbl').val();
             if (!email) {
-            return alert("Masukkan Email!");
+                return alert("Masukkan Email!");
             }
 
             $.ajax({
@@ -323,7 +324,7 @@
                     email_give: email,
                     password_give: password,
                 },
-                success: function(response) {
+                success: function (response) {
                     alert("Akun baru berhasil dibuat. Silahkan Login!");
                     return;
                 },
@@ -333,10 +334,10 @@
         function cek_username_mobile() {
             let username = $("#username-mbl").val();
             if (!username) {
-            return alert("Masukkan Username!");
+                return alert("Masukkan Username!");
             }
             if (!username_cek(username)) {
-            return alert("Maaf Kak, Username Anda belum sesuai. Silahkan masukkan 2-10 huruf, angka, atau karakter spesial (.), (_), (-)");
+                return alert("Maaf Kak, Username Anda belum sesuai. Silahkan masukkan 2-10 huruf, angka, atau karakter spesial (.), (_), (-)");
             }
 
             $.ajax({
@@ -368,13 +369,16 @@
 <body class="body">
     <div class="container" id="main">
         <div class="sign-up">
-            <form action="#">
+            <form>
                 <h3>Register akun baru</h3>
                 <div class="control has-icons-left" style="width: 100%;">
-                    <input type="text" name="nama-lengkap" id="nama-lengkap" placeholder="Masukkan Nama Lengkap" required>
+                    <input type="text" name="nama-lengkap" id="nama-lengkap" placeholder="Masukkan Nama Lengkap"
+                        required>
                 </div>
                 <div class="control has-icons-left" style="width: 100%; display: flex; flex-direction: row;">
-                    <input type="text" name="username" id="username-register" placeholder="Masukkan Username" style="border-radius: 5px 0 0 5px;" required><button class="cek-id" onclick="cek_username()">Cek ID</button>
+                    <input type="text" name="username" id="username-register" placeholder="Masukkan Username"
+                        style="border-radius: 5px 0 0 5px;" required><button class="cek-id" onclick="cek_username()">Cek
+                        ID</button>
                 </div>
                 <p id="help-id" class="hint">Masukkan 2-10 huruf, angka, atau karakter spesial (.), (_), (-).</p>
                 <p id="help-id-login" class="hint" style="font-size: 12px;"></p>
@@ -384,7 +388,8 @@
                 <div class="control has-icons-left" style="width: 100%;">
                     <input type="password" name="password" id="pw-register" placeholder="Masukkan Password" required>
                 </div>
-                <p id="help-password" class="hint">Masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*).</p>
+                <p id="help-password" class="hint">Masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($),
+                    (%), (^), (&), (*).</p>
                 <p id="help-password-login" class="hint" style="font-size: 12px;"></p>
                 <div class="form-buttons">
                     <button class="tombolSignUp button-inForm" id="Register" onclick="sign_up()">Sign Up</button>
@@ -393,13 +398,14 @@
             </form>
         </div>
         <div class="sign-in">
-            <form action="#">
+            <form>
                 <h3>Sign In dengan akun Anda</h3>
                 <input type="text" name="username" id="username" placeholder="Masukkan Username" required>
                 <input type="password" name="password" id="password" placeholder="Masukkan Password" required>
                 <button type="button" class="transparent-button" id="lupaPassword">Lupa password?</button>
                 <div class="form-buttons">
-                    <button class="tombolSignIn button-inForm" id="Login" onclick="sign_in()">Sign In</button>
+                    <button class="tombolSignIn button-inForm" type="button" id="Login" onclick="sign_in()">Sign
+                        In</button>
                     <a href="/"><button type="button" class="tombolKembali button-inForm">Kembali</button></a>
                 </div>
             </form>
@@ -432,10 +438,13 @@
     <div id="updatePasswordModal" class="modal">
         <div class="modal-content">
             <h2>Update Password</h2>
-            <input style="margin-left: 0;" type="text" name="username" id="username-new-pw" placeholder="Masukkan Username">
-            <input style="margin-left: 0;" type="password" name="new-password" id="new-password" placeholder="Masukkan Password Baru">
+            <input style="margin-left: 0;" type="text" name="username" id="username-new-pw"
+                placeholder="Masukkan Username">
+            <input style="margin-left: 0;" type="password" name="new-password" id="new-password"
+                placeholder="Masukkan Password Baru">
             <div class="form-buttons">
-                <button class="tombolUpdatePassword button-inForm" id="UpdatePassword" onclick="update_password()">Update Password</button>
+                <button class="tombolUpdatePassword button-inForm" id="UpdatePassword"
+                    onclick="update_password()">Update Password</button>
                 <button class="tombolKembali button-inForm" id="tombolBatal">Batal</button>
             </div>
         </div>
@@ -457,37 +466,45 @@
                                     </span>
                                 </div>
                                 <div class="control" id="btn-check-dup">
-                                    <button class="button is-sparta" onclick="cek_username_mobile()">Cek Username</button>
+                                    <button class="button is-sparta" onclick="cek_username_mobile()">Cek
+                                        Username</button>
                                 </div>
                             </div>
-                            <p id="hint-id-hp" class="help is-safe">Masukkan 2-10 huruf, angka, atau karakter spesial (.), (_), (-).</p>
+                            <p id="hint-id-hp" class="help is-safe">Masukkan 2-10 huruf, angka, atau karakter spesial
+                                (.), (_), (-).</p>
                             <div class="field">
                                 <div class="control has-icons-left">
-                                    <input class="input" type="password" id="password-mbl" placeholder="Masukkan Password">
+                                    <input class="input" type="password" id="password-mbl"
+                                        placeholder="Masukkan Password">
                                     <span class="icon is-small is-left">
                                         <i class="fa fa-lock"></i>
                                     </span>
                                 </div>
-                                <p id="hint-pw-hp" class="help is-safe">Masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*).</p>
-                                <p id="hint-login-hp" class="help is-safe">Silahkan melakukan Sign In menggunakan akun yang telah Anda buat sebelumnya.</p>
+                                <p id="hint-pw-hp" class="help is-safe">Masukkan 8-20 huruf, angka, atau karakter
+                                    spesial (!), (@), (#), ($), (%), (^), (&), (*).</p>
+                                <p id="hint-login-hp" class="help is-safe">Silahkan melakukan Sign In menggunakan akun
+                                    yang telah Anda buat sebelumnya.</p>
                             </div>
                         </div>
-    
+
                         <div id="div-sign-in-or-up" class="has-text-centered">
                             <nav class="level is-mobile">
                                 <button class="level-item button is-sparta" onclick="sign_in_mobile()">Sign In</button>
-                                <button class="level-item button is-sparta is-outlined" onclick="clearInputs()">Clear</button>
+                                <button class="level-item button is-sparta is-outlined"
+                                    onclick="clearInputs()">Clear</button>
                             </nav>
                             <hr />
                             <h4 class="mb-3 has-text-centered">Belum punya akun? Daftar dulu, yuk!</h4>
                             <nav class="level is-mobile">
-                                <button class="level-item button is-sparta is-outlined" onclick="toggle_sign_up()">Sign Up</button>
+                                <button class="level-item button is-sparta is-outlined" onclick="toggle_sign_up()">Sign
+                                    Up</button>
                             </nav>
                         </div>
-    
+
                         <div id="sign-up-box">
                             <div class="control has-icons-left" style="width: 100%; margin-bottom: 20px;">
-                                <input class="input" type="text" id="namaLengkap-mbl" placeholder="Masukkan Nama Lengkap">
+                                <input class="input" type="text" id="namaLengkap-mbl"
+                                    placeholder="Masukkan Nama Lengkap">
                                 <span class="icon is-small is-left">
                                     <i class="fa fa-user"></i>
                                 </span>
@@ -500,11 +517,13 @@
                             </div>
                             <nav class="level is-mobile">
                                 <button class="level-item button is-sparta" onclick="sign_up_mobile()">Sign Up</button>
-                                <button class="level-item button is-sparta is-outlined" onclick="toggle_cancel()">Cancel</button>
-                                <button class="level-item button is-sparta is-outlined" onclick="clearInputs()">Clear</button>
+                                <button class="level-item button is-sparta is-outlined"
+                                    onclick="toggle_cancel()">Cancel</button>
+                                <button class="level-item button is-sparta is-outlined"
+                                    onclick="clearInputs()">Clear</button>
                             </nav>
                         </div>
-    
+
                     </div>
                 </article>
             </div>
