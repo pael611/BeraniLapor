@@ -272,6 +272,8 @@ def adminDashboard():
     token_receive = request.cookies.get('token')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
+            return redirect('/')
         user_info = db.admin.find_one({"username": payload["id"]})
         dataAdmin = list(db.admin.find({"role": "Admin"}))
        
@@ -305,9 +307,12 @@ def adminControl():
             db.admin.insert_one(data)      
         # Handle POST Request here
         return redirect(url_for('adminControl'))
+    
     token_receive = request.cookies.get('token')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
+            return redirect('/')
         user_info = db.admin.find_one({"username": payload["id"]})
         dataAdmin = list(db.admin.find({"role": "admin"})) 
         return render_template('admin/adminControl.html',data=user_info , data_admin = dataAdmin)
@@ -356,6 +361,8 @@ def detailLaporan():
     token_receive = request.cookies.get('token')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
+            return redirect('/')
         user_info = db.admin.find_one({"username": payload["id"],
                                         "role": payload["role"]
                                         })
@@ -369,6 +376,8 @@ def forumControl():
     token_receive = request.cookies.get('token')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
+            return redirect('/')
         user_info = db.admin.find_one({"username": payload["id"],
                                         "role": payload["role"]
                                         })
@@ -382,6 +391,8 @@ def userControl():
         token_receive = request.cookies.get('token')
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+            if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
+                return redirect('/')
             user_info = db.admin.find_one({"username": payload["id"],
                                            "role": payload["role"]
                                            })
@@ -424,6 +435,8 @@ def artikelControl():
     token_receive = request.cookies.get('token')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
+            return redirect('/')
         user_info = db.admin.find_one({"username": payload["id"],
                                         "role": payload["role"]
                                         })
