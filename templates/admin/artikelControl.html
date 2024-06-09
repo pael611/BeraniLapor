@@ -6,7 +6,9 @@
   {% include 'admin/adminTemplate/headerAdmin.html' %}
   <!-- end header -->
 </head>
+<style>
 
+</style>
 
 <body>
   <div class="container-scroller">
@@ -36,7 +38,7 @@
             </div>
           </div>
           <main>
-            <div class="table-responsive-xl">
+            <div class="table-responsive">
               <table class="table table-striped table-hover table-bordered table-primary align-middle table-dark">
                 <thead class="table-light">
                   <tr>
@@ -44,38 +46,36 @@
                     <th scope="col">Id Artikel</th>
                     <th scope="col">judul</th>
                     <th scope="col">Source Gamber</th>
+                    <th scope="col">Tanggal Dibuat</th>
                     <th scope="col">Isi</th>
                     <th scope="col">Aksi</th>
+
                   </tr>
                 </thead>
                 <tbody class="table-group-divider">
+                  {% for art in article %}
                   <tr class="table-primary">
-                    <th scope="row">1</th>
-                    <td>asdas213a</td>
-                    <td>TITTLE::</td>
-                    <td>source::</td>
-                    <td class="artiekl-detail" style="max-width: 30vw; overflow-y:scroll;">Lorem ipsum dolor sit amet consectetur adipisicing
-                      elit. Id iusto nostrum incidunt maiores
-                      voluptas cumque cum, velit veniam dicta labore amet distinctio illum ipsa saepe culpa rerum
-                      dolores enim perferendis voluptatem sint alias illo magni! Obcaecati porro reprehenderit tempora
-                      veritatis saepe, dolorum culpa perferendis exercitationem, adipisci vero molestiae tempore?
-                      Ratione, at, ad libero possimus vero aspernatur saepe quam dolorem quidem ex reiciendis deleniti
-                      voluptates, voluptate ipsum officiis expedita obcaecati? Repellendus magnam debitis ratione
-                      deleniti minima harum pariatur nam vel eveniet eos sunt id, perspiciatis iusto ipsam! Mollitia hic
-                      quisquam ipsam nam. Ad architecto impedit minus quam amet iure, rem fuga a dolorum voluptatibus ea
-                      doloribus enim temporibus ratione tempora. Modi cumque totam maxime velit, aut quo ipsa ipsum
-                      eveniet voluptatem harum temporibus dolorum vero doloremque quasi sit nulla, officiis fuga
-                      sapiente. Nemo aliquam alias non tempore tempora laudantium, voluptatibus voluptas laborum eaque
-                      natus. Id officia cumque, illo fuga ducimus quae amet vel optio eum debitis veritatis earum quod,
-                      fugiat quasi quas a in! Fuga adipisci voluptatibus ipsa minus tenetur soluta vitae ex nostrum.
-                      Possimus, quam? Molestias repellat magnam, labore architecto deserunt voluptas velit maiores iure
-                      corporis cum exercitationem eligendi veritatis blanditiis soluta dolor in pariatur reprehenderit
-                      nobis autem? Eveniet, facilis.</td>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ art._id }}</td>
+                    <td>{{ art.title }}</td>
+                    <td style="max-width: 40vw; overflow-y: auto; max-height: 50vh;">
+                      <div class="image-artikel" style=" width: 100%;
+                      padding-top: 100%;
+                      background-image: url('../../{{art.gambar}}');
+                      background-size: cover;
+                      background-color: #f1f1f1;
+                      background-position: center;"></div>
+                    </td>
+                    <td>{{ art.date }}</td>
+                    <td style="max-width: 40vw; overflow-y: auto; max-height: 50vh;">
+                      {{ art.isi}}
+                    </td>
                     <td>
                       <button class="btn btn-primary">Edit</button>
                       <button class="btn btn-danger">Hapus</button>
                     </td>
                   </tr>
+                  {% endfor %}
                   <!-- Tambahkan baris lain jika diperlukan -->
                 </tbody>
               </table>
@@ -96,11 +96,13 @@
                     <form method="POST" action="/adminDashboard/artikelControl" enctype="multipart/form-data">
                       <div class="mb-3">
                         <label for="judulArtikel_give" class="form-label">Judul artikel</label>
-                        <input type="text" class="form-control" id="judulArtikel_give" required name="judulArtikel_give">
+                        <input type="text" class="form-control" id="judulArtikel_give" required
+                          name="judulArtikel_give">
                       </div>
                       <div class="mb-3">
                         <label for="gambarArtikel_give" class="form-label">Gambar Artikel</label>
-                        <input type="file" class="form-control" id="gambarArtikel_give" required name="gambarArtikel_give">
+                        <input type="file" class="form-control" id="gambarArtikel_give" required
+                          name="gambarArtikel_give">
                       </div>
                       <div class="mb-3">
                         <label for="isiArtikel_give" class="form-label">Isi Artikel</label>
@@ -145,7 +147,7 @@
 
   <script>
     $(document).ready(function () {
-      
+
     });
 
   </script>

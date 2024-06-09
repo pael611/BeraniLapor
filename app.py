@@ -403,7 +403,7 @@ def artikelControl():
         
         gambar_receive = request.files["gambarArtikel_give"]
         extensiongambar = gambar_receive.filename.split('.')[-1]
-        save_dir = 'templates/images/articleImage/'
+        save_dir = 'static/adminAsset/articleImage/'
         os.makedirs(save_dir, exist_ok=True)  # create directory if not exists
         save_gambar = f'{save_dir}image{date_time}.{extensiongambar}'
         gambar_receive.save(save_gambar)
@@ -427,7 +427,9 @@ def artikelControl():
         user_info = db.admin.find_one({"username": payload["id"],
                                         "role": payload["role"]
                                         })
-        return render_template('admin/artikelControl.html',data=user_info)
+        articles = db.articles.find()
+        
+        return render_template('admin/artikelControl.html',data=user_info, article=articles)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
 
