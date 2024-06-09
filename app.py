@@ -385,21 +385,51 @@ def userControl():
             user_info = db.admin.find_one({"username": payload["id"],
                                            "role": payload["role"]
                                            })
-            return render_template('admin/detailLaporan.html',data=user_info)
+            # fetch data user from db.users
+            dataUser = list(db.users.find())   
+            return render_template('admin/adminUserControl.html',data=user_info, data_user = dataUser)     
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
 
 @app.route('/adminDashboard/artikelControl', methods=['GET', 'POST'])
 def artikelControl():
-        token_receive = request.cookies.get('token')
-        try:
-            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
-            user_info = db.admin.find_one({"username": payload["id"],
-                                           "role": payload["role"]
-                                           })
-            return render_template('admin/detailLaporan.html',data=user_info)
-        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-            return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+    if request.method == 'POST':
+        title_receive = request.form["judulArtikel_give"]
+         
+        isi_receive = request.form["isiArtikel_give"]
+        
+        today = datetime.now()
+        date_time = today.strftime("%Y-%m-%d-%H-%M-%S")
+        
+        gambar_receive = request.files["gambarArtikel_give"]
+        extensiongambar = gambar_receive.filename.split('.')[-1]
+        save_dir = 'templates/images/articleImage/'
+        os.makedirs(save_dir, exist_ok=True)  # create directory if not exists
+        save_gambar = f'{save_dir}image{date_time}.{extensiongambar}'
+        gambar_receive.save(save_gambar)
+        
+        thisdate = today.strftime("%Y-%m-%d")        
+
+        doc = {
+            'title':title_receive,
+            'gambar':save_gambar,
+            'isi':isi_receive,
+            'date':thisdate
+        }
+        db.articles.insert_one(doc)
+        return "<script>alert('Upload complete!'); window.location = '/adminDashboard/artikelControl';</script>"
+             
+    
+    
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.admin.find_one({"username": payload["id"],
+                                        "role": payload["role"]
+                                        })
+        return render_template('admin/artikelControl.html',data=user_info)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
 
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD

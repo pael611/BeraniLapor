@@ -37,34 +37,30 @@
               <table class="table table-striped table-hover table-bordered table-primary align-middle table-dark">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Nama Pengguna</th>
+                    <th scope="col">No</th>
+                    <th scope="col">Nama </th>
                     <th scope="col">Email</th>
-                    <th scope="col">Peran</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Password</th>
                     <th scope="col">Aksi</th>
                   </tr>
                 </thead>
                 <tbody class="table-group-divider">
+
+                  {% for user in data_user %}
                   <tr class="table-primary">
-                    <th scope="row">1</th>
-                    <td>Admin</td>
-                    <td>admin@example.com</td>
-                    <td>Admin</td>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ user['nama lengkap'] }}</td>
+                    <td>{{ user['email'] }}</td>
+                    <td>{{ user['username'] }}</td>
+                    <td>{{ user['password'] }}</td>
                     <td>
                       <button class="btn btn-primary">Edit</button>
                       <button class="btn btn-danger">Hapus</button>
                     </td>
                   </tr>
-                  <tr class="table-primary">
-                    <th scope="row">2</th>
-                    <td>Editor</td>
-                    <td>editor@example.com</td>
-                    <td>Editor</td>
-                    <td>
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-danger">Hapus</button>
-                    </td>
-                  </tr>
+                  {% endfor %}
+
                   <!-- Tambahkan baris lain jika diperlukan -->
                 </tbody>
               </table>
