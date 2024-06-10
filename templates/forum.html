@@ -3,22 +3,17 @@
 
 {% include 'header.html' %}
 <script>
-    
-    function komen() {
-            let komentar= $("#komentar").val();
-            if (!komentar) {
-            return alert("Masukkan komentar yang ingin Anda tambahkan!");
-            }
-            $.ajax({
-                type: "POST",
-                url: "/komentar",
-                data: { komentar_giveKomentar },
-                success: function (response) {
-                    alert(response["msg"]);
-                    window.location.reload();
-                }
-            });
-        }
+   
+   //  Menghapus isi textarea
+function cancel() {
+ $("#komentar").val('');
+}
+
+function cancel() {
+ $("#posting").val('');
+}
+
+
     function komen() {
         let komentar = $("#komentar").val();
         if (!komentar) {
@@ -35,26 +30,37 @@
     });
 }
 
-//  Menghapus isi textarea
-function cancel() {
- $("#komentar").val('');
+function posting() {
+        let posting = $("#posting").val();
+        if (!posting) {
+        return alert("Masukkan komentar yang ingin Anda tambahkan!");
+    }
+        $.ajax({
+        type: "POST",
+        url: "/posting",
+        data: { posting: posting },
+        success: function (response) {
+            alert(response["msg"]);
+            window.location.reload();
+        }
+    });
 }
 
-function posting() {
-            let posting = $("#posting").val();
-            if (!posting) {
-            return alert("Masukkan sesuatu yang ingin Anda posting!");
-            }
-            $.ajax({
-                type: "POST",
-                url: "/posting",
-                data: { posting_give: posting },
-                success: function (response) {
-                    alert(response["msg"]);
-                    window.location.reload();
-                }
-            });
-        }
+// function posting() {
+//             let posting = $("#posting").val();
+//             if (!posting) {
+//             return alert("Masukkan sesuatu yang ingin Anda posting!");
+//     }
+//             $.ajax({
+//                 type: "POST",
+//                 url: "/posting",
+//                 data: { posting: posting },
+//                 success: function (response) {
+//                     alert(response["msg"]);
+//                     window.location.reload();
+//                 }
+//             });
+//         }
 
 </script>
 <body>
@@ -69,7 +75,7 @@ function posting() {
                 </a>
             </div>
             <input id="input-post" class="form-control rounded-pill" style="max-width: 600px;"
-            placeholder="Buat Postingan Baru" data-bs-toggle="modal" data-bs-target="#posting">
+            placeholder="Buat Postingan Baru" data-bs-toggle="modal" data-bs-target="#modalposting">
         </div>
 
         <!-- untuk postingan-->
@@ -77,13 +83,13 @@ function posting() {
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header" style="background-color: #410404; color: white;">
-                        <h5 class="modal-title " id="postinglabel">Tambah Komentar</h5>
+                        <h5 class="modal-title " id="postinglabel">Tambah postingan</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body bg-body-tertiary">
                         <form>
                             <div class="mb-3">
-                                <textarea class="form-control" id="posting" rows="3" required>Ketikkan komentar anda</textarea>
+                                <textarea class="form-control" id="posting" rows="3" required placeholder="ada cerita apa nih? yuk posting"></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary" onclick="posting()">Submit</button>
                             <button type="button" class="btn btn-secondary" onclick="cancel()">hapus</button>
@@ -112,18 +118,7 @@ function posting() {
                                 natus alias. Ab beatae, sunt ut ea aut voluptatem quasi quae? Tenetur fuga excepturi
                                 sapiente, voluptate officia tempora consectetur aspernatur libero eaque vero tempore!
                                 Qui vero enim illo soluta aut molestiae. Itaque tenetur neque at eius ab molestias earum
-                                enim eligendi, doloremque, saepe unde minima autem, amet doloribus ducimus dolor totam
-                                consequuntur alias dicta ad temporibus. Non voluptatibus recusandae harum voluptatem
-                                amet numquam dignissimos itaque a ipsum quaerat blanditiis eius inventore ab sed,
-                                reiciendis vero debitis commodi. Voluptatum praesentium facere accusamus, deserunt
-                                asperiores assumenda incidunt distinctio, et, libero officiis vel vero architecto
-                                perferendis ipsum! Sit doloremque, perspiciatis rerum recusandae nihil aspernatur
-                                voluptas quae necessitatibus nostrum illum! Dicta et quam ad quidem reiciendis
-                                architecto nisi animi distinctio illo, ipsa consequatur beatae, molestias repellat
-                                veniam soluta aliquid molestiae magni quod nesciunt in? Corporis fugit animi ut
-                                inventore aperiam ullam maxime praesentium aliquid fuga facere, accusamus perspiciatis.
-                                Tempora id laboriosam odit earum, asperiores ab et corrupti architecto repellendus nobis
-                                saepe? Quibusdam?
+  
                             </div>
                         </div>
                     </div>
