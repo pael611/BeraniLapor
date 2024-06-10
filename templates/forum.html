@@ -2,7 +2,61 @@
 <html lang="en">
 
 {% include 'header.html' %}
+<script>
+    
+    function komen() {
+            let komentar= $("#komentar").val();
+            if (!komentar) {
+            return alert("Masukkan komentar yang ingin Anda tambahkan!");
+            }
+            $.ajax({
+                type: "POST",
+                url: "/komentar",
+                data: { komentar_giveKomentar },
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            });
+        }
+    function komen() {
+        let komentar = $("#komentar").val();
+        if (!komentar) {
+        return alert("Masukkan komentar yang ingin Anda tambahkan!");
+    }
+        $.ajax({
+        type: "POST",
+        url: "/komentar",
+        data: { komentar: komentar },
+        success: function (response) {
+            alert(response["msg"]);
+            window.location.reload();
+        }
+    });
+}
 
+//  Menghapus isi textarea
+function cancel() {
+ $("#komentar").val('');
+}
+
+function posting() {
+            let posting = $("#posting").val();
+            if (!posting) {
+            return alert("Masukkan sesuatu yang ingin Anda posting!");
+            }
+            $.ajax({
+                type: "POST",
+                url: "/posting",
+                data: { posting_give: posting },
+                success: function (response) {
+                    alert(response["msg"]);
+                    window.location.reload();
+                }
+            });
+        }
+
+</script>
 <body>
     <!-- Container -->
     <div class="container mt-4">
@@ -15,33 +69,30 @@
                 </a>
             </div>
             <input id="input-post" class="form-control rounded-pill" style="max-width: 600px;"
-                placeholder="What are you thinking about?"
-                onclick='document.getElementById("modal-post").classList.add("show"); document.getElementById("modal-post").style.display = "block"' />
+            placeholder="Buat Postingan Baru" data-bs-toggle="modal" data-bs-target="#posting">
         </div>
 
-        <!-- MODAL -->
-        <div class="modal fade" id="modal-post" tabindex="-1" aria-hidden="true">
+        <!-- untuk postingan-->
+        <div class="modal fade" id="modalposting" tabindex="-1" aria-labelledby="postinglabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Create Post</h5>
-                        <button type="button" class="btn-close" aria-label="Close"
-                            onclick='document.getElementById("modal-post").classList.remove("show"); document.getElementById("modal-post").style.display = "none"'></button>
+                    <div class="modal-header" style="background-color: #410404; color: white;">
+                        <h5 class="modal-title " id="postinglabel">Tambah Komentar</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <textarea id="textarea-post" class="form-control"
-                            placeholder="What are you thinking about?"></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" onclick="post()">Create post</button>
-                        <button class="btn btn-secondary"
-                            onclick='document.getElementById("modal-post").classList.remove("show"); document.getElementById("modal-post").style.display = "none"'>Cancel</button>
+                    <div class="modal-body bg-body-tertiary">
+                        <form>
+                            <div class="mb-3">
+                                <textarea class="form-control" id="posting" rows="3" required>Ketikkan komentar anda</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" onclick="posting()">Submit</button>
+                            <button type="button" class="btn btn-secondary" onclick="cancel()">hapus</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-
-
+    
         <!-- Post Card -->
         <div id="post-box" class="container">
             <div class="card card-forum mb-3  mx-auto w-100 w-sm-75 w-md-50">
@@ -85,28 +136,27 @@
                                 <i class="fa fa-commenting-o"></i> Comment 281
                             </span>
                         </div>
-                        <form>
-                        <div class="modal fade" id="form" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header"  style="background-color:rgb(157, 146, 146) ; color: rgb(95, 30, 30);" >
-                                        <h5 class="modal-title">Komentar anda</h5>
-                                        <button type="button" class="btn-close" aria-label="Close"
-                                            onclick='document.getElementById("form").classList.remove("show"); document.getElementById("form").style.display = "none"'></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <textarea id="textarea-post" class="form-control" rows="3" 
-                                            placeholder="silahkan ketikkan komentar anda"></textarea>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-primary" onclick="post()">tambah komentar</button>
-                                        <button class="btn btn-secondary"
-                                            onclick='document.getElementById("form").classList.remove("show"); document.getElementById("modal-posmodal-post").style.display = "none"'>Batal</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                
-                        <button type="button" class="btn btn-warning mt-2 mt-sm-0"onclick='document.getElementById("form").classList.add("show"); document.getElementById("form").style.display = "block"' />
+                            <!-- Modal Tambah Komentar -->
+    <div class="modal fade" id="Modalkomen" tabindex="-1" aria-labelledby="komentarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #410404; color: white;">
+                    <h5 class="modal-title " id="komentarLabel">Tambah Komentar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-body-tertiary">
+                    <form>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="komentar" rows="3" required placeholder="Ketikkan komentar anda"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" onclick="komen()">Submit</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancel()">hapus</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+                        <button type="button" class="btn btn-warning mt-2 mt-sm-0" data-bs-toggle="modal" data-bs-target="#Modalkomen">
                         Komentar</button>
                         
                     </div>

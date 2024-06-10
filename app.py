@@ -446,6 +446,19 @@ def artikelControl():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
 
+# komentar forum
+@app.route('/komentar', methods=['POST'])
+def komentar():
+    komentar_receive = request.form('komentar_give')
+    return jsonify({'msg':  'Komentar Anda berhasil ditambahkan!'}), 400
+
+# postingan form
+@app.route('/posting', methods=['POST'])
+def posting():
+    posting_receive = request.form['posting_give']
+    return jsonify({'msg':  'postingan Anda berhasil ditambahkan!'}), 400
+
+
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD
     app.run("0.0.0.0", port=5000, debug=True)
