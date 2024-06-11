@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <!-- header -->
   {% include 'admin/adminTemplate/headerAdmin.html' %}
   <!-- end header -->
 </head>
-<style>
-
-</style>
-
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
@@ -21,7 +16,6 @@
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-
           <div class="row">
             <div class="col-md-12 grid-margin">
               <div class="d-flex justify-content-between align-items-center">
@@ -32,7 +26,6 @@
                   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#artikelModal">
                     Tambah Artikel
                   </button>
-                  <!-- button report waws here -->
                 </div>
               </div>
             </div>
@@ -44,47 +37,71 @@
                   <tr>
                     <th scope="col">No</th>
                     <th scope="col">Id Artikel</th>
-                    <th scope="col">judul</th>
-                    <th scope="col">Source Gamber</th>
+                    <th scope="col">Judul</th>
+                    <th scope="col">Source Gambar</th>
                     <th scope="col">Tanggal Dibuat</th>
                     <th scope="col">Isi</th>
                     <th scope="col">Aksi</th>
-
                   </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                  {% for art in article %}
+                  {% for art in articles %}
                   <tr class="table-primary">
                     <th scope="row">{{ loop.index }}</th>
                     <td>{{ art._id }}</td>
                     <td>{{ art.title }}</td>
                     <td style="max-width: 40vw; overflow-y: auto; max-height: 50vh;">
-                      <div class="image-artikel" style=" width: 100%;
-                      padding-top: 100%;
-                      background-image: url('../../{{art.gambar}}');
-                      background-size: cover;
-                      background-color: #f1f1f1;
-                      background-position: center;"></div>
+                      <div class="image-artikel" style="width: 100%; padding-top: 100%; background-image: url('{{ url_for('static', filename=art.gambar) }}'); background-size: cover; background-color: #f1f1f1; background-position: center;"></div>
                     </td>
                     <td>{{ art.date }}</td>
                     <td style="max-width: 40vw; overflow-y: auto; max-height: 50vh;">
-                      {{ art.isi}}
+                      {{ art.isi }}
                     </td>
                     <td>
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-danger">Hapus</button>
+                      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editArtikelModal{{ art._id }}">Edit</button>
+                      <button class="btn btn-danger" onclick="deleteArticle('{{ art._id }}')">Hapus</button>
                     </td>
                   </tr>
+
+                  <!-- Modal for Editing Article -->
+                  <div class="modal fade" id="editArtikelModal{{ art._id }}" tabindex="-1" aria-labelledby="editArtikelModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="editArtikelModalLabel">Edit Artikel</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form method="POST" action="/adminDashboard/editArticle/{{ art._id }}" enctype="multipart/form-data">
+                            <div class="mb-3">
+                              <label for="judulArtikel_give{{ art._id }}" class="form-label">Judul Artikel</label>
+                              <input type="text" class="form-control" id="judulArtikel_give{{ art._id }}" required name="judulArtikel_give" value="{{ art.title }}">
+                            </div>
+                            <div class="mb-3">
+                              <label for="gambarArtikel_give{{ art._id }}" class="form-label">Gambar Artikel</label>
+                              <input type="file" class="form-control" id="gambarArtikel_give{{ art._id }}" name="gambarArtikel_give">
+                            </div>
+                            <div class="mb-3">
+                              <label for="isiArtikel_give{{ art._id }}" class="form-label">Isi Artikel</label>
+                              <textarea class="form-control" id="isiArtikel_give{{ art._id }}" required name="isiArtikel_give">{{ art.isi }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                              <label for="dateArtikel_give{{ art._id }}" class="form-label">Tanggal Artikel</label>
+                              <input type="text" class="form-control" id="dateArtikel_give{{ art._id }}" required name="dateArtikel_give" value="{{ art.date }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-submit-inModal">Submit</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   {% endfor %}
-                  <!-- Tambahkan baris lain jika diperlukan -->
                 </tbody>
               </table>
-              <!-- end table -->
-
             </div>
 
-            <div class="modal fade" id="artikelModal" tabindex="-1" aria-labelledby="adminModalLabel"
-              aria-hidden="true">
+            <!-- Modal for Adding Article -->
+            <div class="modal fade" id="artikelModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -92,21 +109,18 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                    <!-- Form -->
                     <form method="POST" action="/adminDashboard/artikelControl" enctype="multipart/form-data">
                       <div class="mb-3">
-                        <label for="judulArtikel_give" class="form-label">Judul artikel</label>
-                        <input type="text" class="form-control" id="judulArtikel_give" required
-                          name="judulArtikel_give">
+                        <label for="judulArtikel_give" class="form-label">Judul Artikel</label>
+                        <input type="text" class="form-control" id="judulArtikel_give" required name="judulArtikel_give">
                       </div>
                       <div class="mb-3">
                         <label for="gambarArtikel_give" class="form-label">Gambar Artikel</label>
-                        <input type="file" class="form-control" id="gambarArtikel_give" required
-                          name="gambarArtikel_give">
+                        <input type="file" class="form-control" id="gambarArtikel_give" required name="gambarArtikel_give">
                       </div>
                       <div class="mb-3">
                         <label for="isiArtikel_give" class="form-label">Isi Artikel</label>
-                        <input type="text" class="form-control" id="isiArtikel_give" required name="isiArtikel_give">
+                        <textarea class="form-control" id="isiArtikel_give" required name="isiArtikel_give"></textarea>
                       </div>
                       <button type="submit" class="btn btn-primary btn-submit-inModal">Submit</button>
                     </form>
@@ -116,16 +130,9 @@
             </div>
           </main>
         </div>
-        <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
-
-        <!-- partial -->
       </div>
-      <!-- main-panel ends -->
     </div>
-    <!-- page-body-wrapper ends -->
   </div>
-  <!-- container-scroller -->
 
   <!-- plugins:js -->
   <script src="../../static/adminAsset/vendors/base/vendor.bundle.base.js"></script>
@@ -143,14 +150,20 @@
   <!-- Custom js for this page-->
   <script src="../../static/adminAsset/js/dashboard.js"></script>
   <!-- End custom js for this page-->
-
-
   <script>
-    $(document).ready(function () {
-
-    });
-
+    function deleteArticle(articleId) {
+      fetch(`/adminDashboard/deleteArticle/${articleId}`, {
+        method: 'POST'
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Failed to delete article: ' + data.error);
+        }
+      });
+    }
   </script>
 </body>
-
 </html>
