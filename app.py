@@ -420,6 +420,41 @@ def userControl():
 from datetime import datetime
 import os
 
+@app.route('/adminDashboard/deleteArticle/<article_id>', methods=['POST'])
+def delete_article(article_id):
+    try:
+        db.article.delete_one({"_id": ObjectId(article_id)})
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+
+# Admin - Edit Article
+@app.route('/adminDashboard/editArticle/<article_id>', methods=['POST'])
+def edit_article(article_id):
+    try:
+        title_receive = request.form["judulArtikel_give"]
+        isi_receive = request.form["isiArtikel_give"]
+        date_receive = request.form["dateArtikel_give"]
+
+        update_data = {
+            "title": title_receive,
+            "isi": isi_receive,
+            "date": date_receive,
+        }
+
+        if 'gambarArtikel_give' in request.files:
+            gambar_receive = request.files["gambarArtikel_give"]
+            extensiongambar = gambar_receive.filename.split('.')[-1]
+            save_dir = os.path.join(app.root_path, 'static/adminAsset/articleImage/')
+            os.makedirs(save_dir, exist_ok=True)
+            save_gambar = f'/static/adminAsset/articleImage/{date_time}.{extensiongambar}'
+            gambar_receive.save(os.path.join(save_dir, f'image{date_time}.{extensiongambar}'))
+            update_data['gambar'] = save_gambar
+
+        db.article.update_one({"_id": ObjectId(article_id)}, {"$set": update_data})
+        return redirect(url_for('artikelControl'))
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
 
 @app.route('/adminDashboard/artikelControl', methods=['GET', 'POST'])
 def artikelControl():
