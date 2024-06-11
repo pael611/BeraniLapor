@@ -436,6 +436,10 @@ def edit_article(article_id):
         isi_receive = request.form["isiArtikel_give"]
         date_receive = request.form["dateArtikel_give"]
 
+        # Mendapatkan tanggal dan waktu saat ini
+        current_datetime = datetime.now()
+        date_time = current_datetime.strftime("%Y-%m-%d-%H-%M-%S")
+
         update_data = {
             "title": title_receive,
             "isi": isi_receive,
@@ -444,12 +448,13 @@ def edit_article(article_id):
 
         if 'gambarArtikel_give' in request.files:
             gambar_receive = request.files["gambarArtikel_give"]
-            extensiongambar = gambar_receive.filename.split('.')[-1]
-            save_dir = os.path.join(app.root_path, 'static/adminAsset/articleImage/')
-            os.makedirs(save_dir, exist_ok=True)
-            save_gambar = f'/static/adminAsset/articleImage/{date_time}.{extensiongambar}'
-            gambar_receive.save(os.path.join(save_dir, f'image{date_time}.{extensiongambar}'))
-            update_data['gambar'] = save_gambar
+            if gambar_receive.filename != '':
+                extensiongambar = gambar_receive.filename.split('.')[-1]
+                save_dir = os.path.join(app.root_path, 'static/adminAsset/articleImage/')
+                os.makedirs(save_dir, exist_ok=True)
+                save_gambar = f'/static/adminAsset/articleImage/{date_time}.{extensiongambar}'
+                gambar_receive.save(os.path.join(save_dir, f'image{date_time}.{extensiongambar}'))
+                update_data['gambar'] = save_gambar
 
         db.article.update_one({"_id": ObjectId(article_id)}, {"$set": update_data})
         return redirect(url_for('artikelControl'))
@@ -499,3 +504,4 @@ def artikelControl():
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD
     app.run("0.0.0.0", port=5000, debug=True)
+
