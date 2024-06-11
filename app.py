@@ -1,8 +1,10 @@
 from pymongo import MongoClient
+from datetime import datetime
 import jwt
 import datetime
 import hashlib
 from flask import Flask, render_template, jsonify, request, redirect, url_for, make_response, flash, session
+from bson import ObjectId
 from werkzeug.utils import secure_filename
 import os
 from os.path import join, dirname
@@ -202,15 +204,27 @@ def forum():
 
     return render_template('forum.html', username=user_info['username'])
 
+
+
 @app.route('/artikelBase', methods=['GET', 'POST'])
 def artikel():
-    if request.method == 'POST':
-        # Handle POST Request here
-        return render_template('artikel.html')
-    return render_template('artikel.html')
+    articles = list(db.article.find({}))
+    for art in articles:
+        print("Original Image Path:", art.get("gambar"))  # Debug print
+        art["gambar"] = art.get("gambar")  # Just pass the image path directly
+        print("Processed Image Path:", art.get("gambar"))  # Debug print
+        print("Article Date:", art.get("date"))    # Debug print
+        # Jika tanggal artikel belum ada, tambahkan tanggal saat ini
+        if "date" not in art:
+            art["date"] = datetime.now().strftime("%Y-%m-%d")
+            print("Added Current Date:", art.get("date"))  # Debug print
+    return render_template('artikel.html', articles=articles)
 
 
-# 
+
+
+
+
 # 
 # Admin function Here, Jangan Di-edit Push dan commit apabila Masih terjadi Eror!
 # 
@@ -314,8 +328,8 @@ def adminControl():
         if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
             return redirect('/')
         user_info = db.admin.find_one({"username": payload["id"]})
-        dataAdmin = list(db.admin.find({"role": "admin"})) 
-        return render_template('admin/adminControl.html',data=user_info , data_admin = dataAdmin)
+        dataAdmin = db.admin.find({"role": "admin"})
+        return render_template('admin/adminControl.html',data=user_info , data_admin = dataAdmin )
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
     
@@ -388,6 +402,7 @@ def forumControl():
     
 @app.route('/adminDashboard/userControl', methods=['GET', 'POST'])
 def userControl():
+        artikel = list(db.article.find({}))
         token_receive = request.cookies.get('token')
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
@@ -398,15 +413,18 @@ def userControl():
                                            })
             # fetch data user from db.users
             dataUser = list(db.users.find())   
-            return render_template('admin/adminUserControl.html',data=user_info, data_user = dataUser)     
+            return render_template('admin/adminUserControl.html',data=user_info, data_user = dataUser ,artikel=artikel)     
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+
+from datetime import datetime
+import os
+
 
 @app.route('/adminDashboard/artikelControl', methods=['GET', 'POST'])
 def artikelControl():
     if request.method == 'POST':
         title_receive = request.form["judulArtikel_give"]
-         
         isi_receive = request.form["isiArtikel_give"]
         
         today = datetime.now()
@@ -414,51 +432,35 @@ def artikelControl():
         
         gambar_receive = request.files["gambarArtikel_give"]
         extensiongambar = gambar_receive.filename.split('.')[-1]
-        save_dir = 'static/adminAsset/articleImage/'
-        os.makedirs(save_dir, exist_ok=True)  # create directory if not exists
-        save_gambar = f'{save_dir}image{date_time}.{extensiongambar}'
-        gambar_receive.save(save_gambar)
+        save_dir = os.path.join(app.root_path, 'static/adminAsset/articleImage/')
+        os.makedirs(save_dir, exist_ok=True)  # Create directory if not exists
+        filename = f'image{date_time}.{extensiongambar}'
+        save_gambar = os.path.join('adminAsset/articleImage/', filename)  # Relative path without '/static/'
+        gambar_receive.save(os.path.join(save_dir, filename))
         
-        thisdate = today.strftime("%Y-%m-%d")        
+        thisdate = today.strftime("%Y-%m-%d")
 
         doc = {
-            'title':title_receive,
-            'gambar':save_gambar,
-            'isi':isi_receive,
-            'date':thisdate
+            'title': title_receive,
+            'gambar': save_gambar,
+            'isi': isi_receive,
+            'date': thisdate  # Tambahkan tanggal saat ini ke dalam dokumen artikel
         }
-        db.articles.insert_one(doc)
-        return "<script>alert('Upload complete!'); window.location = '/adminDashboard/artikelControl';</script>"
-             
-    
-    
+        db.article.insert_one(doc)
+        return redirect(url_for('artikelControl'))
+
     token_receive = request.cookies.get('token')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
-        if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
+        if payload.get('role') not in ['admin', 'superAdmin']:
             return redirect('/')
-        user_info = db.admin.find_one({"username": payload["id"],
-                                        "role": payload["role"]
-                                        })
-        articles = db.articles.find()
-        
-        return render_template('admin/artikelControl.html',data=user_info, article=articles)
+        user_info = db.admin.find_one({"username": payload["id"], "role": payload["role"]})
+        articles = list(db.article.find())
+
+        return render_template('admin/artikelControl.html', data=user_info, articles=articles)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
-
-# komentar forum
-@app.route('/komentar', methods=['POST'])
-def komentar():
-    komentar_receive = request.form('komentar')
-    return jsonify({'msg':  'Komentar Anda berhasil ditambahkan!'}), 400
-
-# postingan form
-@app.route('/posting', methods=['POST'])
-def posting():
-    posting_receive = request.form['posting']
-    return jsonify({'msg':  'postingan Anda berhasil ditambahkan!'}), 400
 
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD
     app.run("0.0.0.0", port=5000, debug=True)
-    
