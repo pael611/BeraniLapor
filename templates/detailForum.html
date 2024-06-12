@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'header.html' %}
+<script>
+   
+   //  Menghapus isi textarea
+function cancel() {
+ $("#komentar").val('');
+}
+
+function cancel() {
+ $("#posting").val('');
+}
+
+
+    function komen() {
+        let komentar = $("#komentar").val();
+        if (!komentar) {
+        return alert("Masukkan komentar yang ingin Anda tambahkan!");
+    }
+        $.ajax({
+        type: "POST",
+        url: "/komentar",
+        data: { komentar: komentar },
+        success: function (response) {
+            alert(response["msg"]);
+            window.location.reload();
+        }
+    });
+}
+
+function posting() {
+        let posting = $("#posting").val();
+        if (!posting) {
+        return alert("Masukkan komentar yang ingin Anda tambahkan!");
+    }
+        $.ajax({
+        type: "POST",
+        url: "/posting",
+        data: { posting: posting },
+        success: function (response) {
+            alert(response["msg"]);
+            window.location.reload();
+        }
+    });
+}
+
+// function posting() {
+//             let posting = $("#posting").val();
+//             if (!posting) {
+//             return alert("Masukkan sesuatu yang ingin Anda posting!");
+//     }
+//             $.ajax({
+//                 type: "POST",
+//                 url: "/posting",
+//                 data: { posting: posting },
+//                 success: function (response) {
+//                     alert(response["msg"]);
+//                     window.location.reload();
+//                 }
+//             });
+//         }
+
+</script>
+<body>
+    <!-- Container -->
+    <div class="container mt-4">
+        <!-- Post Input -->
+        <div class="d-flex justify-content-center align-items-center mb-3">
+            <div class="me-3">
+                <a href="#">
+                    <img class="rounded" src="../static/assets/placeholder.jpg " alt="User Image" width="32"
+                        height="32">
+                </a>
+            </div>
+            <input id="input-post" class="form-control rounded-pill" style="max-width: 600px;"
+            placeholder="Buat Postingan Baru" data-bs-toggle="modal" data-bs-target="#modalposting">
+        </div>
+
+        <!-- untuk postingan-->
+        <div class="modal fade" id="modalposting" tabindex="-1" aria-labelledby="postinglabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #410404; color: white;">
+                        <h5 class="modal-title " id="postinglabel">Tambah postingan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body bg-body-tertiary">
+                        <form>
+                            <div class="mb-3">
+                                <textarea class="form-control" id="posting" rows="3" required placeholder="ada cerita apa nih? yuk posting"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" onclick="posting()">Submit</button>
+                            <button type="button" class="btn btn-secondary" onclick="cancel()">hapus</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Post Card -->
+        <div id="post-box" class="container">
+            <div class="card card-forum mb-3  mx-auto w-100 w-sm-75 w-md-50">
+                <div class="card-body mx-auto w-100 w-sm-75 w-md-50">
+                    <div class="d-flex mb-3">
+                        <a class="me-3 image-container" style="max-width: 112px; max-height: 112px;" href="#">
+                            <img class="rounded" src="../static/assets/placeholder.jpg" alt="Image">
+                        </a>
+                        <div class="w-100 h-100">
+                            <div class="card-title mb-1 card-tittle">User a <small class="text-muted">@user-a</small>
+                            </div>
+                            <div class="card-subtitle mb-2 text-muted card-info">10 minutes ago</div>
+                            <div class="card-text-content">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vel
+                                molestiae, quae eum corporis amet veritatis natus iste illo ad sed architecto? Libero
+                                numquam deleniti fugit, reprehenderit consequatur provident in quod ratione optio
+                                aliquid veritatis animi pariatur repellat aliquam molestias aut doloribus, inventore
+                                natus alias. Ab beatae, sunt ut ea aut voluptatem quasi quae? Tenetur fuga excepturi
+                                sapiente, voluptate officia tempora consectetur aspernatur libero eaque vero tempore!
+                                Qui vero enim illo soluta aut molestiae. Itaque tenetur neque at eius ab molestias earum
+  
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center">
+                            <span class="cursor me-3" onclick="toggle_like('', 'heart')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">23.k</span>
+                            </span>
+                            <span class="cursor me-3 comment-trigger" data-post-id="#">
+                                <i class="fa fa-commenting-o"></i> Comment 281
+                            </span>
+                        </div>
+                            <!-- Modal Tambah Komentar -->
+    <div class="modal fade" id="Modalkomen" tabindex="-1" aria-labelledby="komentarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #410404; color: white;">
+                    <h5 class="modal-title " id="komentarLabel">Tambah Komentar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-body-tertiary">
+                    <form>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="komentar" rows="3" required placeholder="Ketikkan komentar anda"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" onclick="komen()">Submit</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancel()">hapus</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+                        <button type="button" class="btn btn-warning mt-2 mt-sm-0" data-bs-toggle="modal" data-bs-target="#Modalkomen">
+                        Komentar</button>
+                        
+                    </div>
+                </div>
+
+            </div>
+        </form>
+            <div class="card card-forum mb-3  mx-auto w-100 w-sm-75 w-md-50">
+                <div class="card-body mx-auto w-100 w-sm-75 w-md-50">
+                    <div class="d-flex mb-3">
+                        <a class="me-3 image-container" style="max-width: 112px; max-height: 112px;" href="#">
+                            <img class="rounded" src="../static/assets/placeholder.jpg" alt="Image">
+                        </a>
+                        <div class="w-100 h-100">
+                            <div class="card-title mb-1 card-tittle">User a <small class="text-muted">@user-a</small>
+                            </div>
+                            <div class="card-subtitle mb-2 text-muted card-info">10 minutes ago</div>
+                            <div class="card-text-content">Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                                Atque dolore non omnis neque perspiciatis similique, corporis necessitatibus obcaecati.
+                                Debitis ducimus possimus facere incidunt corporis explicabo voluptas voluptatibus
+                                recusandae voluptates deserunt earum temporibus ullam delectus, minus neque nihil nulla
+                                magnam alias nesciunt dolores suscipit! Animi cum commodi harum molestias optio
+                                quibusdam veniam quod. Repellat, dolorum. Deleniti unde nulla libero aliquam optio,
+                                voluptatibus doloribus officiis ipsa sed et. Cupiditate praesentium numquam facere.
+                                Modi, explicabo ea! Distinctio exercitationem sed nesciunt, totam laboriosam voluptatem
+                                nisi fuga dolorem iure, facere cumque ad praesentium blanditiis nulla vero sequi, veniam
+                                sapiente! Quidem commodi nesciunt quos expedita exercitationem sed, quisquam iure,
+                                magnam sequi enim quaerat sint incidunt! Velit magnam, illo ex, voluptatibus debitis
+                                ullam dolore quo alias est facilis ut repellat exercitationem architecto, eius aut
+                                molestiae officiis nesciunt assumenda asperiores optio expedita? Aliquid qui quo dolore
+                                est asperiores corporis excepturi dignissimos numquam quam iste perferendis unde
+                                laboriosam officia id deserunt illum animi sequi explicabo, esse placeat similique velit
+                                sapiente ab modi? Voluptatem alias, assumenda ipsum sed voluptate tempora qui? Quibusdam
+                                earum sed maiores iusto sunt inventore dolor, asperiores soluta unde autem iste amet
+                                omnis voluptates! Autem incidunt doloremque ducimus optio. Consequatur voluptas,
+                                dignissimos, voluptatem tempore animi a dolor beatae quibusdam velit quae ipsa porro
+                                architecto omnis quasi quisquam deleniti optio aliquid aut. Quas possimus quibusdam
+                                natus impedit asperiores non deleniti blanditiis quae optio fuga! Aliquid blanditiis
+                                dolore quas nobis perspiciatis ipsa, animi veritatis tempora et laborum minima. Odit
+                                vitae ipsum totam obcaecati minima eveniet dolor nulla repellat, fugit quod laborum esse
+                                ipsa! Temporibus debitis perferendis id repellat blanditiis fuga odit perspiciatis
+                                quibusdam ipsum molestias ad delectus omnis architecto dolorum facilis officiis, harum
+                                voluptate minus deserunt mollitia quos quae nisi. Possimus nihil officiis porro
+                                accusantium necessitatibus vero nemo, repellat alias tempore quod quam aliquid rerum
+                                asperiores eius minima quos natus est! Soluta, sapiente dicta autem necessitatibus magni
+                                illo dolorum reiciendis maiores debitis hic nesciunt facere, laborum vel provident
+                                quisquam doloribus veritatis ut rerum consequuntur ad ipsum. Dolor nesciunt aspernatur
+                                esse, nihil expedita laudantium ad exercitationem tenetur! Vel praesentium sed, tempora
+                                accusamus nemo iure deserunt adipisci, temporibus perspiciatis dignissimos ut delectus
+                                possimus cumque distinctio eum facere rerum neque eveniet dolor commodi fugiat! Incidunt
+                                voluptatum ipsum molestiae nobis impedit neque vel voluptates commodi, fugit
+                                perspiciatis consectetur suscipit, debitis sunt laudantium praesentium. Nesciunt beatae
+                                laborum rerum placeat distinctio ut, architecto harum aliquam maiores magni at delectus
+                                fugit nisi dolore quaerat sint veritatis molestias enim maxime voluptatum iure molestiae
+                                vero ratione. Odit, accusamus suscipit. Labore, numquam magnam fuga placeat debitis
+                                consequatur nemo deserunt asperiores quis animi expedita recusandae corporis sint,
+                                aperiam incidunt illo necessitatibus delectus tempora aspernatur at sit accusamus
+                                temporibus obcaecati quo. Placeat odit praesentium doloribus sed voluptas, reprehenderit
+                                impedit minima possimus, officiis, qui quae quisquam doloremque. Ipsum soluta ex quasi,
+                                officia fugiat dolorem necessitatibus natus eum amet accusantium repellendus? Commodi
+                                provident rem veritatis rerum velit accusamus, sed ut obcaecati sint nesciunt dolore
+                                magni, saepe voluptatum, tenetur enim. Cupiditate accusamus deleniti repudiandae
+                                expedita distinctio reiciendis, vel laudantium quam vitae, ea ad dolores.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center">
+                            <span class="cursor me-3" onclick="toggle_like('', 'heart')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">23.k</span>
+                            </span>
+                            <span class="cursor me-3 comment-trigger" data-post-id="#">
+                                <i class="fa fa-commenting-o"></i> Comment 281
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-warning mt-2 mt-sm-0">Komentar</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card card-forum mb-3  mx-auto w-100 w-sm-75 w-md-50">
+                <div class="card-body mx-auto w-100 w-sm-75 w-md-50">
+                    <div class="d-flex mb-3">
+                        <a class="me-3 image-container" style="max-width: 112px; max-height: 112px;" href="#">
+                            <img class="rounded" src="../static/assets/placeholder.jpg" alt="Image">
+                        </a>
+                        <div class="w-100 h-100">
+                            <div class="card-title mb-1 card-tittle">User a <small class="text-muted">@user-a</small>
+                            </div>
+                            <div class="card-subtitle mb-2 text-muted card-info">10 minutes ago</div>
+                            <div class="card-text-content">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vel
+                                molestiae, quae eum corporis amet veritatis natus iste illo ad sed architecto? Libero
+                                numquam deleniti fugit, reprehenderit consequatur provident in quod ratione optio
+                                aliquid veritatis animi pariatur repellat aliquam molestias aut doloribus, inventore
+                                natus alias. Ab beatae, sunt ut ea aut voluptatem quasi quae? Tenetur fuga excepturi
+                                sapiente, voluptate officia tempora consectetur aspernatur libero eaque vero tempore!
+                                Qui vero enim illo soluta aut molestiae. Itaque tenetur neque at eius ab molestias earum
+                                enim eligendi, doloremque, saepe unde minima autem, amet doloribus ducimus dolor totam
+                                consequuntur alias dicta ad temporibus. Non voluptatibus recusandae harum voluptatem
+                                amet numquam dignissimos itaque a ipsum quaerat blanditiis eius inventore ab sed,
+                                reiciendis vero debitis commodi. Voluptatum praesentium facere accusamus, deserunt
+                                asperiores assumenda incidunt distinctio, et, libero officiis vel vero architecto
+                                perferendis ipsum! Sit doloremque, perspiciatis rerum recusandae nihil aspernatur
+                                voluptas quae necessitatibus nostrum illum! Dicta et quam ad quidem reiciendis
+                                architecto nisi animi distinctio illo, ipsa consequatur beatae, molestias repellat
+                                veniam soluta aliquid molestiae magni quod nesciunt in? Corporis fugit animi ut
+                                inventore aperiam ullam maxime praesentium aliquid fuga facere, accusamus perspiciatis.
+                                Tempora id laboriosam odit earum, asperiores ab et corrupti architecto repellendus nobis
+                                saepe? Quibusdam?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center">
+                            <span class="cursor me-3" onclick="toggle_like('', 'heart')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">23.k</span>
+                            </span>
+                            <span class="cursor me-3 comment-trigger" data-post-id="#">
+                                <i class="fa fa-commenting-o"></i> Comment 281
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-warning mt-2 mt-sm-0">Komentar</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card card-forum mb-3  mx-auto w-100 w-sm-75 w-md-50">
+                <div class="card-body mx-auto w-100 w-sm-75 w-md-50">
+                    <div class="d-flex mb-3">
+                        <a class="me-3 image-container" style="max-width: 112px; max-height: 112px;" href="#">
+                            <img class="rounded" src="../static/assets/placeholder.jpg" alt="Image">
+                        </a>
+                        <div class="w-100 h-100">
+                            <div class="card-title mb-1 card-tittle">User a <small class="text-muted">@user-a</small>
+                            </div>
+                            <div class="card-subtitle mb-2 text-muted card-info">10 minutes ago</div>
+                            <div class="card-text-content">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vel
+                                molestiae, quae eum corporis amet veritatis natus iste illo ad sed architecto? Libero
+                                numquam deleniti fugit, reprehenderit consequatur provident in quod ratione optio
+                                aliquid veritatis animi pariatur repellat aliquam molestias aut doloribus, inventore
+                                natus alias. Ab beatae, sunt ut ea aut voluptatem quasi quae? Tenetur fuga excepturi
+                                sapiente, voluptate officia tempora consectetur aspernatur libero eaque vero tempore!
+                                Qui vero enim illo soluta aut molestiae. Itaque tenetur neque at eius ab molestias earum
+                                enim eligendi, doloremque, saepe unde minima autem, amet doloribus ducimus dolor totam
+                                consequuntur alias dicta ad temporibus. Non voluptatibus recusandae harum voluptatem
+                                amet numquam dignissimos itaque a ipsum quaerat blanditiis eius inventore ab sed,
+                                reiciendis vero debitis commodi. Voluptatum praesentium facere accusamus, deserunt
+                                asperiores assumenda incidunt distinctio, et, libero officiis vel vero architecto
+                                perferendis ipsum! Sit doloremque, perspiciatis rerum recusandae nihil aspernatur
+                                voluptas quae necessitatibus nostrum illum! Dicta et quam ad quidem reiciendis
+                                architecto nisi animi distinctio illo, ipsa consequatur beatae, molestias repellat
+                                veniam soluta aliquid molestiae magni quod nesciunt in? Corporis fugit animi ut
+                                inventore aperiam ullam maxime praesentium aliquid fuga facere, accusamus perspiciatis.
+                                Tempora id laboriosam odit earum, asperiores ab et corrupti architecto repellendus nobis
+                                saepe? Quibusdam?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between flex-wrap align-items-center">
+                        <div class="d-flex flex-wrap align-items-center">
+                            <span class="cursor me-3" onclick="toggle_like('', 'heart')">
+                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">23.k</span>
+                            </span>
+                            <span class="cursor me-3 comment-trigger" data-post-id="#">
+                                <i class="fa fa-commenting-o"></i> Comment 281
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-warning mt-2 mt-sm-0">Komentar</button>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <!-- Additional posts can be added in a similar manner -->
+    </div>
+
+    <script>
+        function post() {
+            // Implement your post functionality here
+        }
+
+        function toggle_like(postId, element) {
+            // Implement your like functionality here
+        }
+    </script>
+</body>
+{% include 'footer.html' %}
+
+
+</html>

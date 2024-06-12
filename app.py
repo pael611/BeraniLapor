@@ -429,7 +429,6 @@ def forumControl():
     
 @app.route('/adminDashboard/userControl', methods=['GET', 'POST'])
 def userControl():
-        artikel = list(db.article.find({}))
         token_receive = request.cookies.get('token')
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
@@ -440,12 +439,11 @@ def userControl():
                                            })
             # fetch data user from db.users
             dataUser = list(db.users.find())   
-            return render_template('admin/adminUserControl.html',data=user_info, data_user = dataUser ,artikel=artikel)     
+            return render_template('admin/adminUserControl.html',data=user_info, data_user = dataUser )     
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
 
-from datetime import datetime
-import os
+
 
 @app.route('/adminDashboard/deleteArticle/<article_id>', methods=['POST'])
 def delete_article(article_id):
