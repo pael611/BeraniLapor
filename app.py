@@ -69,7 +69,6 @@ def loginUser():
         pass
     return render_template('login.html')
 
-
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
     username_receive = request.form.get('username_give')
@@ -98,6 +97,12 @@ def sign_in():
     else:
         print(f"Login gagal untuk user {username_receive}.")
         return jsonify({'result': 'fail', 'msg': 'Maaf Kak, akun tidak ditemukan!'})
+
+@app.route('/sign_out', methods=['GET', 'POST'])
+def sign_out():
+    response = make_response(redirect(url_for('home')))
+    response.set_cookie('mytoken', '', expires=0)
+    return response
 
 @app.route('/update_password', methods=['POST'])
 def update_password():
@@ -151,10 +156,32 @@ def lapor():
 
 @app.route('/userProfil', methods=['GET', 'POST'])
 def userProfil():
-    if request.method == 'POST':
-        # Handle POST Request here
-        return render_template('userProfil.html')
-    return render_template('userProfil.html')
+    token_receive = request.cookies.get('mytoken')
+
+    if not token_receive:
+        msg = 'Anda harus login untuk mengakses halaman ini!'
+        flash(msg)
+        return redirect(url_for('home'))
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({'username': payload.get('id')})
+
+        if request.method == 'POST':
+            # Handle POST Request here
+            return render_template('userProfil.html', user_info=user_info)
+
+        return render_template('userProfil.html', user_info=user_info)
+
+    except jwt.ExpiredSignatureError:
+        msg = 'Akun Anda telah keluar, silahkan Login kembali!'
+        flash(msg)
+        return redirect(url_for('home'))
+
+    except jwt.exceptions.DecodeError:
+        msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
+        flash(msg)
+        return redirect(url_for('home'))
 
 @app.route('/userProfil/edit-profil', methods=['POST'])
 def editProfil():

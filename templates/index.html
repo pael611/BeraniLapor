@@ -27,6 +27,19 @@
         </section>
     </main>
 
+    <!-- Alert jika user ingin akses profil page tanpa login -->
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        alert("{{ message }}");
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        });
+    </script>
+
 </body>
 {% include 'footer.html' %}
 

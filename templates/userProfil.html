@@ -98,9 +98,7 @@
         }
 
         function sign_out() {
-            $.removeCookie('mytoken', {path: '/'});
-            alert('Anda berhasil sign out!');
-            window.location.href = '/';
+            alert("Anda berhasil Sign Out!");
         }
     </script>
 
@@ -128,7 +126,7 @@
     <div class="button-container" style="max-width: 70%; max-height: 70%; margin: 4vh auto;">
         <div class="button edit-profile" data-bs-toggle="modal" data-bs-target="#editProfilModal">Edit Profil</div>
         <div class="button check-status" data-bs-toggle="modal" data-bs-target="#cekStatusModal">Cek Status Laporan</div>
-        <div class="button sign-out" onclick="sign_out()">Sign Out</div>
+        <div class="button sign-out" onclick="sign_out()"><a href="/sign_out" style="text-decoration: none; color: white;">Sign Out</a></div>
         <div class="button delete-account">Hapus Akun</div>
     </div>
     <div class="forum">
