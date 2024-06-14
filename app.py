@@ -154,8 +154,9 @@ def lapor():
         return render_template('lapor.html')
     return render_template('lapor.html')
 
-@app.route('/userProfil', methods=['GET', 'POST'])
-def userProfil():
+#Rute untuk mengarahkan user ke profilnya
+@app.route('/userProfil', methods=['GET'])
+def redirect_to_user_profil():
     token_receive = request.cookies.get('mytoken')
 
     if not token_receive:
@@ -165,13 +166,39 @@ def userProfil():
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        user_info = db.users.find_one({'username': payload.get('id')})
+        username = payload.get('id')
+        return redirect(url_for('userProfil', username=username))
+
+    except jwt.ExpiredSignatureError:
+        msg = 'Akun Anda telah keluar, silahkan Login kembali!'
+        flash(msg)
+        return redirect(url_for('home'))
+
+    except jwt.exceptions.DecodeError:
+        msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
+        flash(msg)
+        return redirect(url_for('home'))
+
+#Rute untuk menampilkan profil user berdasarkan usernamenya
+@app.route('/userProfil/<username>', methods=['GET', 'POST'])
+def userProfil(username):
+    token_receive = request.cookies.get('mytoken')
+
+    if not token_receive:
+        msg = 'Anda harus login untuk mengakses halaman ini!'
+        flash(msg)
+        return redirect(url_for('home'))
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        status = username == payload.get('id')
+        user_info = db.users.find_one({'username': username}, {'_id': False})
 
         if request.method == 'POST':
             # Handle POST Request here
             return render_template('userProfil.html', user_info=user_info)
 
-        return render_template('userProfil.html', user_info=user_info)
+        return render_template('userProfil.html', user_info=user_info, status=status)
 
     except jwt.ExpiredSignatureError:
         msg = 'Akun Anda telah keluar, silahkan Login kembali!'
@@ -185,10 +212,37 @@ def userProfil():
 
 @app.route('/userProfil/edit-profil', methods=['POST'])
 def editProfil():
-    nama_receive = request.form['nama_give']
-    deskBio_receive = request.form['deskBio_give']
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        username = payload.get('id')
+        
+        nama_receive = request.form.get('nama_give')
+        deskBio_receive = request.form.get('deskBio_give')
+        
+        new_doc = {
+            'nama_profil': nama_receive,
+            'bio_profil': deskBio_receive,
+        }
+        new_post = {'nama_profil': nama_receive}
+        
+        if 'file_give' in request.files:
+            file = request.files.get('file_give')
+            filename = secure_filename(file.filename)
+            extension = filename.split('.')[-1]
+            file_path = f'foto_profil/{username}.{extension}'
+            file.save('./static/' + file_path)
+            new_doc['foto_profil'] = filename
+            new_doc['foto_profil_real'] = file_path
+            new_post['foto_profil_real'] = file_path
+            
+            db.users.update_one({'username': username}, {'$set': new_doc})
+            db.posts.update_many({'username': username}, {'$set': new_post})
+        
+        return jsonify({'result': 'success', 'msg': 'Profil Anda berhasil diupdate'})
     
-    return jsonify({'msg': 'Profil Anda berhasil diupdate!'})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for('home'))
 
 @app.route('/new-post', methods=['POST'])
 def new_post():

@@ -92,13 +92,13 @@ i:active {
     transform: scale(0.90);
 }
 
-.edit-profile, .check-status, .sign-out, .delete-account {
+.edit-profile, .check-status, .sign-out {
     max-width: 250px;
     font-size: 18px;
     font-weight: 600;
 }
 
-.sign-out, .delete-account {
+.sign-out {
     background: #FF7171;
 }
 
