@@ -1,0 +1,30 @@
+* {
+    font-family: "Poppins", sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background: #ececec;
+}
+
+.box-area {
+    width: 930px;
+}
+
+.right-box {
+    padding: auto;
+}
+
+::placeholder {
+    font-size: 16px;
+}
+
+@media only screen and (max-width: 768px){
+    .box-area {
+        margin: 0 10px;
+    }
+
+    .right-box {
+        padding: auto;
+    }
+}

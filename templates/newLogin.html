@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | BeraniLapor</title>
+    <link rel="icon" href="../static/assets/logo.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Style CSS & Bootsrtap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/style/newLogin.css">
+
+    <!-- jQuery CDN & Boostrtap -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <!-- Javascript -->
+
+    <script>
+        function login() {
+            let username = $("#username").val();
+            if (!username) {
+                alert("Masukkan Username!");
+                return false;
+            }
+            let email = $("#email").val();
+            if (!email) {
+                alert("Masukkan Email!");
+                return false;
+            }
+            let nama_ibu = $("#nama-ibu").val();
+            if (!nama_ibu) {
+                alert("Masukkan Nama Ibu!");
+                return false;
+            }
+            let nim = $("#nim").val();
+            if (!nim) {
+                alert("Masukkan NIM!");
+                return false;
+            }
+            let prodi = $("#prodi").val();
+            if (!prodi) {
+                alert("Pilih Program Studi!");
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/sign_in",
+                data: {
+                    username_give: username,
+                    email_give: email,
+                    nama_ibu_give: nama_ibu,
+                    nim_give: nim,
+                    prodi_give: prodi,
+                },
+                success: function (response) {
+                    if (response['result'] === 'success') {
+                        alert(response['msg']);
+                        window.location.replace('/');
+                    } else {
+                        alert(response['msg']);
+                        window.location.reload();
+                    }
+                },
+            });
+            return false;
+        }
+
+        function username_cek(asValue) {
+            var regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{2,10}$/;
+            return regExp.test(asValue);
+        }
+
+        function cek_username() {
+            let username = $("#username-register").val();
+            if (!username) {
+                return alert("Masukkan Username!");
+            }
+            if (!username_cek(username)) {
+                return alert("Maaf Kak, Password Anda belum sesuai. Silahkan masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*)");
+            }
+            $.ajax({
+                type: "POST",
+                url: "/sign_up/cek-username",
+                data: { username_give: username },
+                success: function (response) {
+                    if (response['exists']) {
+                        alert("Maaf Kak, Username ini sudah digunakan");
+                        return;
+                    } else {
+                        alert("Username ini bisa digunakan");
+                        return;
+                    }
+                }
+            });
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="row border rounded-4 p-3 bg-white shadow box-area">
+            <!-- Left Box -->
+            <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box" style="background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../static/assets/bg_login.jpg'); color: white; padding: auto;">
+                <p class="fs-2" style="font-weight: 500;">Silahkan Login</p>
+                <small class="text-wrap text-center">Untuk dapat mengakses halaman forum dan profil, silahkan Login dengan identitas Anda.</small>
+                <small class="text-wrap text-center">Identitas yang Anda berikan akan kami jaga kerahasiaannya.</small>
+                <small class="text-wrap text-center">Jika butuh bantuan, hubungi <i>Call Center</i> 089812345678</small>
+            </div>
+            <!-- Right Box -->
+            <div class="col-md-6 right-box">
+                <div class="row align-items-center">
+                    <div class="header-text mt-2" style="margin-top: 20px;">
+                        <h4 style="font-weight: bold; text-align: center;">Masukkan Data Diri Anda</h4>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-lg bg-light fs-6" id="username" placeholder="Masukkan Username" aria-label="username" aria-describedby="button-addon2">
+                        <button class="btn btn-primary" type="button" id="button-addon2">Cek Username</button>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control form-control-lg bg-light fs-6" id="email" placeholder="Masukkan Email" aria-label="email" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-lg bg-light fs-6" id="nama-ibu" placeholder="Masukkan Nama Ibu" aria-label="nama-ibu" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-control-lg bg-light fs-6" id="nim" placeholder="Masukkan NIM" aria-label="nim" aria-describedby="button-addon2">
+                        <button class="btn btn-primary" type="button" id="cek_nim">Cek NIM Anda</button>
+                    </div>
+                    <div class="input-group mb-3">
+                        <select class="form-select" id="prodi">
+                          <option selected>Pilih Program Studi</option>
+                          <option value="1">Teknik 1</option>
+                          <option value="2">Sastra Mesin</option>
+                          <option value="3">Dokter Komputer</option>
+                        </select>
+                        <label class="input-group-text" for="inputGroupSelect02">Program Studi</label>
+                    </div>
+                    <div class="input-group mb-3">
+                        <button class="btn btn-lg btn-primary w-100 fs-6" onclick="login()">Login</button>
+                    </div>
+                    <div class="input-group mb-3">
+                        <button class="btn btn-lg btn-secondary w-100 fs-6"><a href="/" style="text-decoration: none; color: white;">Kembali</a></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
