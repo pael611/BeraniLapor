@@ -1,15 +1,13 @@
 from pymongo import MongoClient
 from datetime import datetime
 import jwt
-import datetime
 import hashlib
 from flask import Flask, render_template, jsonify, request, redirect, url_for, make_response, flash, session
 from bson import ObjectId
 from werkzeug.utils import secure_filename
-import os
+import os   
 from os.path import join, dirname
 from datetime import datetime, timedelta, timezone
-from bson import ObjectId
 from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -30,7 +28,6 @@ app.secret_key = os.environ.get("SECRET_KEY")
 def home():
     token_receive = request.cookies.get('mytoken')
     user_info = None
-    print(token_receive)
 
     if token_receive:
         try:
@@ -44,7 +41,6 @@ def home():
         except jwt.exceptions.DecodeError:
             msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
             flash(msg)
-
     return render_template('index.html', user_info=user_info)
 
 # User Function Here!!!
@@ -150,8 +146,13 @@ def cek_username():
 @app.route('/laporUser', methods=['GET', 'POST'])
 def lapor():
     if request.method == 'POST':
+        
+        
+        # db.pelaporan.insertone(data)
         # Handle POST Request here
         return render_template('lapor.html')
+    
+    
     return render_template('lapor.html')
 
 @app.route('/userProfil', methods=['GET', 'POST'])
@@ -292,12 +293,11 @@ def loginAdmin():
             # Create a redirect response and add a cookie to it
             response = make_response(redirect(url_for('adminDashboard')))
             response.set_cookie('token', token)
-            
             return response
         else:
             flash("Username atau Password Salah!")
             return redirect(url_for("loginAdmin"))
- 
+    
     return render_template('admin/loginAdmin.html')
 
 
@@ -305,7 +305,8 @@ def loginAdmin():
 def logoutPetugas():
     response = make_response(redirect(url_for('loginAdmin')))
     response.set_cookie('token', '', expires=0)
-    return response      
+    session.clear()  # Menghapus semua data session
+    return response
     
 
 @app.route('/adminDashboard', methods=['GET', 'POST'])
@@ -320,8 +321,8 @@ def adminDashboard():
        
         return render_template('admin/adminDashboard.html',data=user_info , data_admin = dataAdmin)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-         
-        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+        msg = flash("Anda Belum Login")
+        return redirect(url_for("loginAdmin", msg=msg))
     
     
 @app.route('/adminControl', methods=['GET', 'POST'])
@@ -348,11 +349,13 @@ def adminControl():
             db.admin.insert_one(data)      
         # Handle POST Request here
         return redirect(url_for('adminControl'))
-    
     token_receive = request.cookies.get('token')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
-        if payload.get('role') != 'admin' and payload.get('role') != 'superAdmin':
+        role = payload.get('role')
+        if role == 'admin':
+            return redirect('/adminDashboard')
+        elif role != 'superAdmin':
             return redirect('/')
         user_info = db.admin.find_one({"username": payload["id"]})
         dataAdmin = db.admin.find({"role": "admin"})

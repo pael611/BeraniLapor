@@ -3,6 +3,19 @@
 
 {% include 'header.html' %}
 
+<style>
+    .modal-dialog {
+        margin-top: 70px;
+    }
+
+    .scrollable-content {
+        max-height: calc(100vh - 210px);
+        overflow-y: scroll;
+
+    }
+</style>
+
+
 <body>
     <main>
         <section class="report-section d-flex flex-column align-items-center justify-content-center">
@@ -37,44 +50,50 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+<div class="modal fade modal-fullscreen-xxl-down" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content  ">
             <div class="modal-header" style="background-color: #410404; color: white;">
                 <h5 class="modal-title " id="reportModalLabel">Form Laporan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body bg-body-tertiary">
-                <form>
-                    <div class="no-resi">
-                        <input type="text" class="form-control bg-secondary-subtle" id="reportNoResi" readonly
-                            name="noResi">
-                        <i style="font-size: small; font-family: 'Times New Roman', Times, serif;"> Jika ingin Melakukan
-                            Pelaporan, Silahkan Copy atau Simpan terlebih dahulu Resi diatas agar Anda dapat memeriksa
-                            Perkembangan Laporan Anda!</i>
-                    </div>
-                    <div class="mb-3">
-                        <label for="reporterName" class="form-label">Nama Pelapor</label>
-                        <input type="text" class="form-control" id="reporterName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="reporterName" class="form-label">Program Studi</label>
-                        <input type="text" class="form-control" id="reporterName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="reportDetails" class="form-label">Detail Laporan</label>
-                        <textarea class="form-control" id="reportDetails" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="reportDate" class="form-label">Tanggal Kejadian</label>
-                        <input type="text" class="form-control" id="reportDate" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="reportLocation" class="form-label">Lokasi Kejadian</label>
-                        <input type="text" class="form-control" id="reportLocation" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
+            <div class="scrollable-content rounded-bottom-3">
+                <div class="modal-body  bg-body-tertiary">
+                    <form action="/laporUser" method="POST">
+                        <div class="no-resi">
+                            <input type="text" class="form-control bg-secondary-subtle" id="reportNoResi" readonly
+                                name="noResi">
+                            <i style="font-size: small; font-family: 'Times New Roman', Times, serif;"> Jika ingin
+                                Melakukan
+                                Pelaporan, Silahkan Copy atau Simpan terlebih dahulu Resi diatas agar Anda dapat
+                                memeriksa
+                                Perkembangan Laporan Anda!</i>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reporterName" class="form-label">Nama Pelapor</label>
+                            <input type="text" class="form-control" id="reporterName" name="namaPelapor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reporterName" class="form-label">Program Studi</label>
+                            <input type="text" class="form-control" id="reporterName" name="programStudi" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reportDetails" class="form-label">Detail Laporan</label>
+                            <textarea class="form-control" id="reportDetails" rows="3" name="detailReport"
+                                required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reportDate" class="form-label">Tanggal Kejadian</label>
+                            <input type="text" class="form-control" id="reportDate" name="tanggalKejadian" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reportLocation" class="form-label">Lokasi Kejadian</label>
+                            <input type="text" class="form-control" id="reportLocation" name="lokasiKejadian" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
