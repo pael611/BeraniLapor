@@ -36,18 +36,30 @@
             if (!nama) {
             return alert("Masukkan Nama!");
             }
+
             let deskBio = $("#deskBioEdit").val();
             if (!deskBio) {
             return alert("Masukkan Deskripsi Bio!");
             }
+
+            let file = $('#fotoEdit')[0].files[0];
+            let form_data = new FormData();
+            form_data.append('file_give', file);
+            form_data.append('nama_give', nama);
+            form_data.append('deskBio_give', deskBio);
             $.ajax({
-                type: "POST",
-                url: "/userProfil/edit-profil",
-                data: { nama_give: nama, deskBio_give: deskBio },
-                success: function (response) {
-                    alert(response["msg"]);
-                    window.location.reload();
-                }
+                type: 'POST',
+                url: '/userProfil/edit-profil',
+                data: form_data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response['result'] === 'success') {
+                        alert(response['msg']);
+                        window.location.reload();
+                    }
+                },
             });
         }
 
@@ -115,35 +127,46 @@
 
     <div class="profile" style="max-width: 70vw;max-height: auto; margin-left: auto; margin-right: auto;">
         <div class="profile-card" style="size: auto;">
-            <img class="profile-image" src="../static/assets/Default-profile-image.png" />
+            <img class="profile-image" src="{{ url_for('static', filename=user_info.foto_profil_real) }}" alt="Foto Profil" />
             <div class="profile-info">
-                <div class="profile-name">Nama Lengkap</div>
-                <div class="profile-username">@Username</div>
-                <div class="profile-bio">Deskripsi Bio</div>
+                <div class="profile-name">{{ user_info.nama_profil }}</div>
+                <div class="profile-username">@{{ user_info.username }}</div>
+                <div class="profile-bio">{{ user_info.bio_profil }}</div>
             </div>
         </div>
     </div>
+
+    {% if status %}
+
     <div class="button-container" style="max-width: 70%; max-height: 70%; margin: 4vh auto;">
         <div class="button edit-profile" data-bs-toggle="modal" data-bs-target="#editProfilModal">Edit Profil</div>
         <div class="button check-status" data-bs-toggle="modal" data-bs-target="#cekStatusModal">Cek Status Laporan</div>
         <div class="button sign-out" onclick="sign_out()"><a href="/sign_out" style="text-decoration: none; color: white;">Sign Out</a></div>
-        <div class="button delete-account">Hapus Akun</div>
     </div>
+
+    {% endif %}
+
     <div class="forum">
         <div class="forum-title">Forum</div>
         <div class="forum-divider"></div>
     </div>
+
+    {% if status %}
+
     <div class="new-post-container">
-        <img class="new-post-icon" src="../static/assets/Default-profile-image.png" />
+        <img class="new-post-icon" src="{{ url_for('static', filename=user_info.foto_profil_real) }}" alt="Foto Profil" />
         <input type="button" class="new-post-button" value="Buat Postingan Baru" data-bs-toggle="modal" data-bs-target="#newPostModal">
     </div>
+
+    {% endif %}
+
     <div class="container">
         <div class="post-card">
-            <img class="post-profile-image" src="../static/assets/Default-profile-image.png" />
+            <img class="post-profile-image" src="{{ url_for('static', filename=user_info.foto_profil_real) }}" alt="Foto Profil"/>
             <div class="post-content">
                 <div class="content">
                     <p>
-                        <strong>Nama Lengkap</strong> <small>@username</small> <small>0 minutes ago</small>
+                        <strong>{{ user_info.nama_profil }}</strong> <small>@{{ user_info.username }}</small> <small>0 minutes ago</small>
                         <br>
                         Deskripsi postingan Anda. Contohnya, kemarin aku melihat gerak-gerik aneh dari seorang pria
                         paruh
@@ -157,7 +180,9 @@
                         <i class="far fa-star"></i>
                         <i class="far fa-thumbs-up"></i>
                         <i class="far fa-thumbs-down"></i>
+                        {% if status %}
                         <i class="fas fa-trash-alt post-delete-icon" onclick="delete_post()"></i>
+                        {% endif %}
                     </div>
                     <div class="button post-action" data-bs-toggle="modal" data-bs-target="#komentarModal">Komentar</div>
                 </div>
@@ -167,6 +192,8 @@
     <div class="footer">
         <p class="text-center" style="color: #f9f9f9; font-size: 16px; font-weight: 400; margin: auto;">© 2024 BeraniLapor, Satgas-PPKS Politeknik Negeri Medan</p>
     </div>
+
+    {% if status %}
 
     <!-- Modal Edit Profil -->
     <div class="modal fade" id="editProfilModal" tabindex="-1" aria-labelledby="editProfilLabel" aria-hidden="true">
@@ -180,7 +207,7 @@
                     <form>
                         <div class="mb-3">
                             <label for="namaEdit" class="form-label">Nama</label>
-                            <input type="text" class="form-control" id="namaEdit" required>
+                            <input type="text" class="form-control" id="namaEdit" value="{{ user_info.nama_profil }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="fotoEdit" class="form-label">Foto Profil</label>
@@ -188,7 +215,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="deskBioEdit" class="form-label">Deskripsi Bio</label>
-                            <textarea class="form-control" id="deskBioEdit" rows="3" required></textarea>
+                            <textarea class="form-control" id="deskBioEdit" rows="3" required>{{ user_info.bio_profil }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-primary" onclick="editProfil()">Submit</button>
                     </form>
@@ -238,6 +265,8 @@
             </div>
         </div>
     </div>
+
+    {% endif %}
 
     <!-- Modal Tambah Komentar -->
     <div class="modal fade" id="komentarModal" tabindex="-1" aria-labelledby="komentarLabel" aria-hidden="true">
