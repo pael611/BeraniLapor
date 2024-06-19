@@ -28,6 +28,10 @@
                 </div>
                 <div>
                   <!-- button report waws here -->
+                  <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                    data-bs-target="#addStudentModal">
+                    <strong>Tambah Mahasiswa</strong>
+                  </button>
                 </div>
               </div>
             </div>
@@ -38,10 +42,11 @@
                 <thead class="table-light">
                   <tr>
                     <th scope="col">No</th>
-                    <th scope="col">Nama </th>
                     <th scope="col">Email</th>
-                    <th scope="col">Username</th>
-                    <th scope="col">Password</th>
+                    <th scope="col">Nama </th>
+                    <th scope="col">Nama Ibu </th>
+                    <th scope="col">Program Studi</th>
+                    <th scope="col">Nim</th>
                     <th scope="col">Aksi</th>
                   </tr>
                 </thead>
@@ -50,10 +55,11 @@
                   {% for user in data_user %}
                   <tr class="table-primary">
                     <th scope="row">{{ loop.index }}</th>
-                    <td>{{ user['nama lengkap'] }}</td>
                     <td>{{ user['email'] }}</td>
-                    <td>{{ user['username'] }}</td>
-                    <td>{{ user['password'] }}</td>
+                    <td>{{ user['nama'] }}</td>
+                    <td>{{ user['nama_ibu'] }}</td>
+                    <td>{{ user['program_studi'] }}</td>
+                    <td>{{ user['nim'] }}</td>
                     <td>
                       <button class="btn btn-primary">Edit</button>
                       <button class="btn btn-danger">Hapus</button>
@@ -67,6 +73,19 @@
               <!-- end table -->
 
             </div>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <script>
+              swal({
+                title: "Pesan",
+                text: "{{ messages[0] }}",
+                icon: "error",
+                button: "OK",
+              }); 
+            </script>
+            {% endif %}
+            {% endwith %}
 
 
           </main>
@@ -98,6 +117,49 @@
   <!-- Custom js for this page-->
   <script src="../../static/adminAsset/js/dashboard.js"></script>
   <!-- End custom js for this page-->
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addStudentModalLabel">Tambah Mahasiswa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="/adminDashboard/userControl">
+            <div class="mb-3">
+              <label for="fullName" class="form-label">Nama Lengkap</label>
+              <input type="text" class="form-control" id="fullName" name="nama_mahasiswa_give">
+            </div>
+            <div class="mb-3">
+              <label for="nim" class="form-label">NIM</label>
+              <input type="number" class="form-control" id="nim" name="mahasiswa_nim_give">
+            </div>
+            <div class="mb-3">
+              <label for="studyProgram" class="form-label">Program Studi</label>
+              <input type="text" class="form-control" id="studyProgram" name="prodi_mahasiswa_give">
+            </div>
+            <div class="mb-3">
+              <label for="motherName" class="form-label">Nama Ibu</label>
+              <input type="text" class="form-control" id="motherName" name="ibu_mahasiswa_give">
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email_mahasiswa_give">
+            </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Tambah Data!</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>

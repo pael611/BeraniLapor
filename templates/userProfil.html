@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile {{ username }} | BeraniLapor</title>
+    <title>Profile | BeraniLapor</title>
     <link rel="icon" href="{{url_for('static', filename = '/assets/logo.jpg')}}">
 
     <!-- Fonts -->
@@ -20,101 +20,37 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <!-- sweet alert -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
     <!-- Javascript -->
-    <script>
-        function editProfil() {
-            let nama = $("#namaEdit").val();
-            if (!nama) {
-            return alert("Masukkan Nama!");
-            }
 
-            let deskBio = $("#deskBioEdit").val();
-            if (!deskBio) {
-            return alert("Masukkan Deskripsi Bio!");
-            }
-
-            let file = $('#fotoEdit')[0].files[0];
-            let form_data = new FormData();
-            form_data.append('file_give', file);
-            form_data.append('nama_give', nama);
-            form_data.append('deskBio_give', deskBio);
-            $.ajax({
-                type: 'POST',
-                url: '/userProfil/edit-profil',
-                data: form_data,
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    if (response['result'] === 'success') {
-                        alert(response['msg']);
-                        window.location.reload();
-                    }
-                },
-            });
-        }
-
-        function newPost() {
-            let new_post = $("#new-post").val();
-            if (!new_post) {
-            return alert("Masukkan sesuatu yang ingin Anda posting!");
-            }
-            $.ajax({
-                type: "POST",
-                url: "/new-post",
-                data: { new_post_give: new_post },
-                success: function (response) {
-                    alert(response["msg"]);
-                    window.location.reload();
-                }
-            });
-        }
-
-        function komentar() {
-            let tambahKomentar= $("#tambahKomentar").val();
-            if (!tambahKomentar) {
-            return alert("Masukkan komentar yang ingin Anda tambahkan!");
-            }
-            $.ajax({
-                type: "POST",
-                url: "/tambah-komentar",
-                data: { komentar_give: tambahKomentar },
-                success: function (response) {
-                    alert(response["msg"]);
-                    window.location.reload();
-                }
-            });
-        }
-
-        function delete_post() {
-            if (confirm("Apakah Anda yakin ingin menghapus postingan ini?")) {
-                $.ajax({
-                    type: "POST",
-                    url: "/delete-post",
-                    data: {},
-                    success: function (response) {
-                        alert(response["msg"]);
-                        window.location.reload();
-                    }
-                });
-            }
-        }
-
-        function sign_out() {
-            alert("Anda berhasil Sign Out!");
-        }
-    </script>
 
 </head>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        swal({
+            title: "Pesan",
+            text: "{{ messages[0][1] }}",
+            icon: "{{ messages[0][0] }}",
+            button: "OK",
+        });
+
+    });
+</script>
+{% endif %}
+{% endwith %}
 
 <body>
     <a href="/" class="float-icon"><i class="fa fa-home"></i></a>
@@ -127,46 +63,51 @@
 
     <div class="profile" style="max-width: 70vw;max-height: auto; margin-left: auto; margin-right: auto;">
         <div class="profile-card" style="size: auto;">
-            <img class="profile-image" src="{{ url_for('static', filename=user_info.foto_profil_real) }}" alt="Foto Profil" />
+            <img class="profile-image" src="{{ url_for('static', filename='foto_profil/Alfian.png') }}"
+                alt="Foto Profil" />
             <div class="profile-info">
-                <div class="profile-name">{{ user_info.nama_profil }}</div>
-                <div class="profile-username">@{{ user_info.username }}</div>
-                <div class="profile-bio">{{ user_info.bio_profil }}</div>
+                <div class="profile-name">{{ user_info.nama }}</div>
+                <div class="profile-username">@{{ user_info.nim }}</div>
+                <div class="profile-bio">{{ user_info.program_studi }}</div>
             </div>
         </div>
     </div>
 
-    {% if status %}
 
     <div class="button-container" style="max-width: 70%; max-height: 70%; margin: 4vh auto;">
-        <div class="button edit-profile" data-bs-toggle="modal" data-bs-target="#editProfilModal">Edit Profil</div>
-        <div class="button check-status" data-bs-toggle="modal" data-bs-target="#cekStatusModal">Cek Status Laporan</div>
-        <div class="button sign-out" onclick="sign_out()"><a href="/sign_out" style="text-decoration: none; color: white;">Sign Out</a></div>
+        <div class="button edit-profile" data-bs-toggle="modal" data-bs-target="#editProfilModal"
+            style="font-size: large;">Ubah Password</div>
+        <div class="button check-status" data-bs-toggle="modal" data-bs-target="#cekStatusModal"
+            style="font-size: larger;">Cek Status Laporan</div>
+        <div class="button sign-out"><a href="/sign_out" style="text-decoration: none; color: white;"
+                style="font-size: larger;">Sign Out</a></div>
     </div>
 
-    {% endif %}
 
     <div class="forum">
         <div class="forum-title">Forum</div>
         <div class="forum-divider"></div>
     </div>
 
-    {% if status %}
+
 
     <div class="new-post-container">
-        <img class="new-post-icon" src="{{ url_for('static', filename=user_info.foto_profil_real) }}" alt="Foto Profil" />
-        <input type="button" class="new-post-button" value="Buat Postingan Baru" data-bs-toggle="modal" data-bs-target="#newPostModal">
+        <img class="new-post-icon" src="{{ url_for('static', filename='foto_profil/Alfian.png') }}" alt="Foto Profil" />
+        <input type="button" class="new-post-button" style="font-size: medium;" value="Buat Postingan Baru"
+            data-bs-toggle="modal" data-bs-target="#newPostModal">
     </div>
 
-    {% endif %}
+
 
     <div class="container">
         <div class="post-card">
-            <img class="post-profile-image" src="{{ url_for('static', filename=user_info.foto_profil_real) }}" alt="Foto Profil"/>
+            <img class="post-profile-image" src="{{ url_for('static', filename='foto_profil/Alfian.png') }}"
+                alt="Foto Profil" />
             <div class="post-content">
                 <div class="content">
                     <p>
-                        <strong>{{ user_info.nama_profil }}</strong> <small>@{{ user_info.username }}</small> <small>0 minutes ago</small>
+                        <strong>{{ user_info.nama }}</strong> <small>{{ user_info.email }}</small> <small>0
+                            minutes ago</small>
                         <br>
                         Deskripsi postingan Anda. Contohnya, kemarin aku melihat gerak-gerik aneh dari seorang pria
                         paruh
@@ -180,44 +121,42 @@
                         <i class="far fa-star"></i>
                         <i class="far fa-thumbs-up"></i>
                         <i class="far fa-thumbs-down"></i>
-                        {% if status %}
                         <i class="fas fa-trash-alt post-delete-icon" onclick="delete_post()"></i>
-                        {% endif %}
                     </div>
-                    <div class="button post-action" data-bs-toggle="modal" data-bs-target="#komentarModal">Komentar</div>
+                    <div class="button post-action" data-bs-toggle="modal" data-bs-target="#komentarModal">Komentar
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="footer">
-        <p class="text-center" style="color: #f9f9f9; font-size: 16px; font-weight: 400; margin: auto;">© 2024 BeraniLapor, Satgas-PPKS Politeknik Negeri Medan</p>
+        <p class="text-center" style="color: #f9f9f9; font-size: 16px; font-weight: 400; margin: auto;">© 2024
+            BeraniLapor, Satgas-PPKS Politeknik Negeri Medan</p>
     </div>
 
-    {% if status %}
+
 
     <!-- Modal Edit Profil -->
     <div class="modal fade" id="editProfilModal" tabindex="-1" aria-labelledby="editProfilLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header" style="background-color: #410404; color: white;">
-                    <h5 class="modal-title " id="editProfilLabel">Edit Profil</h5>
+                    <h5 class="modal-title " id="editProfilLabel">Ubah Password</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body bg-body-tertiary">
-                    <form>
+                    <form action="/userProfil/password-update" method="post">
                         <div class="mb-3">
-                            <label for="namaEdit" class="form-label">Nama</label>
-                            <input type="text" class="form-control" id="namaEdit" value="{{ user_info.nama_profil }}" required>
+                            <label for="namaEdit" class="form-label">Password Lama</label>
+                            <input type="password" class="form-control" name="passwordLamaGive" id="passwordLama"
+                                required>
                         </div>
                         <div class="mb-3">
-                            <label for="fotoEdit" class="form-label">Foto Profil</label>
-                            <input class="form-control" type="file" id="fotoEdit">
+                            <label for="namaEdit" class="form-label">Password baru</label>
+                            <input type="password" class="form-control" name="passwordBaruGive" id="passwordBaru"
+                                required>
                         </div>
-                        <div class="mb-3">
-                            <label for="deskBioEdit" class="form-label">Deskripsi Bio</label>
-                            <textarea class="form-control" id="deskBioEdit" rows="3" required>{{ user_info.bio_profil }}</textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" onclick="editProfil()">Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>
@@ -266,7 +205,6 @@
         </div>
     </div>
 
-    {% endif %}
 
     <!-- Modal Tambah Komentar -->
     <div class="modal fade" id="komentarModal" tabindex="-1" aria-labelledby="komentarLabel" aria-hidden="true">
@@ -279,7 +217,8 @@
                 <div class="modal-body bg-body-tertiary">
                     <form>
                         <div class="mb-3">
-                            <label for="tambahKomentar" class="form-label">Komentar apa yang ingin Anda tambahkan?</label>
+                            <label for="tambahKomentar" class="form-label">Komentar apa yang ingin Anda
+                                tambahkan?</label>
                             <textarea class="form-control" id="tambahKomentar" rows="3" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary" onclick="komentar()">Submit</button>
@@ -288,6 +227,7 @@
             </div>
         </div>
     </div>
+
 
 </body>
 

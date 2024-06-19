@@ -5,34 +5,39 @@
     @media (max-width: 768px) {
         .typewriter {
             font-size: 1.5em;
+            
+        }
+
+        .responsive-h1 {
+            font-size: 2em;
         }
     }
 
-    .break-all {
-        word-break: break-all;
-    }
+ 
 </style>
-
+<script>
+</script>
 <body>
     <main>
-        <section class="">
-            <div class="container-landing">
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-dark typewriter">
-                        <h1 class="display-4 break-all"> <strong>Hallo {{user_info.username}}, selamat datang
+        <section class="d-flex align-items-center vh-100">
+            <div class="container">
+                <div class="row text-start">
+                    <div class="col-12 col-md-6 text-dark typewriter">
+                        <h1 class="display-4 responsive-h1 text-start  animated-text"> <strong>Hallo
+                                {{user_info.nama}}, selamat datang
                                 di</strong></h1>
                         <h3 class="my-4">WEB PELAPORAN TINDAKAN DAN KEKERASAN SEKSUAL</h3>
                         <h5 class="mb-4">Jangan Ragu untuk Melawan Tindakan Kekerasan dan Pelecehan Seksual!</h5>
                         <div class="btn-container mb-4">
                             <a href="/laporUser" class="btn btn-primary btn-lg">Lapor!</a>
                             <div class="icons mt-4">
-                                <a href="/artikel"><img src="../static/icon1.png" alt="Icon 1"></a>
-                                <a href="/loginUser"><img src="../static/icon2.png" alt="Icon 2"></a>
+                                <a href="/artikel"><img src="../static/icon1.png" alt="Icon 1" class="img-fluid"></a>
+                                <a href="/loginUser"><img src="../static/icon2.png" alt="Icon 2" class="img-fluid"></a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 background-image-landingPage">
-                        <img src="../static/bg-landing.png" alt="" class="img-fluid">
+                    <div class="col-12 col-md-6">
+                        <img src="../static/bg-landing.png" alt="" class="img-fluid rounded-circle">
                     </div>
                 </div>
             </div>
@@ -40,17 +45,19 @@
     </main>
 
     <!-- Alert jika user ingin akses profil page tanpa login -->
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
-            alert("{{ message }}");
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-        });
+        swal({
+            title: "Pesan",
+            text: "{{ messages[0] }}",
+            icon: "error",
+            button: "OK",
+        }); 
     </script>
+    {% endif %}
+    {% endwith %}
 
 </body>
 {% include 'footer.html' %}

@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-<!-- header -->
-{% include 'admin/adminTemplate/headerAdmin.html' %}
-<!-- end header -->
+  <!-- header -->
+  {% include 'admin/adminTemplate/headerAdmin.html' %}
+  <!-- end header -->
 </head>
 
 
@@ -33,38 +33,39 @@
             </div>
           </div>
           <main>
-            <div class="table-responsive-xl">
+            <div class="table-responsive">
               <table class="table table-striped table-hover table-bordered table-primary align-middle table-dark">
                 <thead class="table-light">
                   <tr>
-                    <th scope="col">ID</th>
+                    <th scope="col">No</th>
+                    <th scope="col">ID Postingan</th>
                     <th scope="col">Nama Pengguna</th>
+                    <th scope="col">Nim</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Peran</th>
+                    <th scope="col">Isi</th>
+                    <th scope="col">Tanggal</th>
                     <th scope="col">Aksi</th>
                   </tr>
                 </thead>
                 <tbody class="table-group-divider">
+                  {% for post in postingan %}
                   <tr class="table-primary">
-                    <th scope="row">1</th>
-                    <td>Admin</td>
-                    <td>admin@example.com</td>
-                    <td>Admin</td>
+                    <th scope="row">{{loop.index}}</th>
+                    <td>{{post._id}}</td>
+                    <td>{{post.nama}}</td>
+                    <td>{{post.nim}}</td>
+                    <td>{{post.email}}</td>
+                    <td style="max-width: 40vw; overflow-y: auto; max-height: 50vh;">{{post.post}}</td>
+                    <td>{{post.date}}</td>
+
                     <td>
                       <button class="btn btn-primary">Edit</button>
                       <button class="btn btn-danger">Hapus</button>
                     </td>
                   </tr>
-                  <tr class="table-primary">
-                    <th scope="row">2</th>
-                    <td>Editor</td>
-                    <td>editor@example.com</td>
-                    <td>Editor</td>
-                    <td>
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-danger">Hapus</button>
-                    </td>
-                  </tr>
+
+                  {% endfor %}
+
                   <!-- Tambahkan baris lain jika diperlukan -->
                 </tbody>
               </table>
@@ -72,7 +73,7 @@
 
             </div>
 
-            
+
           </main>
         </div>
         <!-- content-wrapper ends -->

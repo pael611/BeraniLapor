@@ -9,11 +9,18 @@ import os
 from os.path import join, dirname
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
+from html import escape
+import re
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 MONGODB_URI = os.environ.get("MONGODB_URI")
 DB_NAME =  os.environ.get("DB_NAME")
+EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 
 client = MongoClient(MONGODB_URI)
 
@@ -22,6 +29,39 @@ db = client[DB_NAME]
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 app=Flask(__name__)
+# SMTP email configuration for Resi Pengaduan
+
+def send_email(resi,nama,program_studi,detail_report,tanggal_kejadian,lokasi_kejadian, recipient):
+    # Setup the SMTP server and login
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login("rafaelsiregar611@gmail.com", EMAIL_PASSWORD)
+
+    # Create the message
+    msg = MIMEMultipart()
+    msg['From'] = "rafaelsiregar611@gmail.com"
+    msg['To'] = recipient
+    msg['Subject'] = "Resi Pelaporan"
+    body = f"""
+        Berikut adalah detail laporan Anda:
+        
+        No Resi: {resi}
+        Nama Pelapor: {nama}
+        Program Studi: {program_studi}
+        Detail Laporan: {detail_report}
+        Tanggal Kejadian: {tanggal_kejadian.strftime('%Y-%m-%d')}
+        Lokasi Kejadian: {lokasi_kejadian}
+
+        Terima kasih telah melakukan pelaporan.Tim Satgas Akan Segera Melakukan Peninjauan terhadap Laporan Anda.
+        """
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Send the message
+    text = msg.as_string()
+    server.sendmail("rafaelsiregar611@gmail.com", recipient, text)
+    server.quit()
+
+# 
 app.secret_key = os.environ.get("SECRET_KEY")
 # Index / Landing Page!
 @app.route('/',methods=['GET'])
@@ -32,7 +72,7 @@ def home():
     if token_receive:
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-            user_info = db.users.find_one({'username': payload.get('id')})
+            user_info = db.mahasiswa.find_one({'nim': payload.get('id')})
 
         except jwt.ExpiredSignatureError:
             msg = 'Akun Anda telah keluar, silahkan Login kembali!'
@@ -47,12 +87,11 @@ def home():
 @app.route('/loginUser', methods=['GET', 'POST'])
 def loginUser():
     token_receive = request.cookies.get('mytoken')
-    print (token_receive)
 
     if token_receive:
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-            user_info = db.users.find_one({'username': payload.get('id')})
+            user_info = db.mahasiswa.find_one({'nim': payload.get('id')})
 
             if user_info:
                 return redirect(url_for('home'))
@@ -63,36 +102,78 @@ def loginUser():
     if request.method == 'POST':
         # Handle POST Request here
         pass
+
+    # If user is already logged in, redirect to home
+    if 'nim' in session:
+        return redirect(url_for('home'))
+
     return render_template('login.html')
 
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
-    username_receive = request.form.get('username_give')
+    nim_receive = request.form.get('nim-give')
     password_receive = request.form.get('password_give')
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     
-    result = db.users.find_one({
-        'username': username_receive,
-        'password': pw_hash,
+    result = db.mahasiswa.find_one({
+        'nim': nim_receive,
     })
+
     if result:
-        payload = {
-            'id': username_receive,
-            # Token bisa berlaku sampai 24 jam
-            'exp': datetime.now(timezone.utc) + timedelta(seconds=60 * 60 * 24),
-        }
-        token = jwt.encode(payload, SECRET_KEY)
-        
-        # Membuat response
-        response = make_response(jsonify({'result': 'success', 'msg': 'Anda berhasil Login!'}))
-        # Mengatur cookie
-        response.set_cookie('mytoken', token, httponly=True, samesite='Strict', path='/')
-        return response
-    
-    # Case ketika kombinasi ID dan PW tidak ditemukan
+        password_new = result.get('password_new')
+        default_password = result.get('default_password', '')
+        if password_new is None :  # Jika password_new tidak ditemukan dalam tabel mahasiswa
+            if default_password == pw_hash:  # Jika default_password sama dengan inputan user
+                session['nim'] = nim_receive
+                return redirect(url_for('verifikasi', nim=nim_receive))
+            else:
+                msg = flash("Password Salah!")         
+                return redirect(url_for("loginUser",msg = msg))
+        elif password_new == pw_hash:  # Jika password_new ditemukan dan sesuai dengan inputan user
+            payload = {
+                'id': nim_receive, # Menggunakan NIM sebagai id
+                'exp': datetime.now(timezone.utc) + timedelta(seconds=60 * 60 * 24),
+            }
+            token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')            
+            response = make_response(redirect(url_for('home')))
+            response.set_cookie('mytoken', token)
+            return response
+        else:
+            msg = flash("Password Salah!")         
+            return redirect(url_for("loginUser",msg = msg))
     else:
-        print(f"Login gagal untuk user {username_receive}.")
-        return jsonify({'result': 'fail', 'msg': 'Maaf Kak, akun tidak ditemukan!'})
+        msg = flash("NIM atau Password Salah!")         
+        return redirect(url_for("loginUser",msg = msg))
+    
+@app.route('/verifikasiLogin/<nim>', methods=['GET', 'POST'])
+def verifikasi(nim):
+    if 'nim' not in session or session['nim'] != nim:
+        # Jika tidak, kembalikan ke halaman login atau tampilkan pesan error
+        return redirect(url_for('loginUser'))
+
+    mahasiswa = db.mahasiswa.find_one({'nim': nim})
+
+    if request.method == 'POST':
+        # Ambil data dari form
+        email_kampus = request.form.get('email-kampus-give')
+        nama_ibu = request.form.get('nama-ibu')
+        new_password = request.form.get('new-password')
+
+        # Cek apakah email dan nama ibu benar
+        if mahasiswa['email'] != email_kampus:
+            flash('Email kampus salah', 'error')
+        elif mahasiswa['nama_ibu'] != nama_ibu:
+            flash('Nama ibu salah', 'error')
+        else:
+            # Jika semua data benar, update password
+            pw_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+            db.mahasiswa.update_one({'nim': nim}, {'$set': {'password_new': pw_hash}})
+            flash('Password baru berhasil ditambahkan', 'success')
+            return redirect(url_for('loginUser'))
+
+    return render_template('loginVerifikasi.html', nim=nim, mahasiswa=mahasiswa)
+    
+    
 
 @app.route('/sign_out', methods=['GET', 'POST'])
 def sign_out():
@@ -119,87 +200,55 @@ def update_password():
     except Exception as e:
         return jsonify({'result': 'fail', 'msg': str(e)})
 
-@app.route('/sign_up', methods=['POST'])
-def sign_up():
-    nama_receive = request.form['nama_give']
-    username_receive = request.form['username_give']
-    email_receive = request.form['email_give']
-    password_receive = request.form['password_give']
-    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
-    
-    db.users.insert_one({
-        'nama lengkap': nama_receive,
-        'username': username_receive,
-        'email': email_receive,
-        'password': password_hash,
-        })
-    
-    return jsonify({'result': 'success'})
-
-@app.route('/sign_up/cek-username', methods=['POST'])
-def cek_username():
-    username_receive = request.form.get('username_give')
-    exists = bool(db.users.find_one({'username': username_receive}))
-
-    return jsonify({'result': 'success', 'exists': exists})
 
 @app.route('/laporUser', methods=['GET', 'POST'])
 def lapor():
     if request.method == 'POST':
+        email= request.form.get('emailPelapor')
+        no_resi = request.form.get('noResi')
+        nama_pelapor = request.form.get('namaPelapor')
+        program_studi = request.form.get('programStudi')
+        detail_report = request.form.get('detailReport')
+        tanggal_kejadian = datetime.strptime(request.form.get('tanggalKejadian'), '%Y-%m-%d')
+        lokasi_kejadian = request.form.get('lokasiKejadian')
         
-        
-        # db.pelaporan.insertone(data)
-        # Handle POST Request here
-        return render_template('lapor.html')
+        data = {
+            'email': email,
+            'no_resi': no_resi,
+            'nama_pelapor': nama_pelapor,
+            'program_studi': program_studi,
+            'detail_report': detail_report,
+            'tanggal_kejadian': tanggal_kejadian,
+            'lokasi_kejadian': lokasi_kejadian,
+            'status': 'Dalam Antirian'
+        }
+        db.pelaporan.insert_one(data)
+         # Send the email.
+        send_email(no_resi,nama_pelapor,program_studi,detail_report,tanggal_kejadian,lokasi_kejadian, email)
+        return redirect(url_for('lapor'))
     
     
     return render_template('lapor.html')
 
 #Rute untuk mengarahkan user ke profilnya
-@app.route('/userProfil', methods=['GET'])
-def redirect_to_user_profil():
+#Rute untuk menampilkan profil user berdasarkan nim nya
+@app.route('/userProfil', methods=['GET', 'POST'])
+def userProfil():
     token_receive = request.cookies.get('mytoken')
-
     if not token_receive:
-        msg = 'Anda harus login untuk mengakses halaman ini!'
-        flash(msg)
-        return redirect(url_for('home'))
+        msg = flash('Anda Belum Login')
+        return redirect(url_for('home', msg=msg))
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        username = payload.get('id')
-        return redirect(url_for('userProfil', username=username))
-
-    except jwt.ExpiredSignatureError:
-        msg = 'Akun Anda telah keluar, silahkan Login kembali!'
-        flash(msg)
-        return redirect(url_for('home'))
-
-    except jwt.exceptions.DecodeError:
-        msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
-        flash(msg)
-        return redirect(url_for('home'))
-
-#Rute untuk menampilkan profil user berdasarkan usernamenya
-@app.route('/userProfil/<username>', methods=['GET', 'POST'])
-def userProfil(username):
-    token_receive = request.cookies.get('mytoken')
-
-    if not token_receive:
-        msg = 'Anda harus login untuk mengakses halaman ini!'
-        flash(msg)
-        return redirect(url_for('home'))
-
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        status = username == payload.get('id')
-        user_info = db.users.find_one({'username': username}, {'_id': False})
+        nim = payload.get('id')
+        user_info = db.mahasiswa.find_one({'nim': nim}, {'_id': False})
 
         if request.method == 'POST':
             # Handle POST Request here
             return render_template('userProfil.html', user_info=user_info)
 
-        return render_template('userProfil.html', user_info=user_info, status=status)
+        return render_template('userProfil.html', user_info=user_info)
 
     except jwt.ExpiredSignatureError:
         msg = 'Akun Anda telah keluar, silahkan Login kembali!'
@@ -207,43 +256,36 @@ def userProfil(username):
         return redirect(url_for('home'))
 
     except jwt.exceptions.DecodeError:
-        msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
-        flash(msg)
-        return redirect(url_for('home'))
+        msg = flash('Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!')
+        return redirect(url_for('home',msg=msg))
 
-@app.route('/userProfil/edit-profil', methods=['POST'])
+@app.route('/userProfil/password-update', methods=['POST'])
 def editProfil():
+    passwordLamaReceive = escape(request.form['passwordLamaGive'])
+    passwordBaruReceive = escape(request.form['passwordBaruGive'])
+
+    # Remove any non-word characters
+    passwordLamaReceive = re.sub(r'\W', '', passwordLamaReceive)
+    passwordBaruReceive = re.sub(r'\W', '', passwordBaruReceive)
+
+    passwordBaruHash = hashlib.sha256(passwordBaruReceive.encode('utf-8')).hexdigest()
+    passwordLamaHash = hashlib.sha256(passwordLamaReceive.encode('utf-8')).hexdigest()
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        username = payload.get('id')
-        
-        nama_receive = request.form.get('nama_give')
-        deskBio_receive = request.form.get('deskBio_give')
-        
-        new_doc = {
-            'nama_profil': nama_receive,
-            'bio_profil': deskBio_receive,
-        }
-        new_post = {'nama_profil': nama_receive}
-        
-        if 'file_give' in request.files:
-            file = request.files.get('file_give')
-            filename = secure_filename(file.filename)
-            extension = filename.split('.')[-1]
-            file_path = f'foto_profil/{username}.{extension}'
-            file.save('./static/' + file_path)
-            new_doc['foto_profil'] = filename
-            new_doc['foto_profil_real'] = file_path
-            new_post['foto_profil_real'] = file_path
-            
-            db.users.update_one({'username': username}, {'$set': new_doc})
-            db.posts.update_many({'username': username}, {'$set': new_post})
-        
-        return jsonify({'result': 'success', 'msg': 'Profil Anda berhasil diupdate'})
+        nim = payload.get('id')
+        user_info = db.mahasiswa.find_one({'nim': nim})
+        if user_info['password_new'] == passwordLamaHash:
+            db.mahasiswa.update_one({'nim': nim}, {'$set': {'password_new': passwordBaruHash}})
+            msg = flash('Password berhasil diubah!','success')
+            return redirect(url_for('userProfil', msg=msg))
+        else:
+            msg = flash('Password lama salah!','error')
+            return redirect(url_for('userProfil', msg=msg))
+    except Exception as e:
+        msg = flash('Terjadi kesalahan, silahkan coba lagi!','error')
+        return redirect(url_for('home', msg=msg))
     
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for('home'))
 
 @app.route('/new-post', methods=['POST'])
 def new_post():
@@ -264,27 +306,44 @@ def delete_post():
     return jsonify({'msg': 'Postingan Anda berhasil dihapus!'})
 
 @app.route('/forumBase', methods=['GET', 'POST'])
-def forum():
-    if request.method == 'POST':
-        # Handle POST Request here
-        pass
-
-# validasi token, apabila user sudah login maka akan menampilkan halaman forum
+def forum():        
+    # validasi token, apabila user sudah login maka akan menampilkan halaman forum
     token_receive = request.cookies.get('mytoken')
     if not token_receive:
         flash("Anda Belum Login")
         return redirect(url_for('loginUser'))
-
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        user_info = db.users.find_one({"username": payload["id"]})
+        user_info = db.mahasiswa.find_one({"nim": payload["id"]})
+        postingan = list(db.postingan.find())
+        for post in postingan:
+            post['id'] = str(post['_id'])
+            mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
+            post['nama'] = mahasiswa_info['nama']
+            post['email']=mahasiswa_info['email']
+        print(postingan)
         if not user_info:
             raise jwt.exceptions.DecodeError
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.")
-        return redirect(url_for('login_page'))
+        msg = flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.")
+        return redirect(url_for('loginUser', msg=msg))
+    
+    # jalan kan post untuk postingan ketika user sedang login
+    if request.method == 'POST':
+        # Handle POST Request here
+        user_post_receive = request.form['user-post-give']
+        mahasiswa_get_nim = user_info.get('nim')
+        data = {
+            "nim": mahasiswa_get_nim,
+            "post": user_post_receive,
+            "date": datetime.now().strftime("%Y-%m-%d")
+        }
+        db.postingan.insert_one(data)
+        return redirect(url_for('forum'))
+        # Anda bisa menambahkan kode untuk menangani user_post_receive di sini
 
-    return render_template('forum.html', username=user_info['username'])
+    return render_template('forum.html', user_info=user_info, postingan = postingan)
+
 
 
 
@@ -464,7 +523,8 @@ def detailLaporan():
         user_info = db.admin.find_one({"username": payload["id"],
                                         "role": payload["role"]
                                         })
-        return render_template('admin/detailLaporan.html',data=user_info)
+        laporan_info = list(db.pelaporan.find())
+        return render_template('admin/detailLaporan.html',data=user_info, laporan = laporan_info)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
         
@@ -479,13 +539,45 @@ def forumControl():
         user_info = db.admin.find_one({"username": payload["id"],
                                         "role": payload["role"]
                                         })
-        return render_template('admin/detailLaporan.html',data=user_info)
+        postingan = list(db.postingan.find())
+        for post in postingan:
+            post['id'] = str(post['_id'])
+            mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
+            post['nama'] = mahasiswa_info['nama']
+            post['email']=mahasiswa_info['email']
+        return render_template('admin/forumControl.html',data=user_info,postingan = postingan)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
     
     
 @app.route('/adminDashboard/userControl', methods=['GET', 'POST'])
 def userControl():
+        if request.method == 'POST':
+            mahasiswa_name = request.form.get('nama_mahasiswa_give')
+            mahasiswa_email = request.form.get('email_mahasiswa_give')
+            mahasiswa_nim = request.form.get('mahasiswa_nim_give')
+            mahasiswa_prodi = request.form.get('prodi_mahasiswa_give')
+            ibu_mahasiswa = request.form.get('ibu_mahasiswa_give')
+            password_hash = hashlib.sha256(mahasiswa_nim.encode('utf-8')).hexdigest()
+            
+            data = {
+                "nama": mahasiswa_name,
+                "email": mahasiswa_email,
+                "nim": mahasiswa_nim,
+                "program_studi": mahasiswa_prodi,
+                "nama_ibu": ibu_mahasiswa,
+                "password": password_hash,
+                "role": "mahasiswa"
+            }
+            # duplicate username check
+            if db.mahasiswa.find_one({"nim": mahasiswa_nim}):
+                flash("NIM sudah terdaftar!")
+                return redirect(url_for("userControl"))
+            else:         
+                db.mahasiswa.insert_one(data)      
+            # Handle POST Request here
+            return redirect(url_for('userControl'))
+    
         token_receive = request.cookies.get('token')
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
@@ -495,7 +587,7 @@ def userControl():
                                            "role": payload["role"]
                                            })
             # fetch data user from db.users
-            dataUser = list(db.users.find())   
+            dataUser = list(db.mahasiswa.find())   
             return render_template('admin/adminUserControl.html',data=user_info, data_user = dataUser )     
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             return redirect(url_for("loginAdmin", msg="Anda Belum Login"))

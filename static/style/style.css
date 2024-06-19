@@ -6,6 +6,13 @@
     color: white;
 }
 /* body style */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
@@ -16,6 +23,7 @@ body {
     background-attachment: fixed;
     background-position: center;
     color: white;
+    min-height: 100vh;
 
 }
 /* End of body */
@@ -25,7 +33,6 @@ body {
 
 /* Navbar */
 .navbar {
-    overflow: hidden;
     background-color: #440707;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -34,8 +41,7 @@ body {
     float: left;
     display: block;
     color: white;
-    text-align: center;
-     
+    text-align: center;     
     text-decoration: none;
     transition: background-color 0.3s ease;
 }
@@ -231,22 +237,13 @@ body {
 
 /* Css for footer */
 .footer-container {
-    position: fixed;
-    left: 0;
-    bottom: 0;
     width: 100%;
-    height: 10vh;
     background-color: #410404;
     color: white;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
-
-/* Give padding bottom to content */
-.content-above-footer {
-    padding-bottom: 10vh; /* Adjust the value according to the height of your footer */
-}
-/* End css footer */
+ 
 
 /* css image landingpage */
 .container-landing{
@@ -255,16 +252,7 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.369);
     margin-left: 5vw;
 }
-.hero {
-    display: flex;
-    height: 100vh;
-    align-items: center;
-    background-size: cover;
-    background-position: center;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.369);
-    padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5)
-}
+
  
 .btn-container {
     margin-top: 20px;
@@ -298,7 +286,8 @@ body {
     white-space: nowrap;
     font-size: 2rem;
     width: 0;
-    animation: typingh1 2s forwards infinite;
+    animation: typingh1 2s forwards ;
+    animation-iteration-count: infinite;
   }
   
   @keyframes typingh1 {
@@ -311,8 +300,7 @@ body {
   }
   
   .typewriter h1 {
-    animation-duration: 3s;  
-    animation-iteration-count: infinite;  
+    animation-duration: 3s;
     animation-delay: 1s;  
   }
   

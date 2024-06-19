@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
 {% include 'header.html' %}
-
 <style>
     .modal-dialog {
         margin-top: 70px;
@@ -64,11 +62,13 @@
                         <div class="no-resi">
                             <input type="text" class="form-control bg-secondary-subtle" id="reportNoResi" readonly
                                 name="noResi">
-                            <i style="font-size: small; font-family: 'Times New Roman', Times, serif;"> Jika ingin
-                                Melakukan
-                                Pelaporan, Silahkan Copy atau Simpan terlebih dahulu Resi diatas agar Anda dapat
-                                memeriksa
-                                Perkembangan Laporan Anda!</i>
+                            <i style="font-size: small; font-family: 'Times New Roman', Times, serif;"> Resi Diatas akan Dikirim Ke E-mail 
+                                dan anda dapat melacak perkembangan laporan anda</i>
+                            </i>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reporterEmail" class="form-label">E-mail Pelapor</label>
+                            <input type="email" class="form-control" id="reporterEmail" name="emailPelapor" required>
                         </div>
                         <div class="mb-3">
                             <label for="reporterName" class="form-label">Nama Pelapor</label>

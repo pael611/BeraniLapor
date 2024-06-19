@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,8 +31,13 @@
     <!-- bootstrap input file  -->
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
 
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- sweet alert -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
-<nav class="navbar navbar-expand-lg navbar-dark" aria-label="Offcanvas navbar large">
+<nav class="navbar navbar-expand-lg navbar-dark " aria-label="Offcanvas navbar large">
     <div class="container-fluid">
         <div class="navbar-brand">
             <img src="{{url_for('static', filename = 'assets/logo.jpg')}}" class="rounded-circle" width="40" height="40"
@@ -59,7 +61,7 @@
                         <a class="nav-link active" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/artikelBase">Artikel</a>
+                        <a class="nav-link" href="/artikelBase">Artikel </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/forumBase">Forum</a>
@@ -68,16 +70,27 @@
                         <a class="nav-link" href="/laporUser">Lapor!</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/loginUser">Login/Register</a>
+                        {% if request.cookies.get('mytoken') %}
+                        <a id="loginLogoutLink" class="nav-link" href="/sign_out">Logout</a>
+                        {% else %}
+                        <a id="loginLogoutLink" class="nav-link" href="/loginUser">Login/Register</a>
+                        {% endif %}
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/userProfil"> <i class="fa fa-user"><span> Profile</span></i></a>
+                        <a class="nav-link" href="/userProfil">
+                            <i class="fa fa-user"></i>
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
 </nav>
-<main class="content-above-footer">
+<style>
+    .dropdown-menu {
+        position: absolute;
+    }
+</style>
 
-</html>
+<main class="content-above-footer">
+ 
