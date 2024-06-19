@@ -227,9 +227,21 @@ def lapor():
          # Send the email.
         send_email(no_resi,nama_pelapor,program_studi,detail_report,tanggal_kejadian,lokasi_kejadian, email)
         return redirect(url_for('lapor'))
-    
-    
-    return render_template('lapor.html')
+    token_receive = request.cookies.get('mytoken')
+    user_info = None
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.mahasiswa.find_one({'nim': payload.get('id')})
+
+        except jwt.ExpiredSignatureError:
+            msg = 'Akun Anda telah keluar, silahkan Login kembali!'
+            flash(msg)
+
+        except jwt.exceptions.DecodeError:
+            msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
+            flash(msg)
+    return render_template('lapor.html',user_info=user_info)
 
 #Rute untuk mengarahkan user ke profilnya
 #Rute untuk menampilkan profil user berdasarkan nim nya
@@ -311,8 +323,8 @@ def forum():
     # validasi token, apabila user sudah login maka akan menampilkan halaman forum
     token_receive = request.cookies.get('mytoken')
     if not token_receive:
-        flash("Anda Belum Login")
-        return redirect(url_for('loginUser'))
+        msg = flash("Anda Belum Login","error")
+        return redirect(url_for('loginUser',msg=msg))
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.mahasiswa.find_one({"nim": payload["id"]})
@@ -326,7 +338,7 @@ def forum():
         if not user_info:
             raise jwt.exceptions.DecodeError
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        msg = flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.")
+        msg = flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.","error")
         return redirect(url_for('loginUser', msg=msg))
     
     # jalan kan post untuk postingan ketika user sedang login
@@ -350,6 +362,20 @@ def forum():
 
 @app.route('/artikelBase', methods=['GET', 'POST'])
 def artikel():
+    token_receive = request.cookies.get('mytoken')
+    user_info = None
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.mahasiswa.find_one({'nim': payload.get('id')})
+
+        except jwt.ExpiredSignatureError:
+            msg = 'Akun Anda telah keluar, silahkan Login kembali!'
+            flash(msg)
+
+        except jwt.exceptions.DecodeError:
+            msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
+            flash(msg)
     articles = list(db.article.find({}))
     for art in articles:
         print("Original Image Path:", art.get("gambar"))  # Debug print
@@ -360,7 +386,7 @@ def artikel():
         if "date" not in art:
             art["date"] = datetime.now().strftime("%Y-%m-%d")
             print("Added Current Date:", art.get("date"))  # Debug print
-    return render_template('artikel.html', articles=articles)
+    return render_template('artikel.html', articles=articles, user_info=user_info)
 
 
 
