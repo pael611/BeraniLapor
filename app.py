@@ -357,9 +357,6 @@ def forum():
 
     return render_template('forum.html', user_info=user_info, postingan = postingan)
 
-
-
-
 @app.route('/artikelBase', methods=['GET', 'POST'])
 def artikel():
     token_receive = request.cookies.get('mytoken')
