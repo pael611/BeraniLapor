@@ -32,6 +32,22 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        swal({
+            title: "Pesan",
+            text: "{{ messages[0][1] }}",
+            icon: "{{ messages[0][0] }}",
+            button: "OK",
+        });
+
+    });
+</script>
+{% endif %}
+{% endwith %}
+
 <body>
 
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
@@ -93,17 +109,7 @@
             </div>
         </div>
     </div>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <script>
-        swal({
-            title: "Pesan",
-            text: "{{ messages[0] }}",
-            button: "OK",
-        }); 
-    </script>
-    {% endif %}
-    {% endwith %}
+ 
 
 </body>
 

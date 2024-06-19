@@ -122,8 +122,8 @@ def sign_in():
     if result:
         password_new = result.get('password_new')
         default_password = result.get('default_password', '')
-        if password_new is None :  # Jika password_new tidak ditemukan dalam tabel mahasiswa
-            if default_password == pw_hash:  # Jika default_password sama dengan inputan user
+        if password_new is None :   
+            if default_password == pw_hash:   
                 session['nim'] = nim_receive
                 return redirect(url_for('verifikasi', nim=nim_receive))
             else:
@@ -139,10 +139,10 @@ def sign_in():
             response.set_cookie('mytoken', token)
             return response
         else:
-            msg = flash("Password Salah!")         
+            msg = flash("Password Salah!","error")         
             return redirect(url_for("loginUser",msg = msg))
     else:
-        msg = flash("NIM atau Password Salah!")         
+        msg = flash("NIM atau Password Salah!","error")         
         return redirect(url_for("loginUser",msg = msg))
     
 @app.route('/verifikasiLogin/<nim>', methods=['GET', 'POST'])
@@ -168,8 +168,9 @@ def verifikasi(nim):
             # Jika semua data benar, update password
             pw_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
             db.mahasiswa.update_one({'nim': nim}, {'$set': {'password_new': pw_hash}})
-            flash('Password baru berhasil ditambahkan', 'success')
-            return redirect(url_for('loginUser'))
+            msg = flash('Verifikasi Berhasil', 'success')
+            session.pop('nim', None)
+            return redirect(url_for('loginUser', msg=msg))
 
     return render_template('loginVerifikasi.html', nim=nim, mahasiswa=mahasiswa)
     
@@ -372,7 +373,6 @@ def artikel():
 # 
 @app.route('/loginPetugasSatgas', methods=['GET', 'POST'])
 def loginAdmin():
-    
     token_receive = request.cookies.get('token')
     if token_receive:
         try:
@@ -566,7 +566,7 @@ def userControl():
                 "nim": mahasiswa_nim,
                 "program_studi": mahasiswa_prodi,
                 "nama_ibu": ibu_mahasiswa,
-                "password": password_hash,
+                "default_password": password_hash,
                 "role": "mahasiswa"
             }
             # duplicate username check

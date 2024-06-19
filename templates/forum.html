@@ -1,67 +1,7 @@
 <!DOCTYPE html>
 <html lang="eng">
 {% include 'header.html' %}
-<!-- <script>
-
-    //  Menghapus isi textarea
-    function cancel() {
-        $("#komentar").val('');
-    }
-
-    function cancel() {
-        $("#posting").val('');
-    }
-
-
-    function komen() {
-        let komentar = $("#komentar").val();
-        if (!komentar) {
-            return alert("Masukkan komentar yang ingin Anda tambahkan!");
-        }
-        $.ajax({
-            type: "POST",
-            url: "/komentar",
-            data: { komentar: komentar },
-            success: function (response) {
-                alert(response["msg"]);
-                window.location.reload();
-            }
-        });
-    }
-
-    function posting() {
-        let posting = $("#posting").val();
-        if (!posting) {
-            return alert("Masukkan komentar yang ingin Anda tambahkan!");
-        }
-        $.ajax({
-            type: "POST",
-            url: "/posting",
-            data: { posting: posting },
-            success: function (response) {
-                alert(response["msg"]);
-                window.location.reload();
-            }
-        });
-    }
-
-    // function posting() {
-    //             let posting = $("#posting").val();
-    //             if (!posting) {
-    //             return alert("Masukkan sesuatu yang ingin Anda posting!");
-    //     }
-    //             $.ajax({
-    //                 type: "POST",
-    //                 url: "/posting",
-    //                 data: { posting: posting },
-    //                 success: function (response) {
-    //                     alert(response["msg"]);
-    //                     window.location.reload();
-    //                 }
-    //             });
-    //         }
-
-</script> -->
+ 
 <style>
     @media (max-width: 600px) {
         #posting {

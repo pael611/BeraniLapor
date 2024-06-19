@@ -33,88 +33,25 @@
 
     <!-- Javascript -->
 
-    <!-- <script>
-        function login() {
-            let username = $("#username").val();
-            if (!username) {
-                alert("Masukkan Username!");
-                return false;
-            }
-            let email = $("#email").val();
-            if (!email) {
-                alert("Masukkan Email!");
-                return false;
-            }
-            let nama_ibu = $("#nama-ibu").val();
-            if (!nama_ibu) {
-                alert("Masukkan Nama Ibu!");
-                return false;
-            }
-            let nim = $("#nim").val();
-            if (!nim) {
-                alert("Masukkan NIM!");
-                return false;
-            }
-            let prodi = $("#prodi").val();
-            if (!prodi) {
-                alert("Pilih Program Studi!");
-                return false;
-            }
-
-            $.ajax({
-                type: "POST",
-                url: "/sign_in",
-                data: {
-                    username_give: username,
-                    email_give: email,
-                    nama_ibu_give: nama_ibu,
-                    nim_give: nim,
-                    prodi_give: prodi,
-                },
-                success: function (response) {
-                    if (response['result'] === 'success') {
-                        alert(response['msg']);
-                        window.location.replace('/');
-                    } else {
-                        alert(response['msg']);
-                        window.location.reload();
-                    }
-                },
-            });
-            return false;
-        }
-
-        function username_cek(asValue) {
-            var regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{2,10}$/;
-            return regExp.test(asValue);
-        }
-
-        function cek_username() {
-            let username = $("#username").val();
-            if (!username) {
-                return alert("Masukkan Username!");
-            }
-            if (!username_cek(username)) {
-                return alert("Maaf Kak, Password Anda belum sesuai. Silahkan masukkan 8-20 huruf, angka, atau karakter spesial (!), (@), (#), ($), (%), (^), (&), (*)");
-            }
-            $.ajax({
-                type: "POST",
-                url: "/sign_up/cek-username",
-                data: { username_give: username },
-                success: function (response) {
-                    if (response['exists']) {
-                        alert("Maaf Kak, Username ini sudah digunakan");
-                        return;
-                    } else {
-                        alert("Username ini bisa digunakan");
-                        return;
-                    }
-                }
-            });
-        }
-    </script> -->
+ 
 
 </head>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        swal({
+            title: "Pesan",
+            text: "{{ messages[0][1] }}",
+            icon: "{{ messages[0][0] }}",
+            button: "OK",
+        });
+
+    });
+</script>
+{% endif %}
+{% endwith %}
 
 <body>
 
@@ -161,21 +98,6 @@
             </div>
         </div>
     </div>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <script>
-        swal({
-            title: "Pesan",
-            text: "{{ messages[0] }}",
-            icon: "error",
-            button: "OK",
-        }); 
-    </script>
-    {% endif %}
-    {% endwith %}
-
-
-
 </body>
 
 </html>
