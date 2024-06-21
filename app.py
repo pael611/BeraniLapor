@@ -249,28 +249,36 @@ def lapor():
 def userProfil():
     token_receive = request.cookies.get('mytoken')
     if not token_receive:
-        msg = flash('Anda Belum Login')
-        return redirect(url_for('home', msg=msg))
+        flash('Anda Belum Login')
+        return redirect(url_for('home'))
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         nim = payload.get('id')
         user_info = db.mahasiswa.find_one({'nim': nim}, {'_id': False})
-
+        status = nim == payload.get('id')
+        
+        # Hanya ambil postingan dari user yang sedang login
+        postingan = list(db.postingan.find({'nim': nim}))
+        for post in postingan:
+            post['id'] = str(post['_id'])
+            mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
+            post['nama'] = mahasiswa_info['nama']
+            post['email'] = mahasiswa_info['email']
+        
         if request.method == 'POST':
             # Handle POST Request here
             return render_template('userProfil.html', user_info=user_info)
 
-        return render_template('userProfil.html', user_info=user_info)
+        return render_template('userProfil.html', user_info=user_info, postingan=postingan, status=status)
 
     except jwt.ExpiredSignatureError:
-        msg = 'Akun Anda telah keluar, silahkan Login kembali!'
-        flash(msg)
+        flash('Akun Anda telah keluar, silahkan Login kembali!')
         return redirect(url_for('home'))
 
     except jwt.exceptions.DecodeError:
-        msg = flash('Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!')
-        return redirect(url_for('home',msg=msg))
+        flash('Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!')
+        return redirect(url_for('home'))
 
 @app.route('/userProfil/password-update', methods=['POST'])
 def editProfil():
@@ -300,11 +308,38 @@ def editProfil():
         return redirect(url_for('home', msg=msg))
     
 
-@app.route('/new-post', methods=['POST'])
+@app.route('/new-post', methods=['GET', 'POST'])
 def new_post():
-    newPost_receive = request.form['new_post_give']
-    
-    return jsonify({'msg': 'Postingan baru berhasil ditambahkan!'})
+    # validasi token, apabila user sudah login maka akan menampilkan halaman forum
+    token_receive = request.cookies.get('mytoken')
+    if not token_receive:
+        flash("Anda Belum Login", "error")
+        return redirect(url_for('loginUser'))
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.mahasiswa.find_one({"nim": payload["id"]})
+        
+        if not user_info:
+            raise jwt.exceptions.DecodeError
+
+        if request.method == 'POST':
+            # Handle POST Request here
+            user_post_receive = request.form['user-post-give']
+            mahasiswa_get_nim = user_info.get('nim')
+            data = {
+                "nim": mahasiswa_get_nim,
+                "post": user_post_receive,
+                "date": datetime.now().strftime("%Y-%m-%d")
+            }
+            db.postingan.insert_one(data)
+            return redirect(url_for('userProfil'))
+
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.", "error")
+        return redirect(url_for('loginUser'))
+
+    return render_template('userProfil.html', user_info=user_info)
 
 @app.route('/tambah-komentar', methods=['POST'])
 def tambah_komentar():
@@ -314,9 +349,10 @@ def tambah_komentar():
 
 @app.route("/delete-post", methods=["POST"])
 def delete_post():
-    # num_receive = request.form['num_give']
-    # db.bucket.delete_one({ 'num': int(num_receive) })
+    post_id_receive = request.form['post_id_give']
+    db.postingan.delete_one({'_id': ObjectId(post_id_receive)})
     return jsonify({'msg': 'Postingan Anda berhasil dihapus!'})
+
 
 @app.route('/forumBase', methods=['GET', 'POST'])
 def forum():        
