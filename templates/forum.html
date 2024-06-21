@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="eng">
 {% include 'header.html' %}
- 
+
 <style>
     @media (max-width: 600px) {
         #posting {
@@ -10,6 +10,64 @@
         }
     }
 </style>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: "{{ messages[0][0] }}",
+            title: "{{ messages[0][1] }}"
+        });
+    });
+</script>
+{% endif %}
+{% endwith %}
+
+<!-- for like function -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.like-form').on('submit', function (e) {
+            e.preventDefault();
+
+            var postId = $(this).data('post-id');
+            var form = $(this);
+
+            $.ajax({
+                url: '/like_post/' + postId,
+                type: 'POST',
+                success: function (response) {
+                    // Update the number of likes
+                    form.find('.like-num').text(response.likes.length);
+
+                    // Update the heart icon
+                    var heartIcon = form.find('i');
+                    if (response.userLiked) {
+                        heartIcon.removeClass('far fa-heart');
+                        heartIcon.addClass('fa fa-heart');
+                    } else {
+                        heartIcon.removeClass('fa fa-heart');
+                        heartIcon.addClass('far fa-heart');
+                    }
+                }
+            });
+        });
+    });
+</script>
+
 
 <body>
     <!-- Container -->
@@ -57,32 +115,42 @@
             <!-- Tampilkan postingan  -->
             <div class="card-body mx-auto w-100 w-sm-75 w-md-50">
                 <div class="d-flex mb-3">
-                    <a class="me-3 image-container" style="max-width: 112px; max-height: 112px;" href="#">
-                        <img class="img-fluid" src="../static/assets/placeholder.jpg" alt="Image">
-                    </a>
-                    <div class="w-100 h-100">
-                        <div class="card-title card-tittle">{{post.nama}}<small class="text-muted">&nbsp;{{post.email}}
-                                <br><span>Posted at {{post.date}}</span></small>
-                        </div>
-                        <div class="card-subtitle mb-2 text-muted card-info"></div>
-                        <div class="card-text-content" onclick="window.location.href='/postingan-detail/{{post.id}}'">
-                            {{post.post}}
+                    <div class="col-lg-1 col-3 p-0">
+                        <a href="#">
+                            <img class="rounded img-fluid" src="../static/assets/placeholder.jpg" alt="Image"
+                                style="max-width: 112px; max-height: 112px;">
+                        </a>
+                    </div>
+                    <div class="col-lg-11 col-9 ms-3">
+                        <div class="w-100 h-100 ms-4 pe-1"
+                            onclick="window.location.href='/postingan-detail/{{post.id}}'">
+                            <div class="card-title card-tittle">{{post.nama}}<small
+                                    class="text-muted">&nbsp;{{post.email}}
+                                    <br><span>Posted at {{post.date}}</span></small>
+                            </div>
+                            <div class="card-subtitle mb-2 text-muted card-info"></div>
+                            <div class="card-text-content">
+                                {{post.post}}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between flex-wrap align-items-center">
                     <div class="d-flex flex-wrap align-items-center">
-                        <span class="cursor me-1" onclick="toggle_like('', 'heart')">
-                            <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">23.k</span>
-                        </span>
+                        <form class="like-form" data-post-id="{{ post.id }}">
+                            <button type="submit" class="cursor me-2 border-0 bg-transparent">
+                                <i  class="{{ 'fa fa-heart' if user_info.nim in post.likes else 'far fa-heart' }}"
+                                    aria-hidden="true"></i>
+                                <span class="like-num"> {{ post.likes|length }}</span>
+                            </button>
+                        </form>
                         <span class="cursor me-1 comment-trigger" data-post-id="#">
-                            <i class="fa fa-message"></i>&nbsp;Comment 281
+                            <i class="fa fa-message"></i>&nbsp;{{post.comment_count|length}}
                         </span>
                     </div>
-
-                    <button type="button" class="btn btn-warning mt-2 mt-sm-0" data-bs-toggle="modal"
-                        data-bs-target="#Modalkomen">
-                        Komentar</button>
+                    <a href="/postingan-detail/{{post.id}}"><button type="button" class="btn btn-warning mt-2 mt-sm-0">
+                            Komentar</button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -114,7 +182,8 @@
 
 
 
-    
+
 </body>
 {% include 'footer.html' %}
+
 </html>

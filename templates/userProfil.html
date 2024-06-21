@@ -93,33 +93,36 @@
     </div>
 
     {% if status %}
-        {% for post in postingan %}
-        <div class="container">
-            <div class="post-card">
-                <img class="post-profile-image" src="{{ url_for('static', filename='foto_profil/Alfian.png') }}"
-                    alt="Foto Profil" />
-                <div class="post-content">
-                    <div class="content">
-                        <p>
-                            <strong>{{ post.nama }}</strong> <small>{{ post.email }}</small> <small>Posted at {{ post.date }}</small>
-                            <br>
-                            {{ post.post }}
-                        </p>
+    {% for post in postingan %}
+    <div class="container">
+        <div class="post-card">
+            <img class="post-profile-image" src="{{ url_for('static', filename='foto_profil/Alfian.png') }}"
+                alt="Foto Profil" />
+            <div class="post-content">
+                <div class="content">
+                    <p>
+                        <strong>{{ post.nama }}</strong> <small>{{ post.email }}</small> <small>Posted at {{ post.date
+                            }}</small>
+                        <br>
+                        {{ post.post }}
+                    </p>
+                </div>
+                <div class="post-actions">
+                    <div class=" ">
+                        <i class="far fa-heart me-2">&nbsp;{{ post.likes|length }}</i>
+                        <i class="fa fa-message me-2">&nbsp;{{post.comment_count|length}}</i>
+                        <i class="fas fa-trash-alt post-delete-icon  " data-post-id="{{ post.id }}"
+                            onclick="deletePost(this)"></i>
                     </div>
-                    <div class="post-actions">
-                        <div class="post-icons">
-                            <i class="far fa-heart"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-thumbs-up"></i>
-                            <i class="far fa-thumbs-down"></i>
-                            <i class="fas fa-trash-alt post-delete-icon" data-post-id="{{ post.id }}" onclick="deletePost(this)"></i>
+                    <a href="/postingan-detail/{{post.id}}">
+                        <div class="button post-action" data-bs-toggle="modal" data-bs-target="#komentarModal">Komentar
                         </div>
-                        <div class="button post-action" data-bs-toggle="modal" data-bs-target="#komentarModal">Komentar</div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
-        {% endfor %}
+    </div>
+    {% endfor %}
     {% endif %}
 
     <div class="footer">
@@ -186,7 +189,8 @@
                 <div class="modal-body bg-body-tertiary">
                     <form action="/new-post" method="post">
                         <div class="mb-3">
-                            <label for="namaEdit" class="form-label">Hai {{user_info.nama}}, ada cerita apa nih? Yuk posting!</label>
+                            <label for="namaEdit" class="form-label">Hai {{user_info.nama}}, ada cerita apa nih? Yuk
+                                posting!</label>
                             <input type="text" class="form-control" name="user-post-give" id="user-post" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>

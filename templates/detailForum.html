@@ -2,182 +2,105 @@
 <html lang="en">
 
 {% include 'header.html' %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
 <script>
-
-    //  Menghapus isi textarea
-    function cancel() {
-        $("#komentar").val('');
-    }
-
-    function cancel() {
-        $("#posting").val('');
-    }
-
-
-    function komen() {
-        let komentar = $("#komentar").val();
-        if (!komentar) {
-            return alert("Masukkan komentar yang ingin Anda tambahkan!");
-        }
-        $.ajax({
-            type: "POST",
-            url: "/komentar",
-            data: { komentar: komentar },
-            success: function (response) {
-                alert(response["msg"]);
-                window.location.reload();
+    document.addEventListener('DOMContentLoaded', function () {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
+        })
+
+        Toast.fire({
+            icon: "{{ messages[0][0] }}",
+            title: "{{ messages[0][1] }}"
         });
-    }
-
-    function posting() {
-        let posting = $("#posting").val();
-        if (!posting) {
-            return alert("Masukkan komentar yang ingin Anda tambahkan!");
-        }
-        $.ajax({
-            type: "POST",
-            url: "/posting",
-            data: { posting: posting },
-            success: function (response) {
-                alert(response["msg"]);
-                window.location.reload();
-            }
-        });
-    }
-
-    // function posting() {
-    //             let posting = $("#posting").val();
-    //             if (!posting) {
-    //             return alert("Masukkan sesuatu yang ingin Anda posting!");
-    //     }
-    //             $.ajax({
-    //                 type: "POST",
-    //                 url: "/posting",
-    //                 data: { posting: posting },
-    //                 success: function (response) {
-    //                     alert(response["msg"]);
-    //                     window.location.reload();
-    //                 }
-    //             });
-    //         }
-
+    });
 </script>
+{% endif %}
+{% endwith %}
 
 <body>
     <!-- Container -->
     <div class="container mt-4">
-        <!-- Post Input -->
-        <div class="d-flex justify-content-center align-items-center mb-3">
-            <div class="me-3">
-                <a href="#">
-                    <img class="rounded" src="../static/assets/placeholder.jpg " alt="User Image" width="32"
-                        height="32">
-                </a>
-            </div>
-            <input id="input-post" class="form-control rounded-pill" style="max-width: 600px;"
-                placeholder="Buat Postingan Baru" data-bs-toggle="modal" data-bs-target="#modalposting">
-        </div>
-
-        <!-- untuk postingan-->
-        <div class="modal fade" id="modalposting" tabindex="-1" aria-labelledby="postinglabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: #410404; color: white;">
-                        <h5 class="modal-title " id="postinglabel">Tambah postingan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body bg-body-tertiary">
-                        <form>
-                            <div class="mb-3">
-                                <textarea class="form-control" id="posting" rows="3" required
-                                    placeholder="ada cerita apa nih? yuk posting"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary" onclick="posting()">Submit</button>
-                            <button type="button" class="btn btn-secondary" onclick="cancel()">hapus</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Post Card -->
         <div id="post-box" class="container">
             <div class="card card-forum mb-3  mx-auto w-100 w-sm-75 w-md-50">
                 <div class="card-body mx-auto w-100 w-sm-75 w-md-50">
                     <div class="d-flex mb-3">
-                        <a class="me-3 image-container" style="max-width: 112px; max-height: 112px;" href="#">
-                            <img class="rounded" src="../static/assets/placeholder.jpg" alt="Image">
-                        </a>
-                        <div class="w-100 h-100">
-                            <div class="card-title mb-1 card-tittle">User a <small class="text-muted">@user-a</small>
+                        <div class="col-lg-1 col-3 p-0">
+                            <a href="#">
+                                <img class="rounded img-fluid" src="../static/assets/placeholder.jpg" alt="Image"
+                                    style="max-width: 112px; max-height: 112px;">
+                            </a>
+                        </div>
+                        <div class="col-lg-11 col-9 ms-3">
+                            <div class="card-title card-tittle">{{post.nama}}<small
+                                    class="text-muted">&nbsp;{{post.email}}
+                                    <br><span>Posted at {{post.date}}</span></small>
                             </div>
-                            <div class="card-subtitle mb-2 text-muted card-info">10 minutes ago</div>
-                            <div class="card-text-content">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vel
-                                molestiae, quae eum corporis amet veritatis natus iste illo ad sed architecto? Libero
-                                numquam deleniti fugit, reprehenderit consequatur provident in quod ratione optio
-                                aliquid veritatis animi pariatur repellat aliquam molestias aut doloribus, inventore
-                                natus alias. Ab beatae, sunt ut ea aut voluptatem quasi quae? Tenetur fuga excepturi
-                                sapiente, voluptate officia tempora consectetur aspernatur libero eaque vero tempore!
-                                Qui vero enim illo soluta aut molestiae. Itaque tenetur neque at eius ab molestias earum
-
+                            <div class="card-text w-auto h-auto text-start" style="white-space: pre-wrap;">{{post.post}}
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between flex-wrap align-items-center">
-                        <div class="d-flex flex-wrap align-items-center">
-                            <span class="cursor me-3" onclick="toggle_like('', 'heart')">
-                                <i class="fa fa-heart" aria-hidden="true"></i> <span class="like-num">23.k</span>
-                            </span>
-                            <span class="cursor me-3 comment-trigger" data-post-id="#">
-                                <i class="fa fa-commenting-o"></i> Comment 281
-                            </span>
-                        </div>
-                        <!-- Modal Tambah Komentar -->
-                        <div class="modal fade" id="Modalkomen" tabindex="-1" aria-labelledby="komentarLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header" style="background-color: #410404; color: white;">
-                                        <h5 class="modal-title " id="komentarLabel">Tambah Komentar</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body bg-body-tertiary">
-                                        <form>
-                                            <div class="mb-3">
-                                                <textarea class="form-control" id="komentar" rows="3" required
-                                                    placeholder="Ketikkan komentar anda"></textarea>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary"
-                                                onclick="komen()">Submit</button>
-                                            <button type="button" class="btn btn-secondary"
-                                                onclick="cancel()">hapus</button>
-                                        </form>
-                                    </div>
-                                </div>
+                    <!-- User Comments -->
+
+                    <!-- User comments will be populated here -->
+                     <p class="text-start"><i>Komentar ({{ comments|length }})  </i></p>
+                    {% for comment in comments %}
+                    <div class="coment-container-posted d-flex w-100 align-content-center mt-2 mb-2">
+                        <div class="d-flex justify-content-center align-items-center text-start">
+                            <a href="#">
+                                <img class="rounded" style="max-width:10vw; max-height: 10vh;"
+                                    src="../static/assets/placeholder.jpg " alt="User Image" width="32" height="32">
+                            </a>
+                            <div class="comment ms-2">
+                                <span><strong>{{ comment.nama }}</strong> <br><i class="text-muted fs-6">commented on {{ comment.date.strftime('%Y-%m-%d
+                                    %H:%M') }}</i></span>
+                                <p>{{ comment.comment }}</p>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-warning mt-2 mt-sm-0" data-bs-toggle="modal"
-                            data-bs-target="#Modalkomen">
-                            Komentar</button>
+                    </div>
 
+                    {% endfor %}
+                    <!-- Comment Input -->
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <div class="me-3">
+                            <a href="#">
+                                <img class="rounded" style="max-width:40px; max-height: 40px;"
+                                    src="../static/assets/placeholder.jpg " alt="User Image" width="32" height="32">
+                            </a>
+                        </div>
+                        <form class="d-flex w-100" style="max-width: 600px;" action="/postingan-detail/{{ post.id }}"
+                            method="post">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="comment" placeholder="Tambah Komentar"
+                                    aria-label="komentar" aria-describedby="button-addon2">
+                                <button class="btn btn-primary" type="submit" id="button-addon2"><i
+                                        class="fa fa-mail-reply"></i></button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-
             </div>
-
         </div>
-        <!-- Additional posts can be added in a similar manner -->
     </div>
 
     <script>
-        function post() {
-            // Implement your post functionality here
+        function postComment() {
+            // Implement your comment functionality here
         }
 
-        function toggle_like(postId, element) {
-            // Implement your like functionality here
+        function cancel() {
+            // Implement your cancel functionality here
         }
     </script>
 </body>

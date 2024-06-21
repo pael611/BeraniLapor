@@ -22,7 +22,6 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
-    color: white;
     min-height: 100vh;
 
 }
@@ -154,10 +153,7 @@ body {
     color: #666;
     margin-top: 15px;
 }
-
-h1 {
-    color: #f7f4f4;
-}
+ 
 
 h2 {
     font-size: 1.2rem;
@@ -165,8 +161,7 @@ h2 {
 
 p {
     font-size: 0.9rem;
-    line-height: 1.5;
-    color: #f9f8fc;
+    line-height: 1.5; 
 }
 body {
     background-color: RGBA(232, 52, 78, 0.2);

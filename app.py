@@ -252,13 +252,8 @@ def lapor():
 def userProfil():
     token_receive = request.cookies.get('mytoken')
     if not token_receive:
-<<<<<<< HEAD
         msg = flash('Anda Belum Login','error')
         return redirect(url_for('home', msg=msg))
-=======
-        flash('Anda Belum Login')
-        return redirect(url_for('home'))
->>>>>>> 442514bb779c37d2942c8cb596eab19762d17e9a
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
@@ -273,6 +268,11 @@ def userProfil():
             mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
             post['nama'] = mahasiswa_info['nama']
             post['email'] = mahasiswa_info['email']
+            
+            # get comment count
+            comments = list(db.comments.find({'post_id': ObjectId(post['id'])}))
+            # Add the comment count to the post
+            post['comment_count'] = comments
         
         if request.method == 'POST':
             # Handle POST Request here
@@ -327,14 +327,13 @@ def new_post():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.mahasiswa.find_one({"nim": payload["id"]})
-        
         if not user_info:
             raise jwt.exceptions.DecodeError
-
+        
         if request.method == 'POST':
-            # Handle POST Request here
-            user_post_receive = request.form['user-post-give']
-            mahasiswa_get_nim = user_info.get('nim')
+        # Handle POST Request here
+            user_post_receive = escape(request.form['user-post-give'])
+            mahasiswa_get_nim = escape(user_info.get('nim'))
             data = {
                 "nim": mahasiswa_get_nim,
                 "post": user_post_receive,
@@ -348,12 +347,6 @@ def new_post():
         return redirect(url_for('loginUser'))
 
     return render_template('userProfil.html', user_info=user_info)
-
-@app.route('/tambah-komentar', methods=['POST'])
-def tambah_komentar():
-    komentar_receive = request.form['komentar_give']
-    
-    return jsonify({'msg': 'Komentar Anda berhasil ditambahkan!'})
 
 @app.route("/delete-post", methods=["POST"])
 def delete_post():
@@ -372,13 +365,18 @@ def forum():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.mahasiswa.find_one({"nim": payload["id"]})
+         
         postingan = list(db.postingan.find())
         for post in postingan:
             post['id'] = str(post['_id'])
             mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
             post['nama'] = mahasiswa_info['nama']
             post['email']=mahasiswa_info['email']
-        print(postingan)
+             # Fetch comments related to the current post
+            comments = list(db.comments.find({'post_id': ObjectId(post['id'])}))
+
+            # Add the comment count to the post
+            post['comment_count'] = comments
         if not user_info:
             raise jwt.exceptions.DecodeError
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
@@ -388,18 +386,67 @@ def forum():
     # jalan kan post untuk postingan ketika user sedang login
     if request.method == 'POST':
         # Handle POST Request here
-        user_post_receive = request.form['user-post-give']
-        mahasiswa_get_nim = user_info.get('nim')
+        user_post_receive = escape(request.form['user-post-give'])
+        mahasiswa_get_nim = escape(user_info.get('nim'))
+        maahasiswa_get_nama = escape(user_info.get('nama'))
         data = {
             "nim": mahasiswa_get_nim,
             "post": user_post_receive,
             "date": datetime.now().strftime("%Y-%m-%d")
         }
         db.postingan.insert_one(data)
-        return redirect(url_for('forum'))
-        # Anda bisa menambahkan kode untuk menangani user_post_receive di sini
+        flash(f'Postingan {maahasiswa_get_nama} berhasil ditambahkan!', 'success')
+        return redirect(url_for('forum'))       
+
+    # Anda bisa menambahkan kode untuk menangani user_post_receive di sini
 
     return render_template('forum.html', user_info=user_info, postingan = postingan)
+
+@app.route('/postingan-detail/<idPost>', methods=['GET', 'POST'])
+def detailPost(idPost):
+    token_receive = request.cookies.get('mytoken')
+    if token_receive : 
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.mahasiswa.find_one({'nim': payload.get('id')})
+            if not user_info:
+                flash("User tidak ditemukan.", "error")
+                return redirect(url_for('loginUser'))
+
+            if request.method == 'POST':
+                comment = request.form.get('comment')
+                db.comments.insert_one({
+                    'nim': user_info['nim'],
+                    'post_id': ObjectId(idPost),
+                    'comment': comment,
+                    'date': datetime.utcnow()
+                })
+                flash("Komentar berhasil diposting.", "success")
+                return redirect(url_for('detailPost', idPost=idPost))
+
+            post = db.postingan.find_one({'_id': ObjectId(idPost)})
+            post['id'] = str(post['_id'])
+            mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
+            post['nama'] = mahasiswa_info['nama']
+            post['email'] = mahasiswa_info['email']
+
+            # Fetch comments related to the current post
+            comments = db.comments.find({'post_id': ObjectId(idPost)})
+             
+            # Convert comments to a list so it can be passed to the template
+            comments = list(comments)
+            for comment in comments:
+                comment['id'] = str(comment['_id'])
+                mahasiswa_info = db.mahasiswa.find_one({'nim': comment['nim']})
+                comment['nama'] = mahasiswa_info['nama']
+
+            return render_template('detailForum.html', post=post, user_info=user_info, comments=comments)
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.","error")
+            return redirect(url_for('loginUser'))
+    else:
+        flash("Token tidak ditemukan. Silakan login.","error")
+        return redirect(url_for('loginUser'))
 
 @app.route('/artikelBase', methods=['GET', 'POST'])
 def artikel():
@@ -428,9 +475,46 @@ def artikel():
             art["date"] = datetime.now().strftime("%Y-%m-%d")
             print("Added Current Date:", art.get("date"))  # Debug print
     return render_template('artikel.html', articles=articles, user_info=user_info)
+ 
+@app.route('/like_post/<post_id>', methods=['POST'])
+def like_post(post_id):
+    # Fetch the post from the database
+    post = db.postingan.find_one({'_id': ObjectId(post_id)})
 
+    token_receive = request.cookies.get('mytoken')
+    if not token_receive:
+        flash("Anda Belum Login", "error")
+        return redirect(url_for('loginUser'))
 
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.mahasiswa.find_one({"nim": payload["id"]})
+    except jwt.ExpiredSignatureError:
+        flash("Session Anda telah berakhir, silakan login kembali", "error")
+        return redirect(url_for('loginUser'))
+    except jwt.InvalidTokenError:
+        flash("Token Anda tidak valid, silakan login kembali", "error")
+        return redirect(url_for('loginUser'))
 
+    # If the 'likes' key doesn't exist in the post, create it and set it to an empty list
+    if 'likes' not in post:
+        post['likes'] = []
+
+    if user_info['nim'] in post['likes']:
+        # If the user has already liked the post, unlike it
+        post['likes'].remove(user_info['nim'])
+    else:
+        # If the user has not liked the post, like it
+        post['likes'].append(user_info['nim'])
+
+    # Save the updated post back to the database
+    db.postingan.update_one({'_id': ObjectId(post_id)}, {'$set': {'likes': post['likes']}})
+    
+    # Determine whether the user liked the post
+    user_liked = user_info['nim'] in post['likes']
+
+    # Return a JSON response
+    return jsonify({'likes': post['likes'], 'userLiked': user_liked})
 
 
 
