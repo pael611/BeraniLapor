@@ -137,6 +137,7 @@ def sign_in():
             token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')            
             response = make_response(redirect(url_for('home')))
             response.set_cookie('mytoken', token)
+            flash('Anda berhasil login', 'success')
             return response
         else:
             msg = flash("Password Salah!","error")         
@@ -178,8 +179,10 @@ def verifikasi(nim):
 
 @app.route('/sign_out', methods=['GET', 'POST'])
 def sign_out():
+    
     response = make_response(redirect(url_for('home')))
     response.set_cookie('mytoken', '', expires=0)
+    flash('Anda telah keluar', 'success')
     return response
 
 @app.route('/update_password', methods=['POST'])
@@ -249,7 +252,7 @@ def lapor():
 def userProfil():
     token_receive = request.cookies.get('mytoken')
     if not token_receive:
-        msg = flash('Anda Belum Login')
+        msg = flash('Anda Belum Login','error')
         return redirect(url_for('home', msg=msg))
 
     try:
@@ -454,8 +457,16 @@ def adminDashboard():
             return redirect('/')
         user_info = db.admin.find_one({"username": payload["id"]})
         dataAdmin = list(db.admin.find({"role": "Admin"}))
-       
-        return render_template('admin/adminDashboard.html',data=user_info , data_admin = dataAdmin)
+
+        # Mengambil statistik dari database
+        article_count = db.article.count_documents({})
+        postingan_count = db.postingan.count_documents({})
+        mahasiswa_count = db.mahasiswa.count_documents({})
+        pelaporan_count = db.pelaporan.count_documents({})
+
+        return render_template('admin/adminDashboard.html', data=user_info, data_admin=dataAdmin, 
+                               article_count=article_count, postingan_count=postingan_count, 
+                               mahasiswa_count=mahasiswa_count, pelaporan_count=pelaporan_count)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         msg = flash("Anda Belum Login")
         return redirect(url_for("loginAdmin", msg=msg))

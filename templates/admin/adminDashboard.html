@@ -6,7 +6,35 @@
   {% include 'admin/adminTemplate/headerAdmin.html' %}
   <!-- end header -->
 </head>
+<style>
+  h5 {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-size: larger;
+    font-style: oblique;
+  }
 
+  h5.card-title {
+    font-size: 2em;
+    /* Adjust this value as needed */
+  }
+</style>
+<script>
+  $(document).ready(function() {
+    $('h3').each(function () {
+      $(this).prop('Counter',0).animate({
+          Counter: $(this).text()
+      }, {
+          duration: 1000,
+          easing: 'swing',
+          step: function (now) {
+              $(this).text(Math.ceil(now));
+          }
+      });
+    });
+  });
+  </script>
 
 <body>
   <div class="container-scroller">
@@ -19,7 +47,6 @@
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-
           <div class="row">
             <div class="col-md-12 grid-margin">
               <div class="d-flex justify-content-between align-items-center">
@@ -33,45 +60,60 @@
             </div>
           </div>
           <main>
-            <div class="table-responsive-xl">
-              <table class="table table-striped table-hover table-bordered table-primary align-middle table-dark">
-                <thead class="table-light">
-                  <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Nama Pengguna</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Peran</th>
-                    <th scope="col">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                  <tr class="table-primary">
-                    <th scope="row">1</th>
-                    <td>Admin</td>
-                    <td>admin@example.com</td>
-                    <td>Admin</td>
-                    <td>
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-danger">Hapus</button>
-                    </td>
-                  </tr>
-                  <tr class="table-primary">
-                    <th scope="row">2</th>
-                    <td>Editor</td>
-                    <td>editor@example.com</td>
-                    <td>Editor</td>
-                    <td>
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-danger">Hapus</button>
-                    </td>
-                  </tr>
-                  <!-- Tambahkan baris lain jika diperlukan -->
-                </tbody>
-              </table>
-              <!-- end table -->
-
+            <div class="row">
+              <div class="col-md-3 grid-margin stretch-card" onclick="location.href='/adminDashboard/artikelControl'">
+                <div class="card">
+                  <div class="card-body">
+                    <p class="card-title text-md-center text-xl-left">Artikel</p>
+                    <div
+                      class="d-flex flex-wrap justify-content-between justify-content-md-center justify-content-xl-between align-items-center">
+                      <h3 class="mb-0 mb-md-2 mb-xl-0 order-md-1 order-xl-0">{{ article_count }}</h3>
+                      <i class="ti-calendar icon-md text-muted mb-0 mb-md-3 mb-xl-0"></i>
+                    </div>
+                    <p class="mb-0 mt-2 text-danger"> <span class="text-black ms-1"><small> </small></span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 grid-margin stretch-card"  onclick="location.href='/adminDashboard/detailLaporan';">
+                <div class="card">
+                  <div class="card-body">
+                    <p class="card-title text-md-center text-xl-left">Pelaporan</p>
+                    <div
+                      class="d-flex flex-wrap justify-content-between justify-content-md-center justify-content-xl-between align-items-center">
+                      <h3 class="mb-0 mb-md-2 mb-xl-0 order-md-1 order-xl-0">{{ pelaporan_count }}</h3>
+                      <i class="ti-agenda icon-md text-muted mb-0 mb-md-3 mb-xl-0"></i>
+                    </div>
+                    <p class="mb-0 mt-2 text-danger"> <span class="text-black ms-1"><small> </small></span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 grid-margin stretch-card" onclick="location.href='/adminDashboard/userControl';">
+                <div class="card">
+                  <div class="card-body">
+                    <p class="card-title text-md-center text-xl-left">Mahasiswa</p>
+                    <div
+                      class="d-flex flex-wrap justify-content-between justify-content-md-center justify-content-xl-between align-items-center">
+                      <h3 class="mb-0 mb-md-2 mb-xl-0 order-md-1 order-xl-0">{{ mahasiswa_count }}</h3>
+                      <i class="ti-user icon-md text-muted mb-0 mb-md-3 mb-xl-0"></i>
+                    </div>
+                    <p class="mb-0 mt-2 text-success"> <span class="text-black ms-1"><small> </small></span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 grid-margin stretch-card" onclick="location.href='/adminDashboard/forumControl';">
+                <div class="card">
+                  <div class="card-body">
+                    <p class="card-title text-md-center text-xl-left">Postingan</p>
+                    <div
+                      class="d-flex flex-wrap justify-content-between justify-content-md-center justify-content-xl-between align-items-center">
+                      <h3 class="mb-0 mb-md-2 mb-xl-0 order-md-1 order-xl-0">{{ postingan_count }}</h3>
+                      <i class="ti-layers-alt icon-md text-muted mb-0 mb-md-3 mb-xl-0"></i>
+                    </div>
+                    <p class="mb-0 mt-2 text-success"> <span class="text-black ms-1"><small> </small></span></p>
+                  </div>
+                </div>
+              </div>
             </div>
-
           </main>
         </div>
         <!-- content-wrapper ends -->
