@@ -107,59 +107,63 @@
                             </div>
                         </div>
                     </div>
-                    <!-- User Comments -->
-
                     <!-- User comments will be populated here -->
                     <p class="text-start"><i>Komentar ({{ comments|length }}) </i></p>
+                </div>
+                <!-- User Comments -->
 
 
-                    <div class="coment-container-posted d-flex w-100 align-content-start mt-2 mb-2 ">
-                        <div class="d-flex justify-content-start align-items-start text-start row">
-                            {% for comment in comments %}
-                            <div class="coment-user-container row">
-                                <div class="col-lg-1 col-md-1 col-sm-1 col-2 mt-1">
-                                    <img class="img-fluid rounded-circle"
-                                        src="{{ url_for('static', filename=comment.fotoProfile if comment.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
-                                        alt="User Image">
-                                </div>
-                                <div class="comments col-lg-10 col-md-10 col-sm-10 col-10 ms-2">
-                                    <span><strong>{{ comment.nama }}</strong> <br><i class="text-muted fs-6">commented
-                                            on {{ comment.date.strftime('%Y-%m-%d %H:%M') }}</i></span>
-                                    <p>{{ comment.comment }}
-                                        {% if comment.nim == user_info.nim %}
-                                        <br>
-                                        <i class="fa fa-trash" type="button"
-                                            onclick="delete_comment('{{ comment.id }}')"></i> &nbsp;
-                                        <i class="fa fa-pencil editCommentbtn" type="button"
-                                            data-commentId="{{comment.id}}" data-comment-old="{{comment.comment}}"
-                                            data-bs-toggle="modal" data-bs-target="#editCommentModal"></i>
-                                        {% endif %}
-                                    </p>
-                                </div>
+
+
+
+                <div class="coment-container-posted d-flex align-content-start ms-2  mt-2 mb-2 ">
+                    <div class="d-flex justify-content-start align-items-start text-start row" style="width: 100vw;">
+                        {% for comment in comments %}
+                        <div class="coment-user-container row" >
+                            <div class="col-lg-1 col-md-1 col-sm-1 col-2 mt-1">
+                                <img class="img-fluid rounded-circle"  
+                                    src="{{ url_for('static', filename=comment.fotoProfile if comment.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+                                    alt="User Image">
                             </div>
-                            {% endfor %}
+                            <div class="comments col-lg-10 col-md-10 col-sm-10 col-10 ms-2"  >
+                                <span><strong>{{ comment.nama }}</strong> <br><i class="text-muted fs-6">commented
+                                        on {{ comment.date.strftime('%Y-%m-%d %H:%M') }}</i></span>
+                                <p>{{ comment.comment }}
+                                    {% if comment.nim == user_info.nim %}
+                                    <br>
+                                    <i class="fa fa-trash" type="button"
+                                        onclick="delete_comment('{{ comment.id }}')"></i>
+                                    &nbsp;
+                                    <i class="fa fa-pencil editCommentbtn" type="button" data-commentId="{{comment.id}}"
+                                        data-comment-old="{{comment.comment}}" data-bs-toggle="modal"
+                                        data-bs-target="#editCommentModal"></i>
+                                    {% endif %}
+                                </p>
+                            </div>
                         </div>
-
+                        {% endfor %}
                     </div>
 
+                </div>
 
-                    <!-- Comment Input -->
-                    <div class="d-flex justify-content-center align-items-center mb-3">
-                        <div class="me-3">
-                        </div>
-                        <form class="d-flex w-100" style="max-width: 600px;" action="/postingan-detail/{{ post.id }}"
-                            method="post">
-                            <div class="input-group">
-                                <input type="text" class="form-control" name="comment" placeholder="Tambah Komentar"
-                                    aria-label="komentar" aria-describedby="button-addon2">
-                                <button class="btn btn-primary" type="submit" id="button-addon2"><i
-                                        class="fa fa-mail-reply"></i></button>
-                            </div>
-                        </form>
+
+                <!-- Comment Input -->
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <div class="me-3">
                     </div>
+                    <form class="d-flex w-100" style="max-width: 600px;" action="/postingan-detail/{{ post.id }}"
+                        method="post">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="comment" placeholder="Tambah Komentar"
+                                aria-label="komentar" aria-describedby="button-addon2">
+                            <button class="btn btn-primary" type="submit" id="button-addon2"><i
+                                    class="fa fa-mail-reply"></i></button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
 

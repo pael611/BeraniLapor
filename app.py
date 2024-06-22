@@ -6,6 +6,7 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for, m
 from bson import ObjectId
 from werkzeug.utils import secure_filename
 import os   
+import bleach
 from os.path import join, dirname
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
@@ -35,11 +36,11 @@ def send_email(resi,nama,program_studi,detail_report,tanggal_kejadian,lokasi_kej
     # Setup the SMTP server and login
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login("rafaelsiregar611@gmail.com", EMAIL_PASSWORD)
+    server.login("rafaelsiregar116@gmail.com", EMAIL_PASSWORD)
 
     # Create the message
     msg = MIMEMultipart()
-    msg['From'] = "rafaelsiregar611@gmail.com"
+    msg['From'] = "rafaelsiregar116@gmail.com"
     msg['To'] = recipient
     msg['Subject'] = "Resi Pelaporan"
     body = f"""
@@ -343,9 +344,9 @@ def new_post():
             raise jwt.exceptions.DecodeError
         
         if request.method == 'POST':
-        # Handle POST Request here
-            user_post_receive = escape_html(request.form['user-post-give'])
-            mahasiswa_get_nim = escape_html(user_info.get('nim'))
+            # Handle POST Request here
+            user_post_receive = bleach.clean(request.form['user-post-give'])
+            mahasiswa_get_nim = bleach.clean(user_info.get('nim'))
             data = {
                 "nim": mahasiswa_get_nim,
                 "post": user_post_receive,
@@ -403,17 +404,17 @@ def forum():
     # jalan kan post untuk postingan ketika user sedang login
     if request.method == 'POST':
         # Handle POST Request here
-        user_post_receive = escape_html(request.form['user-post-give'])
-        mahasiswa_get_nim = escape_html(user_info.get('nim'))
-        maahasiswa_get_nama = escape_html(user_info.get('nama'))
+        user_post_receive = bleach.clean(request.form['user-post-give'])
+        mahasiswa_get_nim = bleach.clean(user_info.get('nim'))
+        mahasiswa_get_nama = bleach.clean(user_info.get('nama'))  # Memperbaiki typo pada variabel
         data = {
             "nim": mahasiswa_get_nim,
             "post": user_post_receive,
             "date": datetime.now().strftime("%Y-%m-%d")
         }
         db.postingan.insert_one(data)
-        flash(f'Postingan {maahasiswa_get_nama} berhasil ditambahkan!', 'success')
-        return redirect(url_for('forum'))       
+        flash(f'Postingan {mahasiswa_get_nama} berhasil ditambahkan!', 'success')
+        return redirect(url_for('forum'))      
 
     # Anda bisa menambahkan kode untuk menangani user_post_receive di sini
 
@@ -481,12 +482,15 @@ def delete_comment(commentId):
 @app.route('/edit_comment/<commentId>', methods=['POST'])
 def editcomment(commentId):
     try:
-        comment = request.form['commentOld'] 
+        # Sanitasi input
+        comment = bleach.clean(request.form['commentOld'])      
+       
+        # Update database
         db.comments.update_one({'_id': ObjectId(commentId)}, {'$set': {'comment': comment}})
         flash("Komentar berhasil diubah.", "success")
         return redirect(request.referrer)
     except Exception as e:
-        flash("Gagal mengubah komentar.", "error")
+        flash(f"Gagal mengubah komentar: {str(e)}", "error")
         return redirect(request.referrer), 500   
 
 
