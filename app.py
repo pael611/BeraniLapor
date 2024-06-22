@@ -9,7 +9,7 @@ import os
 from os.path import join, dirname
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
-from html import escape
+import html
 import re
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -60,6 +60,9 @@ def send_email(resi,nama,program_studi,detail_report,tanggal_kejadian,lokasi_kej
     text = msg.as_string()
     server.sendmail("rafaelsiregar611@gmail.com", recipient, text)
     server.quit()
+
+def escape_html(s):
+    return html.escape(s, quote=True)
 
 # 
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -275,8 +278,17 @@ def userProfil():
             post['comment_count'] = comments
         
         if request.method == 'POST':
+            photo_receive = request.files['photo-new']
+            photo_receive_name = secure_filename(photo_receive.filename)
+            photo_receive_extension = photo_receive_name.split('.')[-1]
+            photo_saveto = f'static/foto_profil/{nim}.{photo_receive_extension}'
+            upload_to_file = os.path.join(app.root_path, photo_saveto)
+            photo_receive.save(upload_to_file)
+            
+            db.mahasiswa.update_one({'nim': nim}, {'$set': {'fotoProfile': f'foto_profil/{nim}.{photo_receive_extension}'}})
+            flash('Foto Profil berhasil diubah!', 'success')
             # Handle POST Request here
-            return render_template('userProfil.html', user_info=user_info)
+            return redirect(url_for('userProfil'))
 
         return render_template('userProfil.html', user_info=user_info, postingan=postingan, status=status)
 
@@ -290,8 +302,8 @@ def userProfil():
 
 @app.route('/userProfil/password-update', methods=['POST'])
 def editProfil():
-    passwordLamaReceive = escape(request.form['passwordLamaGive'])
-    passwordBaruReceive = escape(request.form['passwordBaruGive'])
+    passwordLamaReceive = escape_html(request.form['passwordLamaGive'])
+    passwordBaruReceive = escape_html(request.form['passwordBaruGive'])
 
     # Remove any non-word characters
     passwordLamaReceive = re.sub(r'\W', '', passwordLamaReceive)
@@ -332,8 +344,8 @@ def new_post():
         
         if request.method == 'POST':
         # Handle POST Request here
-            user_post_receive = escape(request.form['user-post-give'])
-            mahasiswa_get_nim = escape(user_info.get('nim'))
+            user_post_receive = escape_html(request.form['user-post-give'])
+            mahasiswa_get_nim = escape_html(user_info.get('nim'))
             data = {
                 "nim": mahasiswa_get_nim,
                 "post": user_post_receive,
@@ -372,11 +384,16 @@ def forum():
             mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
             post['nama'] = mahasiswa_info['nama']
             post['email']=mahasiswa_info['email']
-             # Fetch comments related to the current post
             comments = list(db.comments.find({'post_id': ObjectId(post['id'])}))
 
             # Add the comment count to the post
             post['comment_count'] = comments
+            if 'fotoProfile' in mahasiswa_info and mahasiswa_info['fotoProfile']:
+                post['fotoProfile'] = mahasiswa_info['fotoProfile']
+            else:
+                continue
+             # Fetch comments related to the current post
+            
         if not user_info:
             raise jwt.exceptions.DecodeError
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
@@ -386,9 +403,9 @@ def forum():
     # jalan kan post untuk postingan ketika user sedang login
     if request.method == 'POST':
         # Handle POST Request here
-        user_post_receive = escape(request.form['user-post-give'])
-        mahasiswa_get_nim = escape(user_info.get('nim'))
-        maahasiswa_get_nama = escape(user_info.get('nama'))
+        user_post_receive = escape_html(request.form['user-post-give'])
+        mahasiswa_get_nim = escape_html(user_info.get('nim'))
+        maahasiswa_get_nama = escape_html(user_info.get('nama'))
         data = {
             "nim": mahasiswa_get_nim,
             "post": user_post_receive,
@@ -423,23 +440,26 @@ def detailPost(idPost):
                 })
                 flash("Komentar berhasil diposting.", "success")
                 return redirect(url_for('detailPost', idPost=idPost))
-
+            
+            comments = db.comments.find({'post_id': ObjectId(idPost)})
             post = db.postingan.find_one({'_id': ObjectId(idPost)})
             post['id'] = str(post['_id'])
             mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
             post['nama'] = mahasiswa_info['nama']
             post['email'] = mahasiswa_info['email']
-
+            # Fetch Photo Profile from  user who posted 
+            if 'fotoProfile' in mahasiswa_info and mahasiswa_info['fotoProfile']:
+                post['fotoProfile'] = mahasiswa_info['fotoProfile']
+            
             # Fetch comments related to the current post
-            comments = db.comments.find({'post_id': ObjectId(idPost)})
-             
-            # Convert comments to a list so it can be passed to the template
             comments = list(comments)
             for comment in comments:
                 comment['id'] = str(comment['_id'])
                 mahasiswa_info = db.mahasiswa.find_one({'nim': comment['nim']})
                 comment['nama'] = mahasiswa_info['nama']
-
+                # Check and add fotoProfile for each comment if it exists
+                if 'fotoProfile' in mahasiswa_info and mahasiswa_info['fotoProfile']:
+                    comment['fotoProfile'] = mahasiswa_info['fotoProfile']        
             return render_template('detailForum.html', post=post, user_info=user_info, comments=comments)
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.","error")
@@ -447,6 +467,28 @@ def detailPost(idPost):
     else:
         flash("Token tidak ditemukan. Silakan login.","error")
         return redirect(url_for('loginUser'))
+
+@app.route('/delete-comment/<commentId>', methods=['POST'])
+def delete_comment(commentId):
+    try:
+        db.comments.delete_one({'_id': ObjectId(commentId)})
+        flash("Komentar berhasil dihapus.", "success")
+        return jsonify({"success": True, "message": "Komentar berhasil dihapus."}), 200
+    except Exception as e:
+        flash("Gagal menghapus komentar.", "error")
+        return jsonify({"success": False, "message": "Gagal menghapus komentar."}), 500
+    
+@app.route('/edit_comment/<commentId>', methods=['POST'])
+def editcomment(commentId):
+    try:
+        comment = request.form['commentOld'] 
+        db.comments.update_one({'_id': ObjectId(commentId)}, {'$set': {'comment': comment}})
+        flash("Komentar berhasil diubah.", "success")
+        return redirect(request.referrer)
+    except Exception as e:
+        flash("Gagal mengubah komentar.", "error")
+        return redirect(request.referrer), 500   
+
 
 @app.route('/artikelBase', methods=['GET', 'POST'])
 def artikel():
@@ -726,7 +768,8 @@ def userControl():
                 "program_studi": mahasiswa_prodi,
                 "nama_ibu": ibu_mahasiswa,
                 "default_password": password_hash,
-                "role": "mahasiswa"
+                "role": "mahasiswa",
+                "fotoProfile": "/static/foto_profil/default_profile.png"
             }
             # duplicate username check
             if db.mahasiswa.find_one({"nim": mahasiswa_nim}):

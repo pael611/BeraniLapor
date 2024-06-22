@@ -76,8 +76,9 @@
         <div class="d-flex justify-content-center align-items-center mb-3">
             <div class="me-3">
                 <a href="#">
-                    <img class="rounded" src="../static/assets/placeholder.jpg " alt="User Image" width="32"
-                        height="32">
+                    <img class="rounded"
+                        src="{{ url_for('static', filename=user_info.fotoProfile if user_info.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+                        alt="User Image" width="32" height="32">
                 </a>
             </div>
             <input id="input-post" class="form-control rounded-pill" style="max-width: 600px;"
@@ -109,6 +110,7 @@
         </div>
     </div>
     <!-- Post Card -->
+
     {% for post in postingan %}
     <div id="post-box" class="container">
         <div class="card card-forum mb-3  mx-auto w-100 w-sm-75 w-md-50">
@@ -117,8 +119,9 @@
                 <div class="d-flex mb-3">
                     <div class="col-lg-1 col-3 p-0">
                         <a href="#">
-                            <img class="rounded img-fluid" src="../static/assets/placeholder.jpg" alt="Image"
-                                style="max-width: 112px; max-height: 112px;">
+                            <img class="rounded img-fluid"
+                                src="{{ url_for('static', filename=post.fotoProfile if post.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+                                alt="Image" style="max-width: 112px; max-height: 112px;">
                         </a>
                     </div>
                     <div class="col-lg-11 col-9 ms-3">
@@ -129,7 +132,7 @@
                                     <br><span>Posted at {{post.date}}</span></small>
                             </div>
                             <div class="card-subtitle mb-2 text-muted card-info"></div>
-                            <div class="card-text-content">
+                            <div class="card-text-content p-2">
                                 {{post.post}}
                             </div>
                         </div>
@@ -139,7 +142,7 @@
                     <div class="d-flex flex-wrap align-items-center">
                         <form class="like-form" data-post-id="{{ post.id }}">
                             <button type="submit" class="cursor me-2 border-0 bg-transparent">
-                                <i  class="{{ 'fa fa-heart' if user_info.nim in post.likes else 'far fa-heart' }}"
+                                <i class="{{ 'fa fa-heart' if user_info.nim in post.likes else 'far fa-heart' }}"
                                     aria-hidden="true"></i>
                                 <span class="like-num"> {{ post.likes|length }}</span>
                             </button>
@@ -156,28 +159,6 @@
         </div>
     </div>
     {% endfor %}
-
-    <!-- Modal Tambah Komentar -->
-    <div class="modal fade" id="Modalkomen" tabindex="-1" aria-labelledby="komentarLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #410404; color: white;">
-                    <h5 class="modal-title " id="komentarLabel">Tambah Komentar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body bg-body-tertiary">
-                    <form>
-                        <div class="mb-3">
-                            <textarea class="form-control" id="komentar" rows="3" required
-                                placeholder="Ketikkan komentar anda"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" onclick="komen()">Submit</button>
-                        <button type="button" class="btn btn-secondary" onclick="cancel()">hapus</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
 

@@ -3,6 +3,61 @@
 
 {% include 'header.html' %}
 
+<style>
+    .modal-dialog {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - (.5rem * 2));
+    }
+
+    .modal {
+        overflow-y: auto;
+    }
+</style>
+
+<script>
+    // fungction hapus komentar
+    function delete_comment(comment_id) {
+        $.ajax({
+            type: "POST",
+            url: `/delete-comment/${comment_id}`,
+            data: { comment_id: comment_id },
+            success: function (response) {
+                location.reload();
+            },
+            error: function (xhr, status, error) {
+
+                console.error("Error: " + status + " " + error);
+            }
+        });
+    }
+
+    // edit  comment function
+    $(document).ready(function () {
+        // Event listener untuk tombol edit
+        $('.editCommentbtn').on('click', function () {
+            var commentId = $(this).data('commentid'); // Mengambil commentId
+            var commentOld = $(this).data('comment-old'); // Mengambil commentOld
+
+            // Set action attribute for form only once
+            var formAction = `/edit_comment/${commentId}`;
+            var $editCommentForm = $('#editCommentForm');
+            if ($editCommentForm.attr('action') !== formAction) {
+                $editCommentForm.attr('action', formAction);
+            }
+
+            // Set values for inputs inside modal
+            $('#commentIdInput').val(commentId);
+            $('#commentEditInput').val(commentOld);
+
+            // Show modal
+            $('#editCommentModal').modal('show');
+        });
+    });
+</script>
+
+
+
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
 <script>
@@ -38,8 +93,9 @@
                     <div class="d-flex mb-3">
                         <div class="col-lg-1 col-3 p-0">
                             <a href="#">
-                                <img class="rounded img-fluid" src="../static/assets/placeholder.jpg" alt="Image"
-                                    style="max-width: 112px; max-height: 112px;">
+                                <img class="rounded img-fluid"
+                                    src="{{ url_for('static', filename=post.fotoProfile if post.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+                                    alt="Image" style="max-width: 112px; max-height: 112px;">
                             </a>
                         </div>
                         <div class="col-lg-11 col-9 ms-3">
@@ -54,30 +110,42 @@
                     <!-- User Comments -->
 
                     <!-- User comments will be populated here -->
-                     <p class="text-start"><i>Komentar ({{ comments|length }})  </i></p>
-                    {% for comment in comments %}
-                    <div class="coment-container-posted d-flex w-100 align-content-center mt-2 mb-2">
-                        <div class="d-flex justify-content-center align-items-center text-start">
-                            <a href="#">
-                                <img class="rounded" style="max-width:10vw; max-height: 10vh;"
-                                    src="../static/assets/placeholder.jpg " alt="User Image" width="32" height="32">
-                            </a>
-                            <div class="comment ms-2">
-                                <span><strong>{{ comment.nama }}</strong> <br><i class="text-muted fs-6">commented on {{ comment.date.strftime('%Y-%m-%d
-                                    %H:%M') }}</i></span>
-                                <p>{{ comment.comment }}</p>
+                    <p class="text-start"><i>Komentar ({{ comments|length }}) </i></p>
+
+
+                    <div class="coment-container-posted d-flex w-100 align-content-start mt-2 mb-2 ">
+                        <div class="d-flex justify-content-start align-items-start text-start row">
+                            {% for comment in comments %}
+                            <div class="coment-user-container row">
+                                <div class="col-lg-1 col-md-1 col-sm-1 col-2 mt-1">
+                                    <img class="img-fluid rounded-circle"
+                                        src="{{ url_for('static', filename=comment.fotoProfile if comment.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+                                        alt="User Image">
+                                </div>
+                                <div class="comments col-lg-10 col-md-10 col-sm-10 col-10 ms-2">
+                                    <span><strong>{{ comment.nama }}</strong> <br><i class="text-muted fs-6">commented
+                                            on {{ comment.date.strftime('%Y-%m-%d %H:%M') }}</i></span>
+                                    <p>{{ comment.comment }}
+                                        {% if comment.nim == user_info.nim %}
+                                        <br>
+                                        <i class="fa fa-trash" type="button"
+                                            onclick="delete_comment('{{ comment.id }}')"></i> &nbsp;
+                                        <i class="fa fa-pencil editCommentbtn" type="button"
+                                            data-commentId="{{comment.id}}" data-comment-old="{{comment.comment}}"
+                                            data-bs-toggle="modal" data-bs-target="#editCommentModal"></i>
+                                        {% endif %}
+                                    </p>
+                                </div>
                             </div>
+                            {% endfor %}
                         </div>
+
                     </div>
 
-                    {% endfor %}
+
                     <!-- Comment Input -->
                     <div class="d-flex justify-content-center align-items-center mb-3">
                         <div class="me-3">
-                            <a href="#">
-                                <img class="rounded" style="max-width:40px; max-height: 40px;"
-                                    src="../static/assets/placeholder.jpg " alt="User Image" width="32" height="32">
-                            </a>
                         </div>
                         <form class="d-flex w-100" style="max-width: 600px;" action="/postingan-detail/{{ post.id }}"
                             method="post">
@@ -94,15 +162,32 @@
         </div>
     </div>
 
-    <script>
-        function postComment() {
-            // Implement your comment functionality here
-        }
 
-        function cancel() {
-            // Implement your cancel functionality here
-        }
-    </script>
+    <!-- Edit Comment Modal -->
+    <div class="modal fade" id="editCommentModal" tabindex="-1" aria-labelledby="editCommentModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCommentModalLabel">Edit Comment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCommentForm" method="post">
+                        <div class="mb-3">
+                            <textarea class="form-control" id="commentEditInput" name="commentOld" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="editCommentForm">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </body>
 {% include 'footer.html' %}
 

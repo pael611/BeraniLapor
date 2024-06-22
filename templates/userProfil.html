@@ -61,8 +61,12 @@
 
     <div class="profile" style="max-width: 70vw;max-height: auto; margin-left: auto; margin-right: auto;">
         <div class="profile-card" style="size: auto;">
-            <img class="profile-image" src="{{ url_for('static', filename='foto_profil/Alfian.png') }}"
-                alt="Foto Profil" />
+            <div class="photo-container-profile">
+                <img class="profile-image" src="{{ url_for('static', filename=user_info.fotoProfile if user_info.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+                    alt="Foto Profil" />
+                <i class="fa fa-pencil" data-bs-toggle="modal" data-bs-target="#profilePhotoModal"
+                    style="cursor: pointer;"></i>
+            </div>
             <div class="profile-info">
                 <div class="profile-name">{{ user_info.nama }}</div>
                 <div class="profile-username">@{{ user_info.nim }}</div>
@@ -87,7 +91,8 @@
     </div>
 
     <div class="new-post-container">
-        <img class="new-post-icon" src="{{ url_for('static', filename='foto_profil/Alfian.png') }}" alt="Foto Profil" />
+        <img class="profile-image" src="{{ url_for('static', filename=user_info.fotoProfile if user_info.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+        alt="Foto Profil" />
         <input type="button" class="new-post-button" style="font-size: medium;" value="Buat Postingan Baru"
             data-bs-toggle="modal" data-bs-target="#newPostModal">
     </div>
@@ -96,8 +101,8 @@
     {% for post in postingan %}
     <div class="container">
         <div class="post-card">
-            <img class="post-profile-image" src="{{ url_for('static', filename='foto_profil/Alfian.png') }}"
-                alt="Foto Profil" />
+            <img class="profile-image" src="{{ url_for('static', filename=user_info.fotoProfile if user_info.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+            alt="Foto Profil" />
             <div class="post-content">
                 <div class="content">
                     <p>
@@ -189,11 +194,35 @@
                 <div class="modal-body bg-body-tertiary">
                     <form action="/new-post" method="post">
                         <div class="mb-3">
-                            <label for="namaEdit" class="form-label">Hai {{user_info.nama}}, ada cerita apa nih? Yuk
-                                posting!</label>
-                            <input type="text" class="form-control" name="user-post-give" id="user-post" required>
+                            <label for="posttext" class="form-label">Hai {{user_info.nama}}, ada cerita apa nih? Yuk
+                                posting!
+                            </label>
+                            <textarea class="form-control" name="user-post-give" required id="posttext"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ganti Photo User -->
+    <div class="modal fade" id="profilePhotoModal" tabindex="-1" aria-labelledby="profilePhotoModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="profilePhotoModalLabel">Change Profile Photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Your form or content for changing the profile photo goes here -->
+                    <form method="post" action="" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="profile-photo-upload" class="form-label">Update  photo profile</label>
+                            <input class="form-control" name="photo-new" type="file" id="profile-photo-upload" accept="image/png, image/jpeg,image/jpg">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
                     </form>
                 </div>
             </div>
@@ -204,7 +233,6 @@
     <script>
         function deletePost(element) {
             const postId = element.getAttribute("data-post-id");
-
             Swal.fire({
                 title: 'Apakah Anda yakin ingin menghapus postingan ini?',
                 icon: 'warning',
