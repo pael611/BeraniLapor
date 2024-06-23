@@ -35,6 +35,31 @@
       modalBody.append(`<p>Tanggal Kejadian: ${tanggalKejadian}</p>`);
       modalBody.append(`<p>Tanggal Melapor: ${tanggal_melapor}</p>`);
       modalBody.append(`<p>Lokasi Kejadian: ${lokasiKejadian}</p>`);
+
+      // set button action for modal footer based on status of report
+      var modalFooter = $(this).find('.modal-footer');
+      modalFooter.empty();
+      if (status == "Dalam Antrian") {
+        modalFooter.append(`
+          <form action="/updateLaporan/${noResi}" method="post">
+            <input type="hidden" name="new_status" value="Proses">
+            <button type="submit" class="btn btn-warning">Proses</button>
+          </form>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        `);
+      } else if (status == "Proses") {
+        modalFooter.append(`
+          <form action="/updateLaporan/${noResi}" method="post">
+            <input type="hidden" name="new_status" value="Selesai">
+            <button type="submit" class="btn btn-success">Selesai</button>
+          </form>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        `);
+      } else if (status == "Selesai") {
+        modalFooter.append(`
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        `);
+      }
     });
   });
 </script>
@@ -127,21 +152,7 @@
 
                             </div>
                             <div class="modal-footer">
-                              {% if report.status == "Dalam Antrian" %}
-                              <form action="/updateLaporan/{{ report.no_resi }}" method="post">
-                                <input type="hidden" name="new_status" value="Proses">
-                                <button type="submit" class="btn btn-warning">Proses</button>
-                              </form>
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                              {% elif report.status == "Proses" %}
-                              <form action="/updateLaporan/{{ report.no_resi }}" method="post">
-                                <input type="hidden" name="new_status" value="Selesai">
-                                <button type="submit" class="btn btn-success">Selesai</button>
-                              </form>
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                              {% elif report.status == "Selesai" %}
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                              {% endif %}
+
                             </div>
                           </div>
                         </div>

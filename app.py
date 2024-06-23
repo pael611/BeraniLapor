@@ -921,6 +921,22 @@ def updateUser():
     flash('Data Mahasiswa berhasil diubah!', 'success')
     return redirect(url_for('userControl'))
 
+@app.route('/resetMahasiswa', methods=['POST'])
+def reset():
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        if not payload:
+            return redirect(url_for('loginAdmin'))
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for('loginAdmin'))
+    except jwt.InvalidTokenError:
+        return redirect(url_for('loginAdmin'))
+    nim_receive = request.form.get('nim')
+    # delete kolom password_new dari koleksi mahasiswa
+    db.mahasiswa.update_one({'nim': nim_receive}, {'$unset': {'password_new': ""}})
+    flash('Akun berhasil direset!', 'success')
+    return redirect(url_for('userControl'))
 
 @app.route('/adminDashboard/deleteArticle/<article_id>', methods=['POST'])
 def delete_article(article_id):

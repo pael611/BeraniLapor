@@ -63,12 +63,18 @@
                       <td>{{ user['nim'] }}</td>
                       <td>{{ user['status'] }}</td>
                       <td>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editStudentModal"
+                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editStudentModal"
                           data-email="{{ user['email'] }}" data-nama="{{ user['nama'] }}"
                           data-nama_ibu="{{ user['nama_ibu'] }}" data-program_studi="{{ user['program_studi'] }}"
                           data-nim="{{ user['nim'] }}">
                           Edit
                         </button>
+                        <form action="/resetMahasiswa" method="post">
+                          <input type="text" name="nim" id="nim" value="{{user['nim']}}" hidden readonly>
+                          <button class="btn btn-danger">
+                            Reset!
+                          </button>
+                        </form>
                       </td>
                     </tr>
                     {% endfor %}
@@ -79,7 +85,7 @@
                 <!-- end table -->
               </div>
 
-            
+
 
 
             </main>
