@@ -438,7 +438,7 @@ def detailPost(idPost):
                 return redirect(url_for('loginUser'))
 
             if request.method == 'POST':
-                comment = request.form.get('comment')
+                comment = bleach.clean(request.form['comment'])
                 db.comments.insert_one({
                     'nim': user_info['nim'],
                     'post_id': ObjectId(idPost),
