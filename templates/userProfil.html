@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,13 +20,15 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <!-- sweet alert -->
+    <!-- sweet alert -->
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- sweet alert 2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 
     <!-- Font Awesome -->
@@ -39,11 +40,14 @@
 {% if messages %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        swal({
-            title: "Pesan",
-            text: "{{ messages[0][1] }}",
+        const Toast = Swal.mixin({
+            toast: true,
+            showConfirmButton: true,
+            timerProgressBar: true,
+        })
+        Toast.fire({
             icon: "{{ messages[0][0] }}",
-            button: "OK",
+            title: "{{ messages[0][1] }}"
         });
     });
 </script>
@@ -73,10 +77,10 @@
             <div class="photo-container-profile">
                 <img class="profile-image" src="
                 {% if user_info.fotoProfile %}
-                    {{url_for('static', filename=user_info.fotoProfile)}}
-                {% else %}
-                    {{url_for('static', filename='foto_profil/default_profile.png')}}
-                {% endif %}                
+                        {{url_for('static', filename=user_info.fotoProfile)}}
+                    {% else %}
+                        {{url_for('static', filename='foto_profil/Default-profile-image.png')}}
+                    {% endif %}              
                 " alt="Foto Profil" />
                 <i class="fa fa-pencil" data-bs-toggle="modal" data-bs-target="#profilePhotoModal"
                     style="cursor: pointer;"></i>
@@ -108,12 +112,12 @@
         <div class="new-post-container mt-5 w-100">
             <img class="profile-image " style="width: 112px; height: 112px;" src="
             {% if user_info.fotoProfile %}
-                    {{url_for('static', filename=user_info.fotoProfile)}}
-                {% else %}
-                    {{url_for('static', filename='foto_profil/default_profile.png')}}
-                {% endif %} " alt="Foto Profil" />
+                        {{url_for('static', filename=user_info.fotoProfile)}}
+                    {% else %}
+                        {{url_for('static', filename='foto_profil/Default-profile-image.png')}}
+                    {% endif %} " alt="Foto Profil" />
             <input type="button" class="new-post-button" style="font-size: medium;" value="Buat Postingan Baru"
-                data-bs-toggle="modal" data-bs-target="#newPostModal">
+                data-bs-toggle="modal" data-bs-target="#newPostingan">
         </div>
 
         {% if status %}
@@ -121,10 +125,10 @@
         <div class="container">
             <div class="post-card">
                 <img class="profile-image" style="width: 100px; height: 100px;" src="
-            {% if user_info.fotoProfile %}
+                {% if user_info.fotoProfile %}
                 {{url_for('static', filename=user_info.fotoProfile)}}
             {% else %}
-                {{url_for('static', filename='foto_profil/default_profile.png')}}
+                {{url_for('static', filename='foto_profil/Default-profile-image.png')}}
             {% endif %} " alt="Foto Profil" />
                 <div class="post-content">
                     <div class="content">
@@ -159,139 +163,157 @@
             <p class="text-center" style="color: #f9f9f9; font-size: 16px; font-weight: 400; margin: auto;">© 2024
                 BeraniLapor, Satgas-PPKS Politeknik Negeri Medan</p>
         </div>
+    </div>
 
-        <!-- Modal Edit Profil -->
-        <div class="modal fade" id="editProfilModal" tabindex="-1" aria-labelledby="editProfilLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: #410404; color: white;">
-                        <h5 class="modal-title " id="editProfilLabel">Ubah Password</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body bg-body-tertiary">
-                        <form action="/userProfil/password-update" method="post">
-                            <div class="mb-3">
-                                <label for="namaEdit" class="form-label">Password Lama</label>
-                                <input type="password" class="form-control" name="passwordLamaGive" id="passwordLama"
-                                    required>
+    <!-- Modal Edit Password -->
+    <div class="modal fade" id="editProfilModal" tabindex="-1" aria-labelledby="editProfilLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #410404; color: white;">
+                    <h5 class="modal-title " id="editProfilLabel">Ubah Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-body-tertiary">
+                    <form action="/userProfil/password-update" method="post">
+                        <div class="mb-3">
+                            <label for="namaEdit" class="form-label">Password Lama</label>
+                            <input type="password" class="form-control" name="passwordLamaGive" id="passwordLama"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="namaEdit" class="form-label">Password baru</label>
+                            <input type="password" class="form-control" name="passwordBaruGive" id="passwordBaru"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Edit Photo Profile -->
+    <div class="modal fade" id="profilePhotoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary-subtle">
+                    <h5 class="modal-title" id="profilePhotoModalLabel">Change Profile Photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="potoupdate" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="profile-photo-upload" class="form-label">Update photo profile</label>
+                            <input class="form-control" name="photo-new" required type="file" id="profile-photo-upload"
+                                accept="image/png, image/jpeg,image/jpg">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cek Status Laporan -->
+    <div class="modal fade" id="cekStatusModal" tabindex="-1" aria-labelledby="cekStatusLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #410404; color: white;">
+                    <h5 class="modal-title" id="cekStatusLabel">Cek Status Laporan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-body-tertiary">
+                    <form action="/cekLaporan" method="post">
+                        <div class="mb-3">
+                            <label for="namaEdit" class="form-label">ID Laporan</label>
+                            <input type="text" class="form-control" name="resiLaporan-give" id="laporanId" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+                <div class="container my-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="history-resi">
+                                <h3 class="resi-title mb-3">Riwayat Pengecekan</h3>
+                                <div class="list-group">
+                                    {% for resi in no_resi %}
+                                    <div class="list-group-item ">{{ resi }}</div>
+                                    {% endfor %}
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="namaEdit" class="form-label">Password baru</label>
-                                <input type="password" class="form-control" name="passwordBaruGive" id="passwordBaru"
-                                    required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Modal Cek Status Laporan -->
-        <div class="modal fade" id="cekStatusModal" tabindex="-1" aria-labelledby="cekStatusLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: #410404; color: white;">
-                        <h5 class="modal-title" id="cekStatusLabel">Cek Status Laporan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body bg-body-tertiary">
-                        <form action="/cekStatusLaporan" method="post">
-                            <div class="mb-3">
-                                <label for="namaEdit" class="form-label">ID Laporan</label>
-                                <input type="text" class="form-control" name="laporanIdGive" id="laporanId" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
-                    </div>
+
+    <!-- Modal Buat Postingan Baru -->
+    <div class="modal fade" id="newPostingan" tabindex="-1" aria-labelledby="newPostLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #410404; color: white;">
+                    <h5 class="modal-title" id="newPostLabel">Buat Postingan Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-body-tertiary">
+                    <form action="/new-post" id="new-post" method="post">
+                        <div class="mb-3">
+                            <label for="posttext" class="form-label">Hai {{user_info.nama}}, ada cerita apa nih?
+                                Yuk
+                                posting!
+                            </label>
+                            <textarea class="form-control" name="user-post-give" required id="posttext"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Modal Buat Postingan Baru -->
-        <div class="modal fade" id="newPostModal" tabindex="-1" aria-labelledby="newPostLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: #410404; color: white;">
-                        <h5 class="modal-title" id="newPostLabel">Buat Postingan Baru</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body bg-body-tertiary">
-                        <form action="/new-post" method="post">
-                            <div class="mb-3">
-                                <label for="posttext" class="form-label">Hai {{user_info.nama}}, ada cerita apa nih? Yuk
-                                    posting!
-                                </label>
-                                <textarea class="form-control" name="user-post-give" required id="posttext"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Modal Ganti Photo User -->
-        <div class="modal fade" id="profilePhotoModal" tabindex="-1" aria-labelledby="profilePhotoModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary">
-                        <h5 class="modal-title" id="profilePhotoModalLabel">Change Profile Photo</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Your form or content for changing the profile photo goes here -->
-                        <form method="post" action="" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="profile-photo-upload" class="form-label">Update photo profile</label>
-                                <input class="form-control" name="photo-new" type="file" id="profile-photo-upload"
-                                    accept="image/png, image/jpeg,image/jpg">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Upload</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Tambahkan JavaScript untuk menghapus postingan -->
-        <script>
-            function deletePost(element) {
-                const postId = element.getAttribute("data-post-id");
-                Swal.fire({
-                    title: 'Apakah Anda yakin ingin menghapus postingan ini?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes',
-                    cancelButtonText: 'No'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "POST",
-                            url: "/delete-post",
-                            data: { post_id_give: postId },
-                            success: function (response) {
-                                Swal.fire(
-                                    'Deleted!',
-                                    response.msg,
-                                    'success'
-                                ).then(() => {
-                                    window.location.reload();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                Swal.fire(
-                                    'Failed!',
-                                    'There was an error deleting your post.',
-                                    'error'
-                                );
-                            }
-                        });
-                    }
-                });
-            }
-        </script>
+    <!-- Tambahkan JavaScript untuk menghapus postingan -->
+    <script>
+        function deletePost(element) {
+            const postId = element.getAttribute("data-post-id");
+            Swal.fire({
+                title: 'Apakah Anda yakin ingin menghapus postingan ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/delete-post",
+                        data: { post_id_give: postId },
+                        success: function (response) {
+                            Swal.fire(
+                                'Deleted!',
+                                response.msg,
+                                'success'
+                            ).then(() => {
+                                window.location.reload();
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire(
+                                'Failed!',
+                                'There was an error deleting your post.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

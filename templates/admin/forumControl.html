@@ -59,8 +59,10 @@
                     <td>{{post.date}}</td>
 
                     <td>
-                      <button class="btn btn-primary">Edit</button>
-                      <button class="btn btn-danger">Hapus</button>
+                      <form action="/deletePostbyAdmin" method="post">
+                        <input type="text" readonly hidden name="post_id_give" value="{{post._id}}">
+                        <button type="submit" class="btn btn-danger">Hapus</button>
+                      </form>
                     </td>
                   </tr>
 

@@ -76,9 +76,12 @@
         <div class="d-flex justify-content-center align-items-center mb-3">
             <div class="me-3">
                 <a href="#">
-                    <img class="rounded"
-                        src="{{ url_for('static', filename=user_info.fotoProfile if user_info.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
-                        alt="User Image" width="32" height="32">
+                    <img class="rounded" src="
+                        {% if user_info.fotoProfile %}
+                        {{url_for('static', filename=user_info.fotoProfile)}}
+                    {% else %}
+                        {{url_for('static', filename='foto_profil/Default-profile-image.png')}}
+                    {% endif %}" alt="User Image" width="32" height="32">
                 </a>
             </div>
             <input id="input-post" class="form-control rounded-pill" style="max-width: 600px;"
@@ -102,7 +105,7 @@
                                 placeholder="hai {{user_info.nama}}, ada cerita apa nih? yuk posting"
                                 name="user-post-give"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button> 
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>
@@ -118,9 +121,12 @@
                 <div class="d-flex mb-3">
                     <div class="col-lg-1 col-3 p-0">
                         <a href="#">
-                            <img class="rounded img-fluid"
-                                src="{{ url_for('static', filename=post.fotoProfile if post.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
-                                alt="Image" style="max-width: 112px; max-height: 112px;">
+                            <img class="rounded img-fluid" src="
+                                {% if user_info.fotoProfile %}
+                        {{url_for('static', filename=post.fotoProfile)}}
+                    {% else %}
+                        {{url_for('static', filename='foto_profil/Default-profile-image.png')}}
+                    {% endif %}" alt="Image" style="max-width: 112px; max-height: 112px;">
                         </a>
                     </div>
                     <div class="col-lg-11 col-9 ms-3">

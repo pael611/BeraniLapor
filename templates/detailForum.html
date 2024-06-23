@@ -94,7 +94,11 @@
                         <div class="col-lg-1 col-3 p-0">
                             <a href="#">
                                 <img class="rounded img-fluid"
-                                    src="{{ url_for('static', filename=post.fotoProfile if post.get('fotoProfile') else 'foto_profil/default_profile.png') }}"
+                                    src="{% if user_info.fotoProfile %}
+                                    {{url_for('static', filename=post.fotoProfile)}}
+                                {% else %}
+                                    {{url_for('static', filename='foto_profil/Default-profile-image.png')}}
+                                {% endif %}"
                                     alt="Image" style="max-width: 112px; max-height: 112px;">
                             </a>
                         </div>

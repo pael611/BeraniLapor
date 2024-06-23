@@ -10,7 +10,6 @@ import bleach
 from os.path import join, dirname
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
-import html
 import re
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -32,38 +31,34 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 app=Flask(__name__)
 # SMTP email configuration for Resi Pengaduan
 
-def send_email(resi,nama,program_studi,detail_report,tanggal_kejadian,lokasi_kejadian, recipient):
-    # Setup the SMTP server and login
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login("rafaelsiregar116@gmail.com", EMAIL_PASSWORD)
+def send_email(resi, nama, program_studi, detail_report, tanggal_kejadian, lokasi_kejadian, recipient):
+    server = smtplib.SMTP('smtp.gmail.com', 587) 
+    try:
+        server.starttls()
+        server.login("rafaelsiregar116@gmail.com", "leyf oqai fovm ukwt")
 
-    # Create the message
-    msg = MIMEMultipart()
-    msg['From'] = "rafaelsiregar116@gmail.com"
-    msg['To'] = recipient
-    msg['Subject'] = "Resi Pelaporan"
-    body = f"""
-        Berikut adalah detail laporan Anda:
-        
-        No Resi: {resi}
-        Nama Pelapor: {nama}
-        Program Studi: {program_studi}
-        Detail Laporan: {detail_report}
-        Tanggal Kejadian: {tanggal_kejadian.strftime('%Y-%m-%d')}
-        Lokasi Kejadian: {lokasi_kejadian}
+        msg = MIMEMultipart()
+        msg['From'] = "rafaelsiregar116@gmail.com"
+        msg['To'] = recipient
+        msg['Subject'] = "Resi Pelaporan"
+        body = f"""
+            Berikut adalah detail laporan Anda:
 
-        Terima kasih telah melakukan pelaporan.Tim Satgas Akan Segera Melakukan Peninjauan terhadap Laporan Anda.
-        """
-    msg.attach(MIMEText(body, 'plain'))
+            No Resi: {resi}
+            Nama Pelapor: {nama}
+            Program Studi: {program_studi}
+            Detail Laporan: {detail_report}
+            Tanggal Kejadian: {tanggal_kejadian.strftime('%Y-%m-%d')}
+            Lokasi Kejadian: {lokasi_kejadian}
 
-    # Send the message
-    text = msg.as_string()
-    server.sendmail("rafaelsiregar611@gmail.com", recipient, text)
-    server.quit()
+            Terima kasih telah melakukan pelaporan. Tim Satgas Akan Segera Melakukan Peninjauan terhadap Laporan Anda.
+            """
+        msg.attach(MIMEText(body, 'plain'))
 
-def escape_html(s):
-    return html.escape(s, quote=True)
+        text = msg.as_string()
+        server.sendmail("rafaelsiregar116@gmail.com", recipient, text)
+    finally:
+        server.quit()
 
 # 
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -179,8 +174,6 @@ def verifikasi(nim):
 
     return render_template('loginVerifikasi.html', nim=nim, mahasiswa=mahasiswa)
     
-    
-
 @app.route('/sign_out', methods=['GET', 'POST'])
 def sign_out():
     
@@ -218,6 +211,7 @@ def lapor():
         program_studi = request.form.get('programStudi')
         detail_report = request.form.get('detailReport')
         tanggal_kejadian = datetime.strptime(request.form.get('tanggalKejadian'), '%Y-%m-%d')
+        tanggal_melapor = datetime.now()
         lokasi_kejadian = request.form.get('lokasiKejadian')
         
         data = {
@@ -227,12 +221,14 @@ def lapor():
             'program_studi': program_studi,
             'detail_report': detail_report,
             'tanggal_kejadian': tanggal_kejadian,
+            'tanggal_melapor': tanggal_melapor,
             'lokasi_kejadian': lokasi_kejadian,
-            'status': 'Dalam Antirian'
+            'status': 'Dalam Antrian'
         }
         db.pelaporan.insert_one(data)
          # Send the email.
         send_email(no_resi,nama_pelapor,program_studi,detail_report,tanggal_kejadian,lokasi_kejadian, email)
+        flash('Laporan Anda berhasil dikirim!', 'success')
         return redirect(url_for('lapor'))
     token_receive = request.cookies.get('mytoken')
     user_info = None
@@ -265,19 +261,29 @@ def userProfil():
         user_info = db.mahasiswa.find_one({'nim': nim}, {'_id': False})
         status = nim == payload.get('id')
         
+        # tangkap informasi resi yang pernah di cek oleh user
+        cek_laporan = db.cek_laporan.find({'nim': nim})
+        no_resi = [resi['no_resi'] for resi in cek_laporan]
+        if not no_resi:
+            no_resi = []
+        
         # Hanya ambil postingan dari user yang sedang login
         postingan = list(db.postingan.find({'nim': nim}))
-        for post in postingan:
-            post['id'] = str(post['_id'])
-            mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
-            post['nama'] = mahasiswa_info['nama']
-            post['email'] = mahasiswa_info['email']
-            
-            # get comment count
-            comments = list(db.comments.find({'post_id': ObjectId(post['id'])}))
-            # Add the comment count to the post
-            post['comment_count'] = comments
+        if not postingan:
+            postingan = []
+        else:
+            for post in postingan:
+                post['id'] = str(post['_id'])
+                mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
+                post['nama'] = mahasiswa_info['nama']
+                post['email'] = mahasiswa_info['email']
+                
+                # get comment count
+                comments = list(db.comments.find({'post_id': ObjectId(post['id'])}))
+                # Add the comment count to the post
+                post['comment_count'] = comments
         
+        # method Post pada userProfil
         if request.method == 'POST':
             photo_receive = request.files['photo-new']
             photo_receive_name = secure_filename(photo_receive.filename)
@@ -291,7 +297,7 @@ def userProfil():
             # Handle POST Request here
             return redirect(url_for('userProfil'))
 
-        return render_template('userProfil.html', user_info=user_info, postingan=postingan, status=status)
+        return render_template('userProfil.html', user_info=user_info, postingan=postingan, status=status, no_resi=no_resi)
 
     except jwt.ExpiredSignatureError:
         flash('Akun Anda telah keluar, silahkan Login kembali!')
@@ -303,8 +309,8 @@ def userProfil():
 
 @app.route('/userProfil/password-update', methods=['POST'])
 def editProfil():
-    passwordLamaReceive = escape_html(request.form['passwordLamaGive'])
-    passwordBaruReceive = escape_html(request.form['passwordBaruGive'])
+    passwordLamaReceive = bleach.clean(request.form['passwordLamaGive'])
+    passwordBaruReceive = bleach.clean(request.form['passwordBaruGive'])
 
     # Remove any non-word characters
     passwordLamaReceive = re.sub(r'\W', '', passwordLamaReceive)
@@ -562,6 +568,43 @@ def like_post(post_id):
     # Return a JSON response
     return jsonify({'likes': post['likes'], 'userLiked': user_liked})
 
+@app.route('/cekLaporan', methods=['POST'])
+def cekLaporanbyResi():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256']) 
+        if not payload:
+            flash("Anda Belum Login", "error")
+            return redirect(url_for('loginUser'))
+    except jwt.ExpiredSignatureError:
+        flash("Session Anda telah berakhir, silakan login kembali", "error")
+        return redirect(url_for('loginUser'))
+    except jwt.InvalidTokenError:
+        flash("Token Anda tidak valid, silakan login kembali", "error")
+        return redirect(url_for('loginUser'))
+    # tangkap data yang diperlukan
+    user_checker = db.mahasiswa.find_one({'nim': payload.get('id')})
+    no_resi = request.form.get('resiLaporan-give')
+    # cek untuk mencegah duplikasi data
+    existing_check = db.cek_laporan.find_one({'nim': user_checker['nim'], 'no_resi': no_resi})
+    # Input data user yang melakukan check resi ke koleksi cek_laporan jika tidak ada duplikasi
+    if not existing_check:
+            insert_into_koleksi_check = {
+            'nim': user_checker['nim'],
+            'no_resi': no_resi,
+            'date': datetime.now()
+            }
+            db.cek_laporan.insert_one(insert_into_koleksi_check)
+    
+    # cari resi yang relevan dan berikan kepada user
+    data = db.pelaporan.find_one({'no_resi': no_resi})
+    status_laporan = data.get('status') if data else None
+    if data:
+        flash(f"Status Laporan Anda: {status_laporan} ", "success")
+        return redirect(url_for('userProfil'))
+    else:
+        flash('No Resi tidak ditemukan', 'error')
+        return redirect(url_for('userProfil'))
 
 
 # 
@@ -732,7 +775,25 @@ def detailLaporan():
         return render_template('admin/detailLaporan.html',data=user_info, laporan = laporan_info)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
-        
+  
+@app.route('/updateLaporan/<no_resi>', methods=['POST'])
+def updatestatus(no_resi):
+    token = request.cookies.get('token')
+    if not token:
+        return redirect(url_for('loginAdmin'))
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        if not payload:
+            return redirect(url_for('loginAdmin'))
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for('loginAdmin'))
+    except jwt.InvalidTokenError:
+        return redirect(url_for('loginAdmin'))
+    status_receive = request.form.get('new_status')
+    db.pelaporan.update_one({'no_resi': no_resi}, {'$set': {'status': status_receive}})
+    flash('Status Laporan berhasil diubah!', 'success')
+    return redirect(url_for('detailLaporan'))
+     
         
 @app.route('/adminDashboard/forumControl', methods=['GET', 'POST'])
 def forumControl():
@@ -754,6 +815,21 @@ def forumControl():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
     
+@app.route('/deletePostbyAdmin', methods=['POST'])
+def deletePostbyAdmin():
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        if not payload:
+            return redirect(url_for('loginAdmin'))
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for('loginAdmin'))
+    except jwt.InvalidTokenError:
+        return redirect(url_for('loginAdmin'))
+    post_id = request.form.get('post_id_give')
+    db.postingan.delete_one({'_id': ObjectId(post_id)})
+    flash('Postingan berhasil dihapus!', 'success')
+    return redirect(url_for('forumControl'))   
     
 @app.route('/adminDashboard/userControl', methods=['GET', 'POST'])
 def userControl():
@@ -773,7 +849,7 @@ def userControl():
                 "nama_ibu": ibu_mahasiswa,
                 "default_password": password_hash,
                 "role": "mahasiswa",
-                "fotoProfile": "/static/foto_profil/default_profile.png"
+                "fotoProfile": "foto_profil/Default-profile-image.png"
             }
             # duplicate username check
             if db.mahasiswa.find_one({"nim": mahasiswa_nim}):
@@ -798,6 +874,52 @@ def userControl():
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
 
+@app.route('/updateMahasiswa', methods=['POST'])
+def updateUser():
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        if not payload:
+            return redirect(url_for('loginAdmin'))
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for('loginAdmin'))
+    except jwt.InvalidTokenError:
+        return redirect(url_for('loginAdmin'))
+
+    mahasiswa_nim = request.form.get('nim')
+    new_status = request.form.get('status_give')
+
+    # Check the current status before updating
+    current_info = db.mahasiswa.find_one({'nim': mahasiswa_nim})
+    if current_info and 'status' in current_info and current_info['status'] != new_status:
+        if new_status == 'hide':
+            # Move posts to db.pinalty
+            posts_to_move = list(db.postingan.find({'nim': mahasiswa_nim}))
+            if posts_to_move:
+                db.pinalty.insert_many(posts_to_move)
+                db.postingan.delete_many({'nim': mahasiswa_nim})
+        elif new_status == 'show':
+            # Move posts back to db.postingan
+            posts_to_restore = list(db.pinalty.find({'nim': mahasiswa_nim}))
+            if posts_to_restore:
+                db.postingan.insert_many(posts_to_restore)
+                db.pinalty.delete_many({'nim': mahasiswa_nim})
+
+    # Update the student's information
+    mahasiswa_name = request.form.get('new_name')
+    mahasiswa_email = request.form.get('new_email')
+    mahasiswa_prodi = request.form.get('new_prodi')
+    ibu_mahasiswa = request.form.get('new_mother_name')
+    data = {
+        "nama": mahasiswa_name,
+        "email": mahasiswa_email,
+        "program_studi": mahasiswa_prodi,
+        "nama_ibu": ibu_mahasiswa,
+        "status": new_status
+    }
+    db.mahasiswa.update_one({'nim': mahasiswa_nim}, {'$set': data})
+    flash('Data Mahasiswa berhasil diubah!', 'success')
+    return redirect(url_for('userControl'))
 
 
 @app.route('/adminDashboard/deleteArticle/<article_id>', methods=['POST'])

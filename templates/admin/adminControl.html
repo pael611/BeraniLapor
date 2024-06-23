@@ -123,7 +123,7 @@
           <form method="POST" action="/adminControl">
             <div class="mb-3">
               <label for="adminName" class="form-label">Nama Admin</label>
-              <input type="text" class="form-control" id="adminName" name="adminName_give">
+              <input type="text" class="form-control" id="adminName" required name="adminName_give">
             </div>
             <div class="mb-3">
               <label for="adminUsername" class="form-label">Username</label>
@@ -131,11 +131,11 @@
             </div>
             <div class="mb-3">
               <label for="adminPassword" class="form-label">Password</label>
-              <input type="password" class="form-control" id="adminPassword" name="adminPassword_give">
+              <input type="password" class="form-control" id="adminPassword"required name="adminPassword_give">
             </div>
             <div class="mb-3">
               <label for="adminStatus" class="form-label">Status</label>
-              <input type="text" class="form-control" id="adminStatus" name="adminStatus_give">
+              <input type="text" class="form-control" id="adminStatus" required name="adminStatus_give">
             </div>
             <button type="submit" class="btn btn-primary btn-submit-inModal">Submit</button>
           </form>
@@ -159,6 +159,8 @@
         // Show the modal
         //change the button submit to button update and chnge the action to /adminControl/update
         $('#adminModalLabel').text('Edit Admin');
+        // buat #adminUsername menjadi readonly
+        $('#adminUsername').attr('readonly', true);
         $('#adminModal form').attr('action', '/adminControl/update');
         $('.btn-submit-inModal').remove(); // Remove the submit button
 
@@ -176,6 +178,8 @@
       $('#adminModal').on('hidden.bs.modal', function () {
         // Change the button back to submit and change the action back to /adminControl/add
         $('#adminModalLabel').text('Tambah Admin');
+        // make #adminUsername editable
+        $('#adminUsername').attr('readonly', false);
         $('#adminModal form').attr('action', '/adminControl');
         $('.btn-update-inModal').remove(); // Remove the update button
 
