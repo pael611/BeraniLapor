@@ -21,20 +21,20 @@
   }
 </style>
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     $('h3').each(function () {
-      $(this).prop('Counter',0).animate({
-          Counter: $(this).text()
+      $(this).prop('Counter', 0).animate({
+        Counter: $(this).text()
       }, {
-          duration: 1000,
-          easing: 'swing',
-          step: function (now) {
-              $(this).text(Math.ceil(now));
-          }
+        duration: 1000,
+        easing: 'swing',
+        step: function (now) {
+          $(this).text(Math.ceil(now));
+        }
       });
     });
   });
-  </script>
+</script>
 
 <body>
   <div class="container-scroller">
@@ -74,7 +74,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3 grid-margin stretch-card"  onclick="location.href='/adminDashboard/detailLaporan';">
+              <div class="col-md-3 grid-margin stretch-card" onclick="location.href='/adminDashboard/detailLaporan';">
                 <div class="card">
                   <div class="card-body">
                     <p class="card-title text-md-center text-xl-left">Pelaporan</p>
@@ -114,6 +114,85 @@
                 </div>
               </div>
             </div>
+
+            <div class="statistik-graphic-monthlyReport">
+              <div class="row d-flex justify-content-sm-center">
+                <div class="col-md-4 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Statistik Bulanan</h4>
+                      <canvas id="myChart" width="30px" height="30px"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Statistik Tahunan</h4>
+                      <canvas id="myChart2" width="30px" height="30px"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+              // Tangkap `summary_pelaporan_byMonth` yang dikirim dari Flask sebagai JSON
+
+              // buat masing masing variable bulan dan tahun dan berikan 0 apabila kosong
+              const summaryData = {{ summary_pelaporan_byMonth| tojson }};
+              // sorting juga bulan yang berbeda tahun
+              const summaryData2 = {{ summary_pelaporan_byYear| tojson }}; 
+              const yearlyData = [];
+              const monthlyData = [];
+              for (let month = 1; month <= 12; month++) {
+                monthlyData.push(summaryData[month] || 0);
+              }
+              for (let year = 2024; year <= 2035; year++) {
+                yearlyData.push(summaryData2[year] || 0);
+              }
+              const monthlyReportsData = {
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [{
+                  label: 'Jumlah Laporan',
+                  data: monthlyData, // <-Memasukkan data yang telah diolah
+                  fill: false,
+                  borderColor: 'rgb(75, 192, 192)',
+                  tension: 0.1
+                }]
+              };
+              const yearlyReportsData = {
+                labels: ["2024", "2025", "2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035"],
+                datasets: [{
+                  label: 'Jumlah Laporan',
+                  data: yearlyData, // <-Memasukkan data yang telah diolah
+                  fill: false,
+                  borderColor: 'rgb(75, 192, 192)',
+                  tension: 0.1
+                }]
+              };
+              // Opsi untuk grafik
+              const config = {
+                type: 'bar',  
+                data: monthlyReportsData,
+                options: {}
+              };
+              const config2 = {
+                type: 'bar',  
+                data: yearlyReportsData,
+                options: {}
+              };
+
+              // Inisialisasi grafik bulanan dan tahunan
+              const myChart = new Chart(
+                document.getElementById('myChart'),
+                config
+              );
+              const myChart2 = new Chart(
+                document.getElementById('myChart2'),
+                config2
+              );
+            </script>
           </main>
         </div>
         <!-- content-wrapper ends -->

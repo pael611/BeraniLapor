@@ -25,7 +25,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-
+    <!-- sweet alert -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- sweet alert 2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <!-- sweet alert -->
@@ -41,13 +44,13 @@
 {% if messages %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        swal({
-            title: "Pesan",
-            text: "{{ messages[0][1] }}",
+        Swal.fire({
             icon: "{{ messages[0][0] }}",
-            button: "OK",
+            title: "{{ messages[0][1] }}",
+            showConfirmButton: true, // Tampilkan tombol konfirmasi
+            timer: 3000, // Atur timer sesuai kebutuhan, atau hapus baris ini untuk menghilangkan timer
+            timerProgressBar: false, // Hapus atau atur ke false jika tidak ingin menggunakan progress bar timer
         });
-
     });
 </script>
 {% endif %}

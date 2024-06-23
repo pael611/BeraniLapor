@@ -65,6 +65,10 @@ app.secret_key = os.environ.get("SECRET_KEY")
 # Index / Landing Page!
 @app.route('/',methods=['GET'])
 def home():
+    # cek session apakah didalam session terdapar nim, jika terdapat maka destroy nim
+    if 'nim' in session:
+        session.pop('nim', None)
+    
     token_receive = request.cookies.get('mytoken')
     user_info = None
 
@@ -169,9 +173,8 @@ def verifikasi(nim):
             pw_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
             db.mahasiswa.update_one({'nim': nim}, {'$set': {'password_new': pw_hash}})
             msg = flash('Verifikasi Berhasil', 'success')
-            session.pop('nim', None)
-            return redirect(url_for('loginUser', msg=msg))
-
+            session.pop('nim', None) 
+            return redirect(url_for('loginUser', msg=msg)) 
     return render_template('loginVerifikasi.html', nim=nim, mahasiswa=mahasiswa)
     
 @app.route('/sign_out', methods=['GET', 'POST'])
@@ -644,6 +647,7 @@ def loginAdmin():
             session['role'] = role
             
             # Create a redirect response and add a cookie to it
+            flash("Anda berhasil login", "success")
             response = make_response(redirect(url_for('adminDashboard')))
             response.set_cookie('token', token)
             return response
@@ -659,6 +663,7 @@ def logoutPetugas():
     response = make_response(redirect(url_for('loginAdmin')))
     response.set_cookie('token', '', expires=0)
     session.clear()  # Menghapus semua data session
+    flash('Anda telah keluar', 'success')
     return response
     
 
@@ -677,14 +682,38 @@ def adminDashboard():
         postingan_count = db.postingan.count_documents({})
         mahasiswa_count = db.mahasiswa.count_documents({})
         pelaporan_count = db.pelaporan.count_documents({})
-
+        summary_pelaporan_byMonth = {}
+        summary_pelaporan_byYear = {}
+        if db.pelaporan.count_documents({}) > 0:
+            sort_pelporan_byMonth = db.pelaporan.aggregate([
+                {
+                    '$group': {
+                        '_id': {'$month': '$tanggal_melapor'},
+                        'count': {'$sum': 1}
+                    }
+                }
+            ])
+            for data in sort_pelporan_byMonth:
+                summary_pelaporan_byMonth[data['_id']] = data['count']
+            sort_pelporan_byYear = db.pelaporan.aggregate([
+                {
+                    '$group': {
+                        '_id': {'$year': '$tanggal_melapor'},
+                        'count': {'$sum': 1}
+                    }
+                }
+            ])
+            for data in sort_pelporan_byYear:
+                summary_pelaporan_byYear[data['_id']] = data['count']
+        
         return render_template('admin/adminDashboard.html', data=user_info, data_admin=dataAdmin, 
                                article_count=article_count, postingan_count=postingan_count, 
-                               mahasiswa_count=mahasiswa_count, pelaporan_count=pelaporan_count)
+                               mahasiswa_count=mahasiswa_count, pelaporan_count=pelaporan_count, 
+                               summary_pelaporan_byMonth=summary_pelaporan_byMonth, 
+                               summary_pelaporan_byYear=summary_pelaporan_byYear)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         msg = flash("Anda Belum Login")
         return redirect(url_for("loginAdmin", msg=msg))
-    
     
 @app.route('/adminControl', methods=['GET', 'POST'])
 def adminControl():
@@ -722,7 +751,8 @@ def adminControl():
         dataAdmin = db.admin.find({"role": "admin"})
         return render_template('admin/adminControl.html',data=user_info , data_admin = dataAdmin )
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+        flash('Anda Belum Login', 'error')
+        return redirect(url_for("loginAdmin"))
     
 @app.route('/adminControl/update', methods=['POST'])
 def updateAdmin():
@@ -756,6 +786,20 @@ def updateAdmin():
 
 @app.route('/adminControl/delete/<username>', methods=['GET'])
 def deleteAdmin(username):
+    token_key = request.cookies.get('token')
+    if not token_key:
+        return redirect(url_for('loginAdmin'))
+    try:
+        payload = jwt.decode(token_key, SECRET_KEY, algorithms=['HS256'])
+        if not payload:
+            flash("something wrong", "error")
+            return redirect(url_for('loginAdmin'))
+    except jwt.ExpiredSignatureError:
+        flash("Token Expired", "error")
+        return redirect(url_for('loginAdmin'))
+    except jwt.InvalidTokenError:
+        flash("Invalid Token", "error")
+        return redirect(url_for('loginAdmin'))
     db.admin.delete_one({"username": username})
     return redirect(url_for('adminControl'))
 
@@ -774,7 +818,8 @@ def detailLaporan():
         laporan_info = list(db.pelaporan.find())
         return render_template('admin/detailLaporan.html',data=user_info, laporan = laporan_info)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+        flash('Anda Belum Login', 'error')
+        return redirect(url_for("loginAdmin" ))
   
 @app.route('/updateLaporan/<no_resi>', methods=['POST'])
 def updatestatus(no_resi):
@@ -813,7 +858,8 @@ def forumControl():
             post['email']=mahasiswa_info['email']
         return render_template('admin/forumControl.html',data=user_info,postingan = postingan)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+        flash('Anda Belum Login', 'error')
+        return redirect(url_for("loginAdmin" ))
     
 @app.route('/deletePostbyAdmin', methods=['POST'])
 def deletePostbyAdmin():
@@ -872,7 +918,8 @@ def userControl():
             dataUser = list(db.mahasiswa.find())   
             return render_template('admin/adminUserControl.html',data=user_info, data_user = dataUser )     
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-            return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+            flash('Anda Belum Login', 'error')
+            return redirect(url_for("loginAdmin" ))
 
 @app.route('/updateMahasiswa', methods=['POST'])
 def updateUser():
@@ -940,15 +987,27 @@ def reset():
 
 @app.route('/adminDashboard/deleteArticle/<article_id>', methods=['POST'])
 def delete_article(article_id):
+    token_receive = request.cookies.get('token')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        if payload.get('role') not in ['admin', 'superAdmin']:
+            return redirect('/')
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("loginAdmin"))
     try:
         db.article.delete_one({"_id": ObjectId(article_id)})
+        flash('Artikel berhasil dihapus!', 'success')
         return jsonify({"success": True})
     except Exception as e:
+        flash('Gagal menghapus artikel!', 'error')
         return jsonify({"success": False, "error": str(e)})
 
 # Admin - Edit Article
 @app.route('/adminDashboard/editArticle/<article_id>', methods=['POST'])
 def edit_article(article_id):
+    token_receive = request.cookies.get('token')
+    if not token_receive:
+        return redirect(url_for('loginAdmin'))
     try:
         title_receive = request.form["judulArtikel_give"]
         isi_receive = request.form["isiArtikel_give"]
@@ -975,8 +1034,10 @@ def edit_article(article_id):
                 update_data['gambar'] = save_gambar
 
         db.article.update_one({"_id": ObjectId(article_id)}, {"$set": update_data})
+        flash('Artikel berhasil diubah!', 'success')
         return redirect(url_for('artikelControl'))
     except Exception as e:
+        flash('Gagal mengubah artikel!', 'error')
         return jsonify({"success": False, "error": str(e)})
 
 @app.route('/adminDashboard/artikelControl', methods=['GET', 'POST'])
@@ -1005,6 +1066,7 @@ def artikelControl():
             'date': thisdate  # Tambahkan tanggal saat ini ke dalam dokumen artikel
         }
         db.article.insert_one(doc)
+        flash('Artikel berhasil ditambahkan!', 'success')
         return redirect(url_for('artikelControl'))
 
     token_receive = request.cookies.get('token')
@@ -1017,9 +1079,9 @@ def artikelControl():
 
         return render_template('admin/artikelControl.html', data=user_info, articles=articles)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("loginAdmin", msg="Anda Belum Login"))
+        flash('Anda Belum Login', 'error')
+        return redirect(url_for("loginAdmin"))
 
-if __name__ == '__main__':
-    #DEBUG is SET to TRUE. CHANGE FOR PROD
+if __name__ == '__main__': 
     app.run("0.0.0.0", port=5000, debug=True)
 
