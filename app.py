@@ -287,17 +287,41 @@ def userProfil():
                 post['comment_count'] = comments
         
         # method Post pada userProfil
+        ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+        def allowed_file(filename):
+            return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
         if request.method == 'POST':
+            if 'photo-new' not in request.files:
+                flash('No file part', 'error')
+                return redirect(request.url)
             photo_receive = request.files['photo-new']
-            photo_receive_name = secure_filename(photo_receive.filename)
-            photo_receive_extension = photo_receive_name.split('.')[-1]
-            photo_saveto = f'static/foto_profil/{nim}.{photo_receive_extension}'
-            upload_to_file = os.path.join(app.root_path, photo_saveto)
-            photo_receive.save(upload_to_file)
-            
-            db.mahasiswa.update_one({'nim': nim}, {'$set': {'fotoProfile': f'foto_profil/{nim}.{photo_receive_extension}'}})
-            flash('Foto Profil berhasil diubah!', 'success')
-            # Handle POST Request here
+            if photo_receive.filename == '':
+                flash('No selected file', 'error')
+                return redirect(request.url)
+            if photo_receive and allowed_file(photo_receive.filename):
+                photo_receive_name = secure_filename(photo_receive.filename)
+                photo_receive_extension = photo_receive_name.rsplit('.', 1)[1].lower()
+                photo_saveto = f'static/foto_profil/{nim}.{photo_receive_extension}'
+                upload_to_file = os.path.join(app.root_path, photo_saveto)
+                try:                    
+                    # Get the old photo path
+                    old_photo_path = os.path.join(app.root_path, 'static', user_info.get('fotoProfile', ''))                    
+                    # Check if the old photo is not the default one before deleting
+                    default_photo = 'static/foto_profil/Default-profile-image.png'  # Adjust the path to your default photo
+                    if os.path.isfile(old_photo_path) and old_photo_path != os.path.join(app.root_path, default_photo):
+                        os.remove(old_photo_path)
+                        # Save the new photo first to ensure it's successful
+                        photo_receive.save(upload_to_file)
+                    
+                    # Update the database with the new photo path
+                    db.mahasiswa.update_one({'nim': nim}, {'$set': {'fotoProfile': f'foto_profil/{nim}.{photo_receive_extension}'}})
+                    flash('Foto Profil berhasil diubah!', 'success')
+                except Exception as e:
+                    flash(f'An error occurred: {e}', 'error')
+            else:
+                flash('Invalid file type', 'error')
             return redirect(url_for('userProfil'))
 
         return render_template('userProfil.html', user_info=user_info, postingan=postingan, status=status, no_resi=no_resi)
