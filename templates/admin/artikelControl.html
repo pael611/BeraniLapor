@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <!-- header -->
   {% include 'admin/adminTemplate/headerAdmin.html' %}
   <!-- end header -->
 </head>
+
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
@@ -51,20 +53,24 @@
                     <td>{{ art._id }}</td>
                     <td>{{ art.title }}</td>
                     <td style="max-width: 40vw; overflow-y: auto; max-height: 50vh;">
-                      <div class="image-artikel" style="width: 100%; padding-top: 100%; background-image: url('{{ url_for('static', filename=art.gambar) }}'); background-size: cover; background-color: #f1f1f1; background-position: center;"></div>
+                      <div class="image-artikel"
+                        style="width: 100%; padding-top: 100%; background-image: url('{{ url_for('static', filename=art.gambar) }}'); background-size: cover; background-color: #f1f1f1; background-position: center;">
+                      </div>
                     </td>
                     <td>{{ art.date }}</td>
                     <td style="max-width: 40vw; overflow-y: auto; max-height: 50vh;">
                       {{ art.isi }}
                     </td>
                     <td>
-                      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editArtikelModal{{ art._id }}">Edit</button>
+                      <button class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#editArtikelModal{{ art._id }}">Edit</button>
                       <button class="btn btn-danger" onclick="deleteArticle('{{ art._id }}')">Hapus</button>
                     </td>
                   </tr>
 
                   <!-- Modal for Editing Article -->
-                  <div class="modal fade" id="editArtikelModal{{ art._id }}" tabindex="-1" aria-labelledby="editArtikelModalLabel" aria-hidden="true">
+                  <div class="modal fade" id="editArtikelModal{{ art._id }}" tabindex="-1"
+                    aria-labelledby="editArtikelModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-header">
@@ -72,22 +78,27 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <form method="POST" action="/adminDashboard/editArticle/{{ art._id }}" enctype="multipart/form-data">
+                          <form method="POST" action="/adminDashboard/editArticle/{{ art._id }}"
+                            enctype="multipart/form-data">
                             <div class="mb-3">
                               <label for="judulArtikel_give{{ art._id }}" class="form-label">Judul Artikel</label>
-                              <input type="text" class="form-control" id="judulArtikel_give{{ art._id }}" required name="judulArtikel_give" value="{{ art.title }}">
+                              <input type="text" class="form-control" id="judulArtikel_give{{ art._id }}" required
+                                name="judulArtikel_give" value="{{ art.title }}">
                             </div>
                             <div class="mb-3">
                               <label for="gambarArtikel_give{{ art._id }}" class="form-label">Gambar Artikel</label>
-                              <input type="file" class="form-control" id="gambarArtikel_give{{ art._id }}" name="gambarArtikel_give">
+                              <input type="file" class="form-control" id="gambarArtikel_give{{ art._id }}"
+                                name="gambarArtikel_give">
                             </div>
                             <div class="mb-3">
                               <label for="isiArtikel_give{{ art._id }}" class="form-label">Isi Artikel</label>
-                              <textarea class="form-control" id="isiArtikel_give{{ art._id }}" required name="isiArtikel_give">{{ art.isi }}</textarea>
+                              <textarea class="form-control" id="isiArtikel_give{{ art._id }}" required
+                                name="isiArtikel_give">{{ art.isi }}</textarea>
                             </div>
                             <div class="mb-3">
                               <label for="dateArtikel_give{{ art._id }}" class="form-label">Tanggal Artikel</label>
-                              <input type="text" class="form-control" id="dateArtikel_give{{ art._id }}" required name="dateArtikel_give" value="{{ art.date }}">
+                              <input type="text" class="form-control" id="dateArtikel_give{{ art._id }}" required
+                                name="dateArtikel_give" value="{{ art.date }}">
                             </div>
                             <button type="submit" class="btn btn-primary btn-submit-inModal">Submit</button>
                           </form>
@@ -101,7 +112,8 @@
             </div>
 
             <!-- Modal for Adding Article -->
-            <div class="modal fade" id="artikelModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+            <div class="modal fade" id="artikelModal" tabindex="-1" aria-labelledby="adminModalLabel"
+              aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -112,11 +124,13 @@
                     <form method="POST" action="/adminDashboard/artikelControl" enctype="multipart/form-data">
                       <div class="mb-3">
                         <label for="judulArtikel_give" class="form-label">Judul Artikel</label>
-                        <input type="text" class="form-control" id="judulArtikel_give" required name="judulArtikel_give">
+                        <input type="text" class="form-control" id="judulArtikel_give" required
+                          name="judulArtikel_give">
                       </div>
                       <div class="mb-3">
                         <label for="gambarArtikel_give" class="form-label">Gambar Artikel</label>
-                        <input type="file" class="form-control" id="gambarArtikel_give" required name="gambarArtikel_give">
+                        <input type="file" class="form-control" id="gambarArtikel_give" required
+                          name="gambarArtikel_give">
                       </div>
                       <div class="mb-3">
                         <label for="isiArtikel_give" class="form-label">Isi Artikel</label>
@@ -155,15 +169,16 @@
       fetch(`/adminDashboard/deleteArticle/${articleId}`, {
         method: 'POST'
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          location.reload();
-        } else {
-          alert('Failed to delete article: ' + data.error);
-        }
-      });
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            alert('Failed to delete article: ' + data.error);
+          }
+        });
     }
   </script>
 </body>
+
 </html>

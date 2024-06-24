@@ -11,9 +11,53 @@
         -webkit-box-orient: vertical;
     }
 
+    .card-title {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        /* Adjusted to show only 3 lines */
+        -webkit-box-orient: vertical;
+    }
+
     .expanded {
         -webkit-line-clamp: none;
         height: auto;
+    }
+
+    .article-content {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .card-title {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .card-text-content {
+        text-align: justify;
+        margin-bottom: 1rem;
+    }
+
+    .card-text-content p {
+        margin-bottom: 1rem;
+    }
+
+    /* Add this CSS to your stylesheet */
+    #articles-box .col-3 {
+        padding: 0 15px;
+        /* Adjust padding as needed */
+    }
+
+    .card {
+        margin-bottom: 20px;
+        /* Space between cards vertically */
+    }
+
+    .container-artikel {
+        padding: 0 15px;
+        /* Ensures there's space on the sides of the container */
     }
 </style>
 
@@ -28,42 +72,40 @@
             element.classList.add('truncated');
         }
     }
+
+    document.querySelectorAll('.card-text-content').forEach(function (element) {
+        element.innerHTML = element.textContent.replace(/\n/g, '<br>');
+    });
 </script>
 
 <body>
-    <!-- Container -->
-    <div class="container pt-2">
-        {% if articles %}
-        {% for art in articles %}
-        <div class="container-artikel mt-3 justify-content-center align-items-center">
-            <!-- Articles Section -->
-            <div class="d-flex justify-content-center align-items-center mt-4">
-                <div id="articles-box" class="row">
-                    <!-- Loop through articles and create article cards -->
-                    <div class="col-12 col-md-6 col-lg-4 mb-2 ">
-                        <div class="card  " style="min-width: 30vw; max-width: auto;">
-                            <!-- Debugging: Output the article date to check its value -->
-                            <img src="{{ url_for('static', filename=art.gambar) }}" class="card-img-top"
-                                alt="Article Image">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title text-start text-uppercase">{{ art.title }}</h5>
-                                <p class="card-text-content" onclick="expand(this)">{{ art.isi}}</p>
-                                <p style="color: black;" class="text-start"><i>Uploaded by Tim Satgas PPKS Polmed</i></p>
-                                <!-- Check if the date exists and is not empty before displaying -->
-                                {% if art.date %}
-                                <p style="color: black;" class="text-start"><i>{{ art.date }}</i></p>
-                                {% else %}
-                                <p>Date not available</p>
-                                {% endif %}
-                            </div>
-                        </div>
+    {% if articles %}
+    <div class="container-artikel mt-3">
+        <!-- Articles Section -->
+        <div id="articles-box" class="row">
+            {% for art in articles %}
+            <!-- Adjusted column classes for responsiveness -->
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2  "
+                onclick="window.location.href='/detail-artikel/{{art._id}}';">
+                <div class="card" style="width: 100%;"> <!-- Adjusted style for width -->
+                    <!-- Debugging: Output the article date to check its value -->
+                    <div class="image-artikel-containt d-flex justify-content-center">
+                        <img src="{{ url_for('static', filename=art.gambar) }}" style="height: 150px; max-width: 150px; display: block; margin: auto;" class="card-img-top" alt="Article Image">
+                    </div>
+                    <div class="card-body d-flex flex-column article-content">
+                        <h6 class="card-title text-start text-uppercase">{{ art.title }}</h6>
+                        <div class="card-text-content"  >{{ art.isi }}</div>
+                        <p style="color: black;" class="text-start"><i>Uploaded by Tim Satgas PPKS Polmed</i></p>
+                        {% if art.date %}
+                        <p style="color: black;" class="text-start"><i>{{ art.date }}</i></p>
+                        {% else %}
+                        <p>Date not available</p>
+                        {% endif %}
                     </div>
                 </div>
-
             </div>
+            {% endfor %}
         </div>
-    </div>
-    {% endfor %}
     </div>
     {% else %}
     <div>

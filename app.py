@@ -30,7 +30,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 app=Flask(__name__)
 # SMTP email configuration for Resi Pengaduan
-
 def send_email(resi, nama, program_studi, detail_report, tanggal_kejadian, lokasi_kejadian, recipient):
     server = smtplib.SMTP('smtp.gmail.com', 587) 
     try:
@@ -65,7 +64,6 @@ app.secret_key = os.environ.get("SECRET_KEY")
 # Index / Landing Page!
 @app.route('/',methods=['GET'])
 def home():
-    # cek session apakah didalam session terdapar nim, jika terdapat maka destroy nim
     if 'nim' in session:
         session.pop('nim', None)
     
@@ -101,11 +99,6 @@ def loginUser():
 
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
-
-    if request.method == 'POST':
-        # Handle POST Request here
-        pass
-
     # If user is already logged in, redirect to home
     if 'nim' in session:
         return redirect(url_for('home'))
@@ -132,9 +125,9 @@ def sign_in():
             else:
                 msg = flash("Password Salah!")         
                 return redirect(url_for("loginUser",msg = msg))
-        elif password_new == pw_hash:  # Jika password_new ditemukan dan sesuai dengan inputan user
+        elif password_new == pw_hash:  
             payload = {
-                'id': nim_receive, # Menggunakan NIM sebagai id
+                'id': nim_receive, 
                 'exp': datetime.now(timezone.utc) + timedelta(seconds=60 * 60 * 24),
             }
             token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')            
@@ -152,13 +145,11 @@ def sign_in():
 @app.route('/verifikasiLogin/<nim>', methods=['GET', 'POST'])
 def verifikasi(nim):
     if 'nim' not in session or session['nim'] != nim:
-        # Jika tidak, kembalikan ke halaman login atau tampilkan pesan error
         return redirect(url_for('loginUser'))
 
     mahasiswa = db.mahasiswa.find_one({'nim': nim})
 
     if request.method == 'POST':
-        # Ambil data dari form
         email_kampus = request.form.get('email-kampus-give')
         nama_ibu = request.form.get('nama-ibu')
         new_password = request.form.get('new-password')
@@ -169,7 +160,6 @@ def verifikasi(nim):
         elif mahasiswa['nama_ibu'] != nama_ibu:
             flash('Nama ibu salah', 'error')
         else:
-            # Jika semua data benar, update password
             pw_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
             db.mahasiswa.update_one({'nim': nim}, {'$set': {'password_new': pw_hash}})
             msg = flash('Verifikasi Berhasil', 'success')
@@ -179,7 +169,6 @@ def verifikasi(nim):
     
 @app.route('/sign_out', methods=['GET', 'POST'])
 def sign_out():
-    
     response = make_response(redirect(url_for('home')))
     response.set_cookie('mytoken', '', expires=0)
     flash('Anda telah keluar', 'success')
@@ -280,18 +269,15 @@ def userProfil():
                 mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
                 post['nama'] = mahasiswa_info['nama']
                 post['email'] = mahasiswa_info['email']
-                
                 # get comment count
                 comments = list(db.comments.find({'post_id': ObjectId(post['id'])}))
-                # Add the comment count to the post
+                # Add the comment count
                 post['comment_count'] = comments
         
         # method Post pada userProfil
         ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
-
         def allowed_file(filename):
             return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
         if request.method == 'POST':
             if 'photo-new' not in request.files:
                 flash('No file part', 'error')
@@ -306,16 +292,11 @@ def userProfil():
                 photo_saveto = f'static/foto_profil/{nim}.{photo_receive_extension}'
                 upload_to_file = os.path.join(app.root_path, photo_saveto)
                 try:                    
-                    # Get the old photo path
-                    old_photo_path = os.path.join(app.root_path, 'static', user_info.get('fotoProfile', ''))                    
-                    # Check if the old photo is not the default one before deleting
-                    default_photo = 'static/foto_profil/Default-profile-image.png'  # Adjust the path to your default photo
+                    old_photo_path = os.path.join(app.root_path, 'static', user_info.get('fotoProfile', ''))                  
+                    default_photo = 'foto_profil/Default-profile-image.png'  
                     if os.path.isfile(old_photo_path) and old_photo_path != os.path.join(app.root_path, default_photo):
                         os.remove(old_photo_path)
-                        # Save the new photo first to ensure it's successful
                         photo_receive.save(upload_to_file)
-                    
-                    # Update the database with the new photo path
                     db.mahasiswa.update_one({'nim': nim}, {'$set': {'fotoProfile': f'foto_profil/{nim}.{photo_receive_extension}'}})
                     flash('Foto Profil berhasil diubah!', 'success')
                 except Exception as e:
@@ -339,7 +320,7 @@ def editProfil():
     passwordLamaReceive = bleach.clean(request.form['passwordLamaGive'])
     passwordBaruReceive = bleach.clean(request.form['passwordBaruGive'])
 
-    # Remove any non-word characters
+    # Lakukan Sanitasi inputan usaer
     passwordLamaReceive = re.sub(r'\W', '', passwordLamaReceive)
     passwordBaruReceive = re.sub(r'\W', '', passwordBaruReceive)
 
@@ -363,8 +344,7 @@ def editProfil():
     
 
 @app.route('/new-post', methods=['GET', 'POST'])
-def new_post():
-    # validasi token, apabila user sudah login maka akan menampilkan halaman forum
+def new_post(): 
     token_receive = request.cookies.get('mytoken')
     if not token_receive:
         flash("Anda Belum Login", "error")
@@ -376,8 +356,7 @@ def new_post():
         if not user_info:
             raise jwt.exceptions.DecodeError
         
-        if request.method == 'POST':
-            # Handle POST Request here
+        if request.method == 'POST': 
             user_post_receive = bleach.clean(request.form['user-post-give'])
             mahasiswa_get_nim = bleach.clean(user_info.get('nim'))
             data = {
@@ -402,8 +381,7 @@ def delete_post():
 
 
 @app.route('/forumBase', methods=['GET', 'POST'])
-def forum():        
-    # validasi token, apabila user sudah login maka akan menampilkan halaman forum
+def forum():         
     token_receive = request.cookies.get('mytoken')
     if not token_receive:
         msg = flash("Anda Belum Login","error")
@@ -418,25 +396,19 @@ def forum():
             mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
             post['nama'] = mahasiswa_info['nama']
             post['email']=mahasiswa_info['email']
-            comments = list(db.comments.find({'post_id': ObjectId(post['id'])}))
-
-            # Add the comment count to the post
+            comments = list(db.comments.find({'post_id': ObjectId(post['id'])})) 
             post['comment_count'] = comments
             if 'fotoProfile' in mahasiswa_info and mahasiswa_info['fotoProfile']:
                 post['fotoProfile'] = mahasiswa_info['fotoProfile']
             else:
-                continue
-             # Fetch comments related to the current post
+                continue 
             
         if not user_info:
             raise jwt.exceptions.DecodeError
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         msg = flash("Login tidak valid atau telah kadaluwarsa. Silakan login kembali.","error")
-        return redirect(url_for('loginUser', msg=msg))
-    
-    # jalan kan post untuk postingan ketika user sedang login
-    if request.method == 'POST':
-        # Handle POST Request here
+        return redirect(url_for('loginUser', msg=msg)) 
+    if request.method == 'POST': 
         user_post_receive = bleach.clean(request.form['user-post-give'])
         mahasiswa_get_nim = bleach.clean(user_info.get('nim'))
         mahasiswa_get_nama = bleach.clean(user_info.get('nama'))  # Memperbaiki typo pada variabel
@@ -448,9 +420,6 @@ def forum():
         db.postingan.insert_one(data)
         flash(f'Postingan {mahasiswa_get_nama} berhasil ditambahkan!', 'success')
         return redirect(url_for('forum'))      
-
-    # Anda bisa menambahkan kode untuk menangani user_post_receive di sini
-
     return render_template('forum.html', user_info=user_info, postingan = postingan)
 
 @app.route('/postingan-detail/<idPost>', methods=['GET', 'POST'])
@@ -480,18 +449,14 @@ def detailPost(idPost):
             post['id'] = str(post['_id'])
             mahasiswa_info = db.mahasiswa.find_one({"nim": post['nim']})
             post['nama'] = mahasiswa_info['nama']
-            post['email'] = mahasiswa_info['email']
-            # Fetch Photo Profile from  user who posted 
+            post['email'] = mahasiswa_info['email'] 
             if 'fotoProfile' in mahasiswa_info and mahasiswa_info['fotoProfile']:
-                post['fotoProfile'] = mahasiswa_info['fotoProfile']
-            
-            # Fetch comments related to the current post
+                post['fotoProfile'] = mahasiswa_info['fotoProfile'] 
             comments = list(comments)
             for comment in comments:
                 comment['id'] = str(comment['_id'])
                 mahasiswa_info = db.mahasiswa.find_one({'nim': comment['nim']})
-                comment['nama'] = mahasiswa_info['nama']
-                # Check and add fotoProfile for each comment if it exists
+                comment['nama'] = mahasiswa_info['nama'] 
                 if 'fotoProfile' in mahasiswa_info and mahasiswa_info['fotoProfile']:
                     comment['fotoProfile'] = mahasiswa_info['fotoProfile']        
             return render_template('detailForum.html', post=post, user_info=user_info, comments=comments)
@@ -544,20 +509,33 @@ def artikel():
             msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
             flash(msg)
     articles = list(db.article.find({}))
-    for art in articles:
-        print("Original Image Path:", art.get("gambar"))  # Debug print
-        art["gambar"] = art.get("gambar")  # Just pass the image path directly
-        print("Processed Image Path:", art.get("gambar"))  # Debug print
-        print("Article Date:", art.get("date"))    # Debug print
-        # Jika tanggal artikel belum ada, tambahkan tanggal saat ini
+    for art in articles:   
+        art["gambar"] = art.get("gambar")
         if "date" not in art:
-            art["date"] = datetime.now().strftime("%Y-%m-%d")
-            print("Added Current Date:", art.get("date"))  # Debug print
+            art["date"] = datetime.now().strftime("%Y-%m-%d") 
     return render_template('artikel.html', articles=articles, user_info=user_info)
+
+@app.route('/detail-artikel/<idArtikel>', methods=['GET', 'POST'])
+def detailArtikel(idArtikel):
+    token_receive = request.cookies.get('mytoken')
+    user_info = None
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.mahasiswa.find_one({'nim': payload.get('id')})
+
+        except jwt.ExpiredSignatureError:
+            msg = 'Akun Anda telah keluar, silahkan Login kembali!'
+            flash(msg)
+
+        except jwt.exceptions.DecodeError:
+            msg = 'Maaf Kak, sepertinya ada masalah. Silahkan Login kembali!'
+            flash(msg)
+    article = db.article.find_one({'_id': ObjectId(idArtikel) })
+    return render_template('detailArtikel.html', user_info=user_info, article=article)
  
 @app.route('/like_post/<post_id>', methods=['POST'])
-def like_post(post_id):
-    # Fetch the post from the database
+def like_post(post_id): 
     post = db.postingan.find_one({'_id': ObjectId(post_id)})
 
     token_receive = request.cookies.get('mytoken')
@@ -573,26 +551,19 @@ def like_post(post_id):
         return redirect(url_for('loginUser'))
     except jwt.InvalidTokenError:
         flash("Token Anda tidak valid, silakan login kembali", "error")
-        return redirect(url_for('loginUser'))
-
-    # If the 'likes' key doesn't exist in the post, create it and set it to an empty list
+        return redirect(url_for('loginUser')) 
     if 'likes' not in post:
         post['likes'] = []
 
-    if user_info['nim'] in post['likes']:
-        # If the user has already liked the post, unlike it
+    if user_info['nim'] in post['likes']: 
         post['likes'].remove(user_info['nim'])
-    else:
-        # If the user has not liked the post, like it
+    else: 
         post['likes'].append(user_info['nim'])
-
-    # Save the updated post back to the database
+ 
     db.postingan.update_one({'_id': ObjectId(post_id)}, {'$set': {'likes': post['likes']}})
     
-    # Determine whether the user liked the post
     user_liked = user_info['nim'] in post['likes']
 
-    # Return a JSON response
     return jsonify({'likes': post['likes'], 'userLiked': user_liked})
 
 @app.route('/cekLaporan', methods=['POST'])
@@ -608,13 +579,10 @@ def cekLaporanbyResi():
         return redirect(url_for('loginUser'))
     except jwt.InvalidTokenError:
         flash("Token Anda tidak valid, silakan login kembali", "error")
-        return redirect(url_for('loginUser'))
-    # tangkap data yang diperlukan
+        return redirect(url_for('loginUser')) 
     user_checker = db.mahasiswa.find_one({'nim': payload.get('id')})
-    no_resi = request.form.get('resiLaporan-give')
-    # cek untuk mencegah duplikasi data
-    existing_check = db.cek_laporan.find_one({'nim': user_checker['nim'], 'no_resi': no_resi})
-    # Input data user yang melakukan check resi ke koleksi cek_laporan jika tidak ada duplikasi
+    no_resi = request.form.get('resiLaporan-give') 
+    existing_check = db.cek_laporan.find_one({'nim': user_checker['nim'], 'no_resi': no_resi}) 
     if not existing_check:
             insert_into_koleksi_check = {
             'nim': user_checker['nim'],
@@ -622,8 +590,7 @@ def cekLaporanbyResi():
             'date': datetime.now()
             }
             db.cek_laporan.insert_one(insert_into_koleksi_check)
-    
-    # cari resi yang relevan dan berikan kepada user
+     
     data = db.pelaporan.find_one({'no_resi': no_resi})
     status_laporan = data.get('status') if data else None
     if data:
@@ -665,12 +632,8 @@ def loginAdmin():
                 'role': role,
                 'exp': datetime.utcnow() + timedelta(seconds=60 * 60),
             }
-            token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-            
-            # Simpan role dalam sesi
-            session['role'] = role
-            
-            # Create a redirect response and add a cookie to it
+            token = jwt.encode(payload, SECRET_KEY, algorithm="HS256") 
+            session['role'] = role 
             flash("Anda berhasil login", "success")
             response = make_response(redirect(url_for('adminDashboard')))
             response.set_cookie('token', token)
@@ -686,7 +649,6 @@ def loginAdmin():
 def logoutPetugas():
     response = make_response(redirect(url_for('loginAdmin')))
     response.set_cookie('token', '', expires=0)
-    session.clear()  # Menghapus semua data session
     flash('Anda telah keluar', 'success')
     return response
     
@@ -761,7 +723,6 @@ def adminControl():
             return redirect(url_for("adminControl"))
         else:         
             db.admin.insert_one(data)      
-        # Handle POST Request here
         return redirect(url_for('adminControl'))
     token_receive = request.cookies.get('token')
     try:
@@ -927,7 +888,6 @@ def userControl():
                 return redirect(url_for("userControl"))
             else:         
                 db.mahasiswa.insert_one(data)      
-            # Handle POST Request here
             return redirect(url_for('userControl'))
     
         token_receive = request.cookies.get('token')
@@ -938,7 +898,6 @@ def userControl():
             user_info = db.admin.find_one({"username": payload["id"],
                                            "role": payload["role"]
                                            })
-            # fetch data user from db.users
             dataUser = list(db.mahasiswa.find())   
             return render_template('admin/adminUserControl.html',data=user_info, data_user = dataUser )     
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
@@ -964,13 +923,13 @@ def updateUser():
     current_info = db.mahasiswa.find_one({'nim': mahasiswa_nim})
     if current_info and 'status' in current_info and current_info['status'] != new_status:
         if new_status == 'hide':
-            # Move posts to db.pinalty
+            # Pindahkan user ke db.pinalty
             posts_to_move = list(db.postingan.find({'nim': mahasiswa_nim}))
             if posts_to_move:
                 db.pinalty.insert_many(posts_to_move)
                 db.postingan.delete_many({'nim': mahasiswa_nim})
         elif new_status == 'show':
-            # Move posts back to db.postingan
+            # kembalikan user sessuai denga db.postingan sebelumnya
             posts_to_restore = list(db.pinalty.find({'nim': mahasiswa_nim}))
             if posts_to_restore:
                 db.postingan.insert_many(posts_to_restore)
@@ -1036,8 +995,6 @@ def edit_article(article_id):
         title_receive = request.form["judulArtikel_give"]
         isi_receive = request.form["isiArtikel_give"]
         date_receive = request.form["dateArtikel_give"]
-
-        # Mendapatkan tanggal dan waktu saat ini
         current_datetime = datetime.now()
         date_time = current_datetime.strftime("%Y-%m-%d-%H-%M-%S")
 
@@ -1050,11 +1007,21 @@ def edit_article(article_id):
         if 'gambarArtikel_give' in request.files:
             gambar_receive = request.files["gambarArtikel_give"]
             if gambar_receive.filename != '':
+                # hapus gambar lama
+                old_article = db.article.find_one({"_id": ObjectId(article_id)})
+                old_image_path = old_article.get("gambar")
+                if old_image_path:
+                    old_image_path = os.path.join(app.root_path, 'static/', old_image_path)
+                    if os.path.exists(old_image_path):
+                        os.remove(old_image_path) 
+                #Tambah gambar baru 
+                gambar_receive = request.files["gambarArtikel_give"]
                 extensiongambar = gambar_receive.filename.split('.')[-1]
                 save_dir = os.path.join(app.root_path, 'static/adminAsset/articleImage/')
-                os.makedirs(save_dir, exist_ok=True)
-                save_gambar = f'/static/adminAsset/articleImage/{date_time}.{extensiongambar}'
-                gambar_receive.save(os.path.join(save_dir, f'image{date_time}.{extensiongambar}'))
+                os.makedirs(save_dir, exist_ok=True)   
+                filename = f'image{date_time}.{extensiongambar}'
+                save_gambar = os.path.join('adminAsset/articleImage/', filename)   
+                gambar_receive.save(os.path.join(save_dir, filename))
                 update_data['gambar'] = save_gambar
 
         db.article.update_one({"_id": ObjectId(article_id)}, {"$set": update_data})
@@ -1076,9 +1043,9 @@ def artikelControl():
         gambar_receive = request.files["gambarArtikel_give"]
         extensiongambar = gambar_receive.filename.split('.')[-1]
         save_dir = os.path.join(app.root_path, 'static/adminAsset/articleImage/')
-        os.makedirs(save_dir, exist_ok=True)  # Create directory if not exists
+        os.makedirs(save_dir, exist_ok=True)   
         filename = f'image{date_time}.{extensiongambar}'
-        save_gambar = os.path.join('adminAsset/articleImage/', filename)  # Relative path without '/static/'
+        save_gambar = os.path.join('adminAsset/articleImage/', filename)  
         gambar_receive.save(os.path.join(save_dir, filename))
         
         thisdate = today.strftime("%Y-%m-%d")
@@ -1087,7 +1054,7 @@ def artikelControl():
             'title': title_receive,
             'gambar': save_gambar,
             'isi': isi_receive,
-            'date': thisdate  # Tambahkan tanggal saat ini ke dalam dokumen artikel
+            'date': thisdate   
         }
         db.article.insert_one(doc)
         flash('Artikel berhasil ditambahkan!', 'success')

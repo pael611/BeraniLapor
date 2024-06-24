@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include 'header.html' %}
+
+<style>
+    .truncated, .expanded {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 900; /* Adjust if you want to limit the number of lines initially shown */
+        -webkit-box-orient: vertical;
+    }
+
+    .expanded {
+        -webkit-line-clamp: none;
+        height: auto;
+    }
+
+    .article-content {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .card-title {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .card-text-content {
+        text-align: justify;
+        margin-bottom: 1rem;
+    }
+
+    .card-text-content p {
+        margin-bottom: 1rem;
+    }
+
+    .card {
+        margin-bottom: 20px; /* Space between cards vertically */
+    }
+
+    .container-artikel {
+        padding: 0 15px; /* Ensures there's space on the sides of the container */
+    }
+</style>
+
+<script>
+    function expand(element) {
+        if (element.classList.contains('truncated')) {
+            element.classList.remove('truncated');
+            element.classList.add('expanded');
+        } else {
+            element.classList.remove('expanded');
+            element.classList.add('truncated');
+        }
+    }
+</script>
+
+<body>
+    {% if article %}
+    <div class="container-artikel mt-3">
+        <!-- Article Detail Section -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card" style="width: 100%;">
+                    <img src="{{ url_for('static', filename=article.gambar) }}" class="card-img-top" alt="Article Image">
+                    <div class="card-body d-flex flex-column article-content">
+                        <h5 class="card-title text-start text-uppercase">{{ article.title }}</h5>
+                        <div class="card-text-content" onclick="expand(this)">{{ article.isi | safe }}</div>
+                        <p style="color: black;" class="text-start"><i>Uploaded by Tim Satgas PPKS Polmed</i></p>
+                        {% if article.date %}
+                        <p style="color: black;" class="text-start"><i>{{ article.date }}</i></p>
+                        {% else %}
+                        <p>Date not available</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div>
+        <p>Article not found</p>
+    </div>
+    {% endif %}
+    {% include 'footer.html' %}
+
+</body>
+
+</html>
